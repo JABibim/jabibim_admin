@@ -24,6 +24,7 @@ jobs:
       - name: Build with Maven
         run: ./mvnw clean install -DskipTests
 
+
       # 4. 현재 시간 가져오기
       - name: Get current time
         uses: josStorer/get-current-time@v2.0.2
@@ -46,5 +47,5 @@ jobs:
           environment_name: Jabibimadminapplication-env
           version_label: github-action-${{steps.current-time.outputs.formattedTime}}
           region: ap-northeast-2
-          deployment_package: ./target/${{env.artifact}}
+          deployment_package: ${{env.artifact}}
           wait_for_environment_recovery: 180
