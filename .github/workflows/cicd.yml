@@ -24,6 +24,12 @@ jobs:
       - name: Build with Maven
         run: ./mvnw clean install -DskipTests
 
+      - name: Create deployment package
+        run: |
+          mkdir deployment-package
+          cp build/libs/*.jar deployment-package/application.jar
+          cp -r .platform deployment-package/.platform
+
       # 4. 현재 시간 가져오기
       - name: Get current time
         uses: josStorer/get-current-time@v2.0.2
@@ -33,8 +39,10 @@ jobs:
           utcOffset: "+09:00"
 
       # 5. 배포용 패키지 경로 저장
-#      - name: Set artifact
-#        run: echo "artifact=$(ls ./target | head -n 1)" >> $GITHUB_ENV
+      # - name: Set artifact
+      #   run: echo "artifact=$(ls ./target | head -n 1)" >> $GITHUB_ENV
+      - name: Set artifact
+        run: echo "artifact=deployment-package/deployment-package.zip" >> $GITHUB_ENV
 
       # 6. 빈스토크 배포
       - name: Beanstalk Deploy
