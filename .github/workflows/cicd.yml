@@ -39,8 +39,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: jabibim_admin
-          environment_name: Jabibimadmin-env
+          application_name: jabibim_admin_application
+          environment_name: Jabibimadminapplication-env
           version_label: github-action-${{steps.current-time.outputs.formattedTime}}
           region: ap-northeast-2
           deployment_package: ./target/${{env.artifact}}
