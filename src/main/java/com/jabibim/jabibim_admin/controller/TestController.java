@@ -9,6 +9,6 @@ public class TestController {
     public String test() {
         System.out.println("==> TestController.test()");
 
-        return null;
+        return "test1/sample1";
     }
 }
