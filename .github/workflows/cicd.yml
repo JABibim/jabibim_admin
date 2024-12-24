@@ -50,5 +50,5 @@ jobs:
           environment_name: Jabibimadminapplication-env
           version_label: github-action-${{steps.current-time.outputs.formattedTime}}
           region: ap-northeast-2
-          deployment_package: ./target/${{env.artifact}}
+          deployment_package: ${{env.artifact}}
           wait_for_environment_recovery: 180
