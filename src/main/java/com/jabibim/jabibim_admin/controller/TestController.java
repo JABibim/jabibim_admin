@@ -11,4 +11,11 @@ public class TestController {
 
         return "test1/sample1";
     }
+
+    @GetMapping("/chan")
+    public String test2() {
+        System.out.println("==> TestController.test2()");
+
+        return "test1/chan";
+    }
 }
