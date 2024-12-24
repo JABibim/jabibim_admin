@@ -38,7 +38,7 @@ jobs:
       # 5. 배포용 패키지 경로 저장
       - name: Set artifact
 #        run: echo "artifact=$(ls ./target | head -n 1)" >> $GITHUB_ENV
-        run: echo "artifact=$(ls ./target | *.jar)" >> $GITHUB_ENV
+        run: echo "artifact=$(ls ./target/*.jar)" >> $GITHUB_ENV
 
       # 6. 빈스토크 배포
       - name: Beanstalk Deploy
