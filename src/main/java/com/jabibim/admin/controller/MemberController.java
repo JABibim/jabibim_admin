@@ -1,4 +1,4 @@
-package com.jab.admin.controller;
+package com.jabibim.admin.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

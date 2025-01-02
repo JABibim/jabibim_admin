@@ -1,7 +1,7 @@
-package com.jab.admin;
+package com.jabibim.admin;
 
-import com.jab.admin.security.handler.LoginFailHandler;
-import com.jab.admin.security.handler.LoginSuccessHandler;
+import com.jabibim.admin.security.handler.LoginFailHandler;
+import com.jabibim.admin.security.handler.LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

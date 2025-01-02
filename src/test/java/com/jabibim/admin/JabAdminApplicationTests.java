@@ -1,4 +1,4 @@
-package com.jab.admin;
+package com.jabibim.admin;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

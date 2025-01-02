@@ -1,4 +1,4 @@
-package com.jab.admin.security.provider;
+package com.jabibim.admin.security.provider;
 
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

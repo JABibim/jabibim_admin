@@ -1,4 +1,4 @@
-package com.jab.admin.security.handler;
+package com.jabibim.admin.security.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

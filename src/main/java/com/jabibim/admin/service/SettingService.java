@@ -1,6 +1,6 @@
-package com.jab.admin.service;
+package com.jabibim.admin.service;
 
-import com.jab.admin.domain.Academy;
+import com.jabibim.admin.domain.Academy;
 
 import java.util.List;
 

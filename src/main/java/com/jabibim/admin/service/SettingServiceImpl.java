@@ -1,7 +1,7 @@
-package com.jab.admin.service;
+package com.jabibim.admin.service;
 
-import com.jab.admin.domain.Academy;
-import com.jab.admin.mybatis.mapper.AcademyMapper;
+import com.jabibim.admin.domain.Academy;
+import com.jabibim.admin.mybatis.mapper.AcademyMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

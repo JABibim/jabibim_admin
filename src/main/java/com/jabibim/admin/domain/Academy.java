@@ -1,4 +1,4 @@
-package com.jab.admin.domain;
+package com.jabibim.admin.domain;
 
 public class Academy {
     private String academyId;

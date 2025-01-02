@@ -1,4 +1,4 @@
-package com.jab.admin.controller;
+package com.jabibim.admin.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;

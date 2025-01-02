@@ -1,6 +1,6 @@
-package com.jab.admin.mybatis.mapper;
+package com.jabibim.admin.mybatis.mapper;
 
-import com.jab.admin.domain.Teacher;
+import com.jabibim.admin.domain.Teacher;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
