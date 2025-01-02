@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8">
+<th:block th:fragment="FooterImportFragment">
+    <!-- 위로가기 버튼입니다~ -->
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Vendor JS Files -->
+    <script th:src="@{/niceAdmin/vendor/apexcharts/apexcharts.min.js}"></script>
+    <script th:src="@{/niceAdmin/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/niceAdmin/vendor/chart.js/chart.umd.js}"></script>
+    <script th:src="@{/niceAdmin/vendor/echarts/echarts.min.js}"></script>
+    <script th:src="@{/niceAdmin/vendor/quill/quill.js}"></script>
+    <script th:src="@{/niceAdmin/vendor/simple-datatables/simple-datatables.js}"></script>
+    <script th:src="@{/niceAdmin/vendor/tinymce/tinymce.min.js}"></script>
+    <script th:src="@{/niceAdmin/vendor/php-email-form/validate.js}"></script>
+
+    <!-- Template Main JS File -->
+    <script th:src="@{/niceAdmin/js/main.js}"></script>
+</th:block>
+</html>

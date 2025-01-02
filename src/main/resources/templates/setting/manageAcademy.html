@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리</title>
+    <th:block th:replace="~{fragments/headerImport :: HeaderImportFragment}"></th:block>
+    <script th:src="@{/js/dashboard.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <script th:src="@{/js/academyManage.js}"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+</head>
+<body>
+<th:block th:replace="~{fragments/header :: Header}"></th:block>
+<th:block th:replace="~{fragments/sidebar :: SideBar}"></th:block>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>학원 관리</h1>
+    </div>
+    <!-- 학원 리스트 출력부 -->
+    <section class="section profile">
+        <div class="row">
+            <!-- 학원 목록 section -->
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-body profile-card pt-4 d-flex flex-column justify-content-center align-items-center"
+                         id="selectForm">
+                        <div class="spinner-border text-primary" role="status" id="spinner">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 오른쪽 상세 탭 section -->
+            <div class="col-xl-8" id="detail-tabs"></div>
+        </div>
+    </section>
+</main><!-- End #main -->
+
+<%-- Toast --%>
+<div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"
+     style="z-index: 11">
+    <div class="toast" id="validationToast" role="alert" aria-live="assertive" aria-atomic="true"
+         data-bs-delay="3000">
+        <div class="toast-header">
+            <strong class="me-auto" style="color: red;">알림</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            입력된 값이 유효하지 않습니다.
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/footerImport :: FooterImportFragment}"></th:block>
+</body>
+</html>
