@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8">
+<th:block th:fragment="SideBar">
+    <!-- START Sidebar-->
+    <aside id="sidebar" class="sidebar">
+
+        <ul class="sidebar-nav" id="sidebar-nav">
+
+            <!-- START DASHBOARD -->
+            <li class="nav-item">
+                <a class="nav-link " th:href="@{/dashboard}">
+                    <i class="bi bi-grid"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <!-- END DASHBOARD -->
+
+            <!-- START MEMBERS -->
+            <li class="nav-heading">MEMBERS</li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-backpack2"></i><span>수강생 관리</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a th:href="@{/student}">
+                            <i class="bi bi-circle"></i><span>회원 관리</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{student/grade}">
+                            <i class="bi bi-circle"></i><span>등급 관리</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/student/signhist}">
+                            <i class="bi bi-circle"></i><span>접속이력 관리</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/student/resignhist}">
+                            <i class="bi bi-circle"></i><span>탈퇴이력 관리</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/student/ad}">
+                            <i class="bi bi-circle"></i><span>마케팅정보수신동의 관리</span>
+                        </a>
+                    </li>
+                </ul>
+            </li><!-- 수강생 -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-diagram-3"></i><span>강사 관리</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a th:href="@{/teacher}">
+                            <i class="bi bi-circle"></i><span>직원 관리</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/teacher/profile}">
+                            <i class="bi bi-circle"></i><span>약력 관리</span>
+                        </a>
+                    </li>
+                </ul>
+            </li><!-- 강사 -->
+            <!-- END MEMBERS -->
+
+            <!-- START CONTENTS -->
+            <li class="nav-heading mt-4">CONTENTS</li>
+            <li class="nav-item">
+            <li class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse"
+                style="cursor: pointer;">
+                <i class="bi bi-feather"></i><span>콘텐츠 관리</span><i
+                    class="bi bi-chevron-down ms-auto"></i>
+            </li>
+            <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a th:href="@{/content}">
+                        <i class="bi bi-circle"></i><span>과정 관리</span>
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/content/class}">
+                        <i class="bi bi-circle"></i><span>강의 관리</span>
+                    </a>
+                </li>
+            </ul>
+            </li>
+            <!-- END CONTENTS -->
+
+            <!-- START PAYMENTS -->
+            <li class="nav-heading mt-4">PAYMENTS</li>
+            <li class="nav-item">
+                <div class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse"
+                     style="cursor: pointer;">
+                    <i class="bi bi-cart3"></i><span>주문결제 관리</span><i class="bi bi-chevron-down ms-auto"></i>
+                </div>
+                <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a th:href="@{/orders}">
+                            <i class="bi bi-circle"></i><span>주문 목록</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/orders/refund}">
+                            <i class="bi bi-circle"></i><span>환불 관리</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!-- END PAYMENTS -->
+
+            <!-- START SITES -->
+            <li class="nav-heading mt-4">SITES</li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
+                    <i class="bi bi-journal-text"></i><span>게시판</span><i class="bi bi-chevron-down ms-auto"></i>
+                </a>
+                <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                    <li>
+                        <a th:href="@{/board/notice}">
+                            <i class="bi bi-circle"></i><span>공지사항</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/board/qna}">
+                            <i class="bi bi-circle"></i><span>Q & A</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a th:href="@{/board/review}">
+                            <i class="bi bi-circle"></i><span>수강평</span>
+                        </a>
+                    </li>
+                </ul>
+                <a class="nav-link collapsed" th:href="@{/policy/privacy}">
+                    <i class="bi bi-person-vcard"></i><span>개인정보처리방침</span>
+                </a>
+                <a class="nav-link collapsed" th:href="@{/policy/service}">
+                    <i class="bi bi-shield-lock"></i><span>서비스이용약관</span>
+                </a>
+
+            </li>
+            <!-- END SITES -->
+
+        </ul>
+
+    </aside>
+    <!-- End Sidebar-->
+</th:block>

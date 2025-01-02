@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="Header">
+    <script th:inline="javascript">
+        let token = $("meta[name='_csrf']").attr("content");
+        let header = $("meta[name='_csrf_header']").attr("content");
+
+        $(document).ready(function () {
+            $('#confirmPasswordBtn').click(function () {
+                let enteredPassword = $('#adminPassword').val();
+                $.ajax({
+                    url: "setting/checkAdminPass",
+                    method: "POST",
+                    data: {password: enteredPassword},
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader(header, token);
+                    },
+                    success: function (response) {
+                        if (response) {
+                            $('#passwordConfirmModal').modal('hide');
+
+                            // Bootstrap Dropdown 인스턴스를 수동으로 열기
+                            const dropdownToggle = new bootstrap.Dropdown($('#adminMenuBtn')[0]);
+                            dropdownToggle.show();
+
+                            // 드롭다운 위치 수동 조정 (CSS 활용)
+                            $('#adminMenuDropdown').css({
+                                position: 'absolute',
+                                top: $('#adminMenuBtn').outerHeight() + 'px', // 버튼 바로 아래로 배치
+                                left: '0',
+                            });
+                        } else {
+                            alert("비밀번호가 올바르지 않습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("서버와의 통신 중 오류가 발생했습니다.");
+                    }
+                });
+            });
+
+            $('#adminPassword').keypress(function (event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // 폼의 기본 제출 동작 방지
+                    $('#confirmPasswordBtn').click(); // 버튼 클릭 이벤트 트리거
+                }
+            });
+        });
+    </script>
+
+    <header id="header" class="header fixed-top d-flex align-items-center">
+        <!-- START 로고 -->
+        <div class="d-flex align-items-center justify-content-between">
+            <a th:href="@{/dashboard}" class="logo d-flex align-items-center">
+                <img th:src="@{/img/bibim.png}" alt="logo">
+                <span class="d-none d-lg-block">중앙비빔(JABIM)</span>
+            </a>
+            <i class="bi bi-list toggle-sidebar-btn"></i>
+        </div>
+        <!-- End 로고 -->
+
+        <nav class="header-nav ms-auto">
+            <ul class="d-flex align-items-center">
+
+                <!-- START 어드민 메뉴 -->
+                <th:block th:if="${session.isAdmin == true}">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link nav-icon" href="#" id="adminMenuBtn" data-bs-toggle="modal"
+                           data-bs-target="#passwordConfirmModal">
+                            <i class="bi bi-tools"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages" id="adminMenuDropdown">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" th:href="@{/setting/manageAcademy}">
+                                    <i class="bi bi-building-add"></i>
+                                    <span>학원 추가하기</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" th:href="@{/setting/manageTeacher}">
+                                    <i class="bi bi-person-add"></i>
+                                    <span>강사 추가하기</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center"
+                                   th:href="@{/setting/manageSystemNotice}">
+                                    <i class="bi bi-bell"></i>
+                                    <span>시스템 공지사항 관리</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </th:block>
+                <!-- END 어드민 메뉴 -->
+
+                <li class="nav-item dropdown pe-3">
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                        <th:block th:if="${#strings.isEmpty(teacher_profile_image)}">
+                            <img th:src="@{/img/default_profile.jpg}" alt="Profile" class="rounded-circle">
+                        </th:block>
+                        <th:block th:if="${not #strings.isEmpty(teacher_profile_image)}">
+                            <img th:src="@{/img/default_profile.jpg}" alt="Profile" class="rounded-circle">
+                        </th:block>
+                        <span class="d-none d-md-block dropdown-toggle ps-2"></span>
+                    </a><!-- End Profile Image Icon -->
+
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                        <li class="dropdown-header">
+                            <h6>[[${session.name}]]</h6>
+                            <span>[[${session.email}]]</span>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center"
+                               th:href="@{'mypage/detail?id=' + ${session.id}}">
+                                <i class="bi bi-person"></i>
+                                <span>내 정보</span>
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                                <i class="bi bi-shop"></i>
+                                <span>강의 홈페이지</span>
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center"
+                               th:href="@{/contact}">
+                                <i class="bi bi-question-circle"></i>
+                                <span>고객센터</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center"
+                               href="${pageContext.request.contextPath}/members/logout">
+                                <i class="bi bi-box-arrow-right"></i>
+                                <span>로그아웃</span>
+                            </a>
+                        </li>
+
+                    </ul><!-- End Profile Dropdown Items -->
+                </li>
+                <!-- END 마이페이지 메뉴 -->
+            </ul>
+        </nav><!-- End Icons Navigation -->
+
+    </header>
+
+    <div class="modal fade" id="passwordConfirmModal" tabindex="-1" aria-labelledby="passwordConfirmModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordConfirmModalLabel">관리자 2차 인증</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="passwordConfirmForm">
+                        <div class="mb-3">
+                            <label for="adminPassword" class="form-label">비밀번호</label>
+                            <input type="password" class="form-control" id="adminPassword" required>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="confirmPasswordBtn">확인</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+

@@ -1,0 +1,44 @@
+에이젝스 함수 실행 이후에
+
+
+$(document).on( "ajaxComplete", function() {
+    $('#order-list-table').addClass('datatable');
+    const datatables = select('.datatable', true)
+    datatables.forEach(datatable => {
+        new simpleDatatables.DataTable(datatable, {
+            perPageSelect: [5, 10, 15, ["All", -1]],
+            columns: [{
+                select: 0, <- column index (첫번째부터 0)
+                sortSequence: ["desc", "asc"] <- (오름차순 /내림차순 정렬)
+            },{
+                select: 1,
+                sortSequence: ["desc", "asc"]
+            },
+              {
+                select: 2,
+                sortSequence: ["desc", "asc"]
+            },
+                {
+                    select: 3,
+                    sortSequence: ["desc","asc"]
+                },
+                {
+                    select: 4,
+                    sortSequence: ["desc","asc"]
+                },
+                {
+                    select: 5,
+                    type: "date", <- 날짜 타입의 경우 테이블에서 TimeStamp 가져올 때 toString() 하고 연도/월/일 로 변환 후 적용합니다.
+                    format: "YYYY-MM-DD", <- 날짜 타입의 포맷 설정
+                    sortSequence: ["desc","asc"]
+                },
+                {
+                    select: 6,
+                    type: "date",
+                    format: "YYYY-MM-DD",
+                    sortSequence: ["desc","asc"]
+                }
+            ]
+        });
+    })
+});
