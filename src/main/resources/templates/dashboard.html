@@ -1,16 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>DashBoard</title>
-    <th:block th:replace="~{fragments/headerImport :: HeaderImportFragment}"></th:block>
-    <script th:src="@{/js/dashboard.js}"></script>
-    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
-</head>
-<body>
-<th:block th:replace="~{fragments/header :: Header}"></th:block>
-<th:block th:replace="~{fragments/sidebar :: SideBar}"></th:block>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
 
-<th:block th:replace="~{fragments/footerImport :: FooterImportFragment}"></th:block>
-</body>
+<div layout:fragment="content">
+
+</div>
+
 </html>
