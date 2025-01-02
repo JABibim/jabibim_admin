@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>중앙비빔 LMS</title>
+    <th:block th:replace="~{fragments/headerImport :: HeaderImportFragment}"></th:block>
+    <script th:src="@{/js/dashboard.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+<th:block th:replace="~{fragments/header :: Header}"></th:block>
+<th:block th:replace="~{fragments/sidebar :: SideBar}"></th:block>
+
+<div layout:fragment="content" class="content"></div>
+
+<th:block th:replace="~{fragments/footerImport :: FooterImportFragment}"></th:block>
+</body>
+</html>
