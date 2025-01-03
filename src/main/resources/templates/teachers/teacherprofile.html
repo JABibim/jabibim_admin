@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="utf-8">
+    <title>강사 관리 > 약력 관리</title>
+
+    <script th:inline="javascript">
+        let contextPath = /*[[${contextPath}]]*/ '';
+    </script>
+    <script th:src="@{/js/careerList.js}"></script>
+</head>
+<body>
+<div layout:fragment="content">
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>약력관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">강사 관리</li>
+                <li class="breadcrumb-item active">약력 관리</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <div class="card">
+        <div class="card-body">
+            <div style="margin-top: 30px;">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>약력 이름</th>
+                        <th>등록 날짜</th>
+                        <th>상태
+                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="약력의 노출여부를 설정합니다.">
+                                <i class="bi bi-info-circle"></i>
+                            </span>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <div th:if="${not #lists.isEmpty(careerList)}">
+                        <span th:with="num=1"></span>
+                        <tr th:each="career, iterStat : ${careerList}">
+                            <td>
+                                <span th:text="${num}"></span>
+                                <span th:with="num=${num+1}"></span>
+                            </td>
+                            <td>
+                                <a th:href="@{/profile/detail(id=${career.career_id})}" th:text="${career.career_name}"></a>
+                            </td>
+                            <td th:text="${career.created_at}"></td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input toggle-course-status"
+                                           type="checkbox"
+                                           id="flexSwitchCheck[[${career.career_name}]]"
+                                           data-career-name="${career.career_name}"
+                                           th:checked="${career.career_is_display == 1}"/>
+                                </div>
+                            </td>
+                        </tr>
+                    </div>
+                    <div th:if="${#lists.isEmpty(careerList)}">
+                        <tr class="text-center">
+                            <td colspan="10">데이터가 존재하지 않습니다.</td>
+                        </tr>
+                    </div>
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 30px; text-align: right;">
+                <a th:href="@{/teacher/write}" class="btn btn-success">약력 등록하기</a>
+            </div>
+        </div>
+    </div>
+
+</main><!-- End #main -->
+</div>
+
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="utf-8">
+    <title>약력 관리 > 약력 등록하기</title>
+
+    <style>
+        .preview-container {
+            display: flex;
+            align-items: center; /* 세로 중앙 정렬 */
+        }
+
+        .preview-container img {
+            max-width: 150px; /* 이미지 크기 조절 */
+            height: auto;
+            margin-left: 10px; /* 텍스트와 이미지 간의 간격 */
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-end; /* 오른쪽 정렬 */
+            gap: 10px; /* 버튼 간 간격 */
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>약력관리</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/dashboard}">약력 관리</a></li>
+                    <li class="breadcrumb-item active">약력 등록하기</li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
+
+        <div class="container">
+            <div class="form_container container">
+                <div class="card">
+                    <div class="card-body">
+                        <div style="margin-top: 30px;">
+                            <form th:action="@{/profile/add}" method="post" enctype="multipart/form-data">
+                                <!-- 파일명 입력 -->
+                                <div class="row mb-3">
+                                    <label for="career_name" class="col-sm-2 col-form-label">약력 제목</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="career_name" name="career_name" required>
+                                    </div>
+                                </div>
+
+                                <!-- 파일 선택 -->
+                                <div class="row mb-3">
+                                    <label for="board_file_name" class="col-sm-2 col-form-label">파일 업로드</label>
+                                    <div class="col-sm-10">
+                                        <input class="form-control" type="file" id="board_file_name" name="board_file" accept="image/*" required>
+                                    </div>
+                                </div>
+
+                                <!-- 약력 미리보기 -->
+                                <div class="row mb-3">
+                                    <label class="col-sm-2 col-form-label">약력 미리보기</label>
+                                    <div class="col-sm-10 preview-container">
+                                        <img id="preview-image" th:src="@{#}" alt="미리보기" style="display: none;">
+                                    </div>
+                                </div>
+
+                                <!-- 버튼 -->
+                                <div class="button-container">
+                                    <button type="button" class="btn btn-secondary" onclick="history.back()">리스트로 돌아가기</button>
+                                    <button type="submit" class="btn btn-primary">등록</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main><!-- End #main -->
+</div>
+
+<script th:inline="javascript">
+    // 이미지 미리보기 스크립트
+    document.getElementById('board_file_name').addEventListener('change', function (event) {
+        const fileInput = event.target;
+        const previewImage = document.getElementById('preview-image');
+
+        if (fileInput.files && fileInput.files[0]) {
+            const file = fileInput.files[0];
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('이미지 파일만 업로드할 수 있습니다.');
+                fileInput.value = '';
+                previewImage.style.display = 'none';
+            }
+        } else {
+            previewImage.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>
