@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>중앙비빔 Admin</title>
+</head>
+<body>
+<div layout:fragment="content">
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>개인정보처리방침 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">홈페이지 관리</li>
+                <li class="breadcrumb-item active">개인정보처리방침 상세보기</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">개인정보처리방침</h5>
+                <th:block th:if="${privacydata != null and privacydata.rnum != null and maxRnum != null and privacydata.rnum < maxRnum}">
+                    <a th:href="@{'detail?rnum=' + ${privacydata.rnum} + 1}" th:text="이전 개인정보 처리방침 보기"></a>
+                </th:block>
+                <th:block th:text="${privacydata != null ? privacydata.privacy_policy_content : null}"/>
+                <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/admin/policy/privacy'|" style="float: right">목록</button>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+</body>
+</html>

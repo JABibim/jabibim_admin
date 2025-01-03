@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>중앙비빔 Admin</title>
+
+</head>
+
+<body>
+<div layout:fragment="content">
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>홈페이지 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{dashboard}">개인정보 처리방침</a></li>
+                <li class="breadcrumb-item active">개인정보 처리방침 등록</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <div class="container">
+        <div class="card">
+        <div class="card-body">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; float: right;">
+              <button type="button" class="btn btn-secondary btn-sm" id="pre-button">이전 본문내용 불러오기</button>
+        </div>
+        <br>
+        <br>
+        <form id="save-form" action="add" method="post" name="privacyform">
+            <div class="form-row h-33 text-center d-flex border">
+                <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">시행 일자</div>
+                <div class="input-group align-self-center">
+                    <div class="col-3 col-md-4">
+                        <label class="w-100" for="inputDate1">
+                            <input type="date" id="inputDate1" class="form-control start_date" name="privacy_policy_effective_date" required>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-form-label align-self-center col-auto fw-bold border" style="text-align: center">내용</div>
+            <div id="editor" style="height: 300px;"></div>
+
+            <input type="hidden" id="content" name="content">
+
+            <div style="display: flex; gap: 10px; margin-top: 20px; float: right;">
+            <button type="button" id="save-button" class="btn btn-primary btn-sm">등록</button>
+            <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/admin/policy/privacy'|">목록</button>
+            </div>
+        </form>
+        </div>
+        </div>
+    </div>
+</main><!-- End #main -->
+</div>
+<script>
+    const quill = new Quill('#editor', {
+        theme: 'snow'
+    });
+
+    // '이전 본문내용 불러오기' 버튼 클릭 시 서버에서 최신 본문 내용 가져오기
+    document.querySelector('#pre-button').addEventListener('click', function() {
+        getPreviousPolicy();
+    });
+
+    function getPreviousPolicy() {
+        $.ajax({
+            type: "POST",
+            url: "/admin/policy/privacy/previous",
+            dataType: "json",
+            success: function(data) {
+                console.log(data);
+                console.log(data.privacy_policy_content);
+                if (data && data.privacy_policy_content) {
+
+                    quill.root.innerHTML = data.privacy_policy_content;
+                } else {
+                    alert("이전 본문이 없습니다.");
+                }
+            },
+            error: function() {
+                console.log("이전 본문 불러오기 에러");
+            }
+        });
+    }
+
+    // '등록' 버튼 클릭 시 Quill 에디터 내용을 숨겨진 input에 저장하고 폼 제출
+    $('#save-button').on('click', function(event) {
+        event.preventDefault(); // 기본 submit 동작을 막음
+
+        // Quill 에디터의 HTML 내용 가져오기
+        let content = quill.root.innerHTML;
+
+        // 시행일자가 선택되었는지 확인
+        let effectiveDate = $('#inputDate1').val();
+        if (!effectiveDate) {
+            alert('시행일자를 선택하세요');
+            $('#inputDate1').focus();
+            return false;
+        }
+
+        // Quill 에디터의 내용이 비어있는지 확인
+        if (content.trim() === '' || content === '<p><br></p>') {
+            alert('내용을 입력하세요');
+            return false;
+        }
+
+        // 숨겨진 input 요소에 데이터 설정
+        $('#content').val(content); // 에디터의 내용을 숨겨진 input에 저장
+        $('#privacy_policy_effective_date').val(effectiveDate); // 날짜 값을 설정
+
+        // form을 submit하여 서버에 데이터 전송
+        $('#save-form').submit();
+    });
+
+</script>
+
+</body>
+</html>
