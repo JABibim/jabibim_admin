@@ -2,6 +2,7 @@ package com.jabibim.admin.controller;
 
 import com.jabibim.admin.domain.Privacy;
 import com.jabibim.admin.domain.PrivacyPage;
+import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.service.PrivacyService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -77,6 +78,28 @@ public class PolicyController {
         return map;
     }
 
+    @ResponseBody
+    @PostMapping("/privacy/previous")
+    public Map<String, Object> getPreviousContent() {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 이전 본문 내용을 데이터베이스에서 가져오는 로직
+            Privacy previousPolicy = privacyService.getLatestPrivacyPolicy(); // 최신 본문 불러오기
+            if (previousPolicy != null && previousPolicy.getPrivacyTermContent() != null) {
+                response.put("privacyTermContent", previousPolicy.getPrivacyTermContent());
+            } else {
+                response.put("privacyTermContent", null); // 본문 내용이 없을 경우
+            }
+        } catch (Exception e) {
+            // 예외 처리
+            e.printStackTrace();
+            response.put("privacyTermContent", null);
+        }
+
+        return response;
+    }
+
     @GetMapping(value="/privacy/write")
     public String privacyWrite() {
 
@@ -85,6 +108,11 @@ public class PolicyController {
 
     @PostMapping(value="/privacy/add")
     public String addPolicy(Privacy privacy, HttpServletRequest request) {
+        // UUID 생성
+        String privacyTermId = UUIDGenerator.getUUID();
+
+        // 생성한 UUID를 Privacy 객체에 설정
+        privacy.setPrivacyTermId(privacyTermId);
         privacyService.insertPrivacy(privacy);
         logger.info(privacy.toString());
         return "redirect:/policy/privacy";
