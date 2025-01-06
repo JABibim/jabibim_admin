@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>중앙비빔 Admin</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>홈페이지 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{dashboard}">게시판</a></li>
+                <li class="breadcrumb-item active">공지사항 상세정보</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">공지사항 상세보기</h3>
+                <form>
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">과정명</label>
+                        <div class="col-sm-10" th:text="${noticedata != null ? noticedata.course_id : null}">test course id</div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">강사 이름</label>
+                        <div th:text="${noticedata != null ? noticedata.teacher_name : null}" class="col-sm-10">test teacher name</div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">제목</label>
+                        <div th:text="${noticedata != null ? noticedata.board_title : null}" class="col-sm-10">test title</div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">내용</label>
+                        <div class="col-sm-10 pb-5">
+                            <div th:text="${noticedata != null ? noticedata.board_content : null}" id="editor">test content</div>
+                            <input type="hidden" name="board_content" id="board_content" readonly>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">조회수</label>
+                        <div th:text="${noticedata != null ? noticedata.board_read_count: null}" class="col-sm-10">0</div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">등록일</label>
+                        <div th:text="${noticedata != null ? noticedata.created_at : null}" class="col-sm-10">test</div>
+                    </div>
+                    <div th:if="${fileData != null ? not #strings.isEmpty(fileData.board_file_name) : false}">
+                        <label class="col-sm-2 col-form-label">업로드 파일</label>
+                        <span>
+                            <img th:src="@{/assets/images/down.png}" width="10px">
+                            <a th:href="@{'down?filename=' + ${fileData.board_file_name}}" th:text="${fileData != null ? fileData.board_file_name : null}">test</a>
+                        </span>
+                    </div>
+                    <div th:if="${fileData == null ? not #strings.isEmpty(fileData.board_file_name) : false}"></div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" style="vertical-align: middle;">노출</label>
+                        <div class="col-sm-10 d-flex align-items-center">
+                            <span class="badge bg-primary" style="font-size: 0.75rem;"
+                                  th:if="${noticedata?.boardExposureStatus == 1}">노출</span>
+                            <span class="badge bg-secondary" style="font-size: 0.75rem;"
+                                  th:if="${noticedata?.boardExposureStatus == 0}">숨김</span>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+        <button type="reset" class="btn btn-primary btn-sm"
+                th:onclick="|location.href='/admin/board/notice'|"
+                style="float: right; margin: 5px;">목록</button>
+
+        <button type="reset" class="btn btn-danger btn-sm"
+                style="float: right; margin: 5px;"
+                id="delete">삭제</button>
+
+        <button type="reset" class="btn btn-success btn-sm"
+                th:onclick="|location.href='modify?board_id=' + (${noticedata != null and noticedata.board_id != null ? noticedata.board_id : 0})|"
+                style="float: right; margin: 5px;">수정</button>
+
+        <table class="table table-bordered">
+
+            <tr th:if="${prernum != null}">
+                <td class="col-sm-2 col-form-label">이전 글</td>
+                <td>
+                    <a th:href="@{'detail?id=' + ${pretitle.board_id != null ? pretitle.board_id : 'test'} + '&rnum=' + ${prernum}}" th:text="${pretitle != null ? pretitle.board_title : null}">test</a>
+                </td>
+            </tr>
+
+                <tr th:if="${nextrnum != null}">
+                    <td class="col-sm-2 col-form-label">다음 글</td>
+                    <td>
+                        <a th:href="@{'detail?id=' + ${nexttitle.board_id != null ? nexttitle.board_id : 'test'} + '&rnum=' + ${nextrnum}}" th:test="${nexttitle != null ? nexttitle.board_title : null}">test</a>
+                    </td>
+                </tr>
+
+        </table>
+    </div>
+</main>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#delete").click(function () {
+            const answer = confirm("정말 삭제하시겠습니까?");
+
+            if (answer) {
+                // Thymeleaf 표현식을 사용하여 서버 측 데이터를 JavaScript로 삽입
+                const id = /*[[${noticedata != null ? noticedata.board_id : null}]]*/ ''; // id를 Thymeleaf에서 받아오기
+
+                const form = $("<form></form>");
+                form.attr("action", "/admin/board/notice/delete");
+                form.attr("method", "post");
+                form.append("<input type='hidden' name='id' value='" + id + "'>");
+                $("body").append(form);
+                form.submit();
+            } else {
+                alert('취소를 선택하셨습니다.');
+            }
+        });
+
+        // result 값 처리
+        const result = /*[[${message}]]*/ ''; // message 값을 Thymeleaf에서 받아오기
+        if (result !== '') {
+            alert(result);
+        }
+    });
+</script>
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+    <i class="bi bi-arrow-up-short"></i>
+</a>
+
+</body>
+</html>

@@ -8,7 +8,7 @@
         <version>3.2.11</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.jab</groupId>
+    <groupId>com.jabibim</groupId>
     <artifactId>admin</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>jabibim_admin</name>
@@ -93,15 +93,11 @@
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
 
-
-        <!-- log4jjdbc 마이바티스 쿼리문 출력 위한 라이브러리-->
-        <!-- https://mvnrepository.com/artifact/org.bgee.log4jdbc-log4j2/log4jdbc-log4j2-jdbc4.1 -->
+        <!-- 타임 리프 레이아웃 -->
         <dependency>
-            <groupId>org.bgee.log4jdbc-log4j2</groupId>
-            <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
-            <version>1.16</version>
+            <groupId>nz.net.ultraq.thymeleaf</groupId>
+            <artifactId>thymeleaf-layout-dialect</artifactId>
         </dependency>
-
 
     </dependencies>
 

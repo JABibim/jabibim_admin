@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>중앙비빔 Admin</title>
+</head>
+<body>
+<div layout:fragment="content">
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>서비스이용약관 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="dashboard">홈페이지 관리</a></li>
+                <li class="breadcrumb-item active">서비스이용약관 목록</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+                <table th:if="${listcount > 0}" class="table" id="service-list-table">
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th data-type="date" data-format="YYYY/MM/DD">시행일자</th>
+                        <th style="text-align: right; padding-right: 55px"></th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <h6 th:if="${listcount == null}" style="text-align: center; margin-top: 2rem;">등록된 글이 없습니다.</h6>
+
+            <button type="button" class="btn btn-outline-primary btn-sm" style="float: right"
+                    onclick="location.href='service/write'">신규등록
+            </button>
+
+        </div>
+    </div>
+
+</main><!-- End #main -->
+</div>
+<script th:src="@{/assets/js/service.js}"></script>
+</body>
+</html>
