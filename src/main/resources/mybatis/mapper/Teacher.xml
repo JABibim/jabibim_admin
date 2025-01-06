@@ -8,4 +8,20 @@
         from teacher
     </select>
 
+    <select id="teacherInfo" resultType="teacher">
+        select *
+        from teacher
+        where teacher_id = #{id}
+    </select>
+
+    <update id="update">
+        update teacher
+        set teacher_img_origin = #{teacherImgOrigin},
+            teacher_phone = #{teacherPhone},
+            teacher_email = #{teacherEmail}
+        where teacher_id = #{id}
+
+    </update>
+
+
 </mapper>
