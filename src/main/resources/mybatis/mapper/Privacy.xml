@@ -3,6 +3,27 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jabibim.admin.mybatis.mapper.PrivacyMapper">
 
+    <select id="getListCount" resultType="int">
+        select count(*)
+        from privacy_term
+    </select>
+
+    <select id="getPrivacyList" resultType="privacy">
+        SELECT *
+        FROM (
+        SELECT
+        ROW_NUMBER() OVER (ORDER BY PRIVACY_TERM_EFFECTIVE_DATE DESC) AS rnum,
+        PRIVACY_TERM_ID,
+        PRIVACY_TERM_SUBJECT,
+        PRIVACY_TERM_NAME,
+        PRIVACY_TERM_CONTENT,
+        PRIVACY_TERM_EFFECTIVE_DATE
+        FROM privacy_term
+        ) AS ranked_terms
+        WHERE rnum &gt;= #{start} AND rnum &lt;= #{end}
+    </select>
+
+
     <insert id="insertPrivacy">
         INSERT INTO privacy_term
         (privacy_term_id, created_at, privacy_term_subject, privacy_term_name,

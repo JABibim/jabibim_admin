@@ -1,74 +1,97 @@
-const select = (el, all = false) => {
-    el = el.trim()
-    if (all) {
-        return [...document.querySelectorAll(el)]
-    } else {
-        return document.querySelector(el)
+
+function go(page) {
+
+    const limit = $('#viewcount').val();
+    const data = {limit: limit, state: 'ajax', page: page};
+    ajax(data);
+}
+
+function setPaging(href, digit, isActive = false) {
+    const gray = (href === '' && isNaN(digit)) ? 'gray' : '';
+    const active = isActive ? 'active' : '';
+    const anchor = `<a class="page-link ${gray}" ${href}>${digit}</a>`;
+    return `<li class="page-item ${active}">${anchor}</li>`;
+}
+
+function generatePagination(data) {
+    let output = '';
+    //이전 버튼 
+    let prevHref = data.page >1 ? `href=javascript:go(${data.page -1})` : "";
+    output += setPaging(prevHref, '이전&nbsp;');
+
+    //페이지 번호
+    for (let i = data.startpage; i <= data.endpage; i++){
+        const isActive = (i === data.page);
+        let pageHref = !isActive ? `href=javascript:go(${i})` : "";
+        output += setPaging(pageHref, i, isActive);
     }
+    let nextHref = (data.page < data.maxpage) ? `href=javascript:go(${data.page+1})` : "";
+    output += setPaging(nextHref,'&nbsp;다음&nbsp;');
+    console.log(output);
+    $('.pagination').empty().append(output);
 }
 
-function listajax() {
+function ajax(data) {
+
+    console.log("AJAX 요청 데이터:", data);
+
     $.ajax({
-        type: "post",
-        url: "/admin/policy/privacy",
-        data: {
-            state: "ajax" // state 값을 직접 "ajax"로 설정합니다.
+        type:"POST",
+        data: data,
+        url: 'list_ajax',
+        beforeSend : function(xhr)
+        {   //데이터를 전송하기 전에 헤더에 csrf값을 설정합니다.
+            xhr.setRequestHeader(header, token);
         },
-        dataType: "json",
+        dataType: 'json',
         cache: false,
-        success: function(data) {
-            console.log(data);
-            printprivacyList(data);
+        success: function (data) {
+            console.log("서버 응답:", data);  // 서버 응답을 확인
+            $('#viewcount').val(data.limit);
+            $(".listcount").text('글 개수 : ' + data.listcount);
+            if (data.listcount > 0) {
+                $('tbody').remove();
+                updateBoardList(data); // 게시판 내용 업데이트
+                generatePagination(data); // 페이지네이션 생성
+            }
         },
-        error: function() {
-            console.log("개인정보 처리방침 목록 페이지 출력 에러");
+        error: function () {
+            console.log('에러');
         }
-    });
+    })
 }
 
-function printprivacyList(data) {
-    const $table = $('#privacy-list-table');
-    $table.find('tbody').empty();
-    data.privacylist.forEach(function(item) {
-        let output = `<tr>
-                             <td>${item.rnum}</td>
-                             <td>${item.privacy_policy_effective_date}</td>
-                             <td style="text-align: right; padding-right: 30px">
-                              <button type="button" class="btn btn-outline-primary" 
-                              onclick='location.href="/admin/policy/privacy/detail?rnum=${item.rnum}"'>본문보기</button>
-                             </td>
-                            </tr>`;
-        $table.find('tbody').append(output);
+function updateBoardList(data) {
+    const {listcount, page, limit, privacylist} = data;
+
+    let num = listcount - (page - 1) * limit;
+    let output = '<tbody>';
+
+    $(privacylist).each(function (index, item) {
+
+        const {privacyTermSubject, privacyTermName, privacyTermEffectiveDate} = item;
+        const subject = privacyTermSubject.length >= 20 ? privacyTermSubject.substring(0, 20) + "..." : privacyTermSubject;
+        const changeSubject = subject
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt');
+
+        output += `
+            <tr>
+                <td>${num--}</td>
+                <td><div><a href='detail?subject=${privacyTermSubject}'>${changeSubject}</a></a></div></td>
+                <td><div>${privacyTermName}</div></td>
+                <td><div>${privacyTermEffectiveDate}</div></td>
+            </tr>
+        `;
     });
+    output += '</tbody>';
+    $('table').append(output);
 }
 
-$(function(){
-    $(document).ready(listajax);  // 즉시 실행하지 않고 함수 참조를 전달합니다.
+$(function () {
 
-    $(document).on("ajaxComplete", function() {
-        $('#privacy-list-table').addClass('datatable');
-        const datatables = select('.datatable', true)
-        datatables.forEach(datatable => {
-            new simpleDatatables.DataTable(datatable, {
-                perPageSelect: [5, 10, 15, ["All", -1]],
-                columns: [{
-                    select: 0,
-                    sortSequence: ["desc", "asc"]
-                },
-                    {
-                        select: 1,
-                        type: "String",
-                        format: "YYYY/MM/DD",
-                        sortSequence: ["desc", "asc"]
-                    },
-                    {
-                        select: 2,  // "비고" 열의 인덱스 (여기서는 2번째 열)
-                        sortable: false, // 정렬 기능 비활성화
-                        searchable : false
-                    }
-
-                ]
-            });
-        });
-    });
-});
+    console.log("token")
+    $('#viewcount').change(function () {
+        go(1)
+    })
+})
