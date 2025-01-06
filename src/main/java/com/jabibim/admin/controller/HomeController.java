@@ -15,6 +15,11 @@ public class HomeController {
         return "member/login";
     }
 
+    @GetMapping(value = "/admin/login")
+    public String adminLoginForm() {
+        return "admin/login";
+    }
+
     @GetMapping(value = "/dashboard")
     public String dashBoard() {
         return "dashboard";
