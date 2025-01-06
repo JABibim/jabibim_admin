@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="utf-8">
+    <title>회원 관리 > 회원정보 상세조회</title>
+    <script th:src="@{/static/js/studentInfo.js}"></script>
+</head>
+<body>
+<div layout:fragment="content">
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>회원관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/student}">수강생 관리</a></li>
+                <li class="breadcrumb-item active">회원정보 상세조회</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <div class="card">
+        <div class="card-body">
+            <div style="margin-top: 30px;">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>이름</th>
+                        <td th:text="${studentInfo.student_name}"></td>
+                    </tr>
+                    <tr>
+                        <th>이메일 주소</th>
+                        <td th:text="${studentInfo.student_email}"></td>
+                    </tr>
+                    <tr>
+                        <th>회원등급</th>
+                        <td th:text="${studentInfo.grade_name}"></td>
+                    </tr>
+                    <tr>
+                        <th>로그인 실패횟수</th>
+                        <td th:text="${studentInfo.is_login_success}"></td>
+                    </tr>
+                    <tr>
+                        <th>가입일자</th>
+                        <td th:text="${studentInfo.created_at}"></td>
+                    </tr>
+                    <tr>
+                        <th>최근접속일</th>
+                        <td th:text="${studentInfo.login_created_at}"></td>
+                    </tr>
+                    <tr>
+                        <th>마케팅동의여부</th>
+                        <td>
+                            <span th:if="${studentInfo.is_ads_agree == 1}" class="badge badge-secondary"
+                                  style="background-color: blue;">동의</span>
+                            <span th:if="${studentInfo.is_ads_agree != 1}" class="badge badge-secondary"
+                                  style="background-color: red;">비동의</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div style="float: right;">
+                <button type="reset" class="btn btn-secondary" id="cancelBtn" th:onclick="|location.href='@{/student}'|">
+                    목록&nbsp;&nbsp;<i class="bi bi-backspace"></i>
+                </button>
+                <button type="submit" class="btn btn-success" id="modifyBtn"
+                        th:data-student-id="${studentInfo.student_id}"
+                        th:data-academy-id="${session.aid}"
+                        th:data-grade-id="${studentInfo.grade_id}">
+                    등급 수정&nbsp;&nbsp;<i class="bi bi-pencil"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</main><!-- End #main -->
+</div>
+
+<div class="modal fade" id="verticalycentered" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">등급 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="text-muted fs-6">
+                    회원에게 부여할 <span class="fw-bold">새로운 등급</span>을 아래에서 선택해주세요.
+                </p>
+                <div class="mt-4">
+                    <label for="updatableGradeSelect" class="form-label fw-bold">업데이트 가능한 등급</label>
+                    <select id="updatableGradeSelect" class="form-select">
+                        <option value="">선택하세요</option>
+                        <!-- 동적 옵션 추가 -->
+                        <option th:each="grade : ${grades}" th:value="${grade.id}" th:text="${grade.name}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary px-4 confirmUpdateBtn"
+                        th:data-grade-id=""
+                        th:data-student-id="">
+                    저장
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"
+         style="z-index: 11">
+        <!-- 토스트 예시 -->
+        <div class="toast" id="validationToast" role="alert" aria-live="assertive" aria-atomic="true"
+             data-bs-delay="3000">
+            <div class="toast-header">
+                <strong class="me-auto" style="color: red;">알림</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                입력된 값이 유효하지 않습니다.
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

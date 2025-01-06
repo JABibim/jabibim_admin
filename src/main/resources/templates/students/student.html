@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="utf-8">
+    <title>수강생 관리 > 회원 관리</title>
+</head>
+<body>
+<div layout:fragment="content">
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>회원 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">수강생 관리</li>
+                <li class="breadcrumb-item active">회원 관리</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <div class="card">
+        <div class="card-body">
+            <div style="margin-top: 30px;">
+                <form method="get" th:action="@{/students}">
+                    <!-- 상태 체크박스 -->
+                    <div class="form-row h-33 border d-flex text-center">
+                        <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">상태</div>
+                        <div class="input-group align-self-center">
+                            <div class="form-group d-flex">
+                                <!-- 전체 체크박스 -->
+                                <div class="form-check my-auto mx-1">
+                                    <label for="stateall">
+                                        <input class="form-check-input" type="checkbox" name="state"
+                                               id="stateall" value="option1"
+                                               th:checked="${state == 'option1'}"> 전체
+                                    </label>
+                                </div>
+                                <!-- 정상 체크박스 -->
+                                <div class="form-check my-auto mx-1">
+                                    <label for="stateok">
+                                        <input class="form-check-input" type="checkbox" name="state"
+                                               id="stateok" value="option2"
+                                               th:checked="${state == 'option2'}"> 정상
+                                    </label>
+                                </div>
+                                <!-- 탈퇴 체크박스 -->
+                                <div class="form-check my-auto mx-1">
+                                    <label for="statexx">
+                                        <input class="form-check-input" type="checkbox" name="state"
+                                               id="statexx" value="option3"
+                                               th:checked="${state == 'option3'}"> 탈퇴
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 가입일 -->
+                    <div class="form-row h-33 text-center d-flex border">
+                        <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">가입일</div>
+                        <div class="input-group align-self-center">
+                            <div class="col-3 col-md-4">
+                                <input type="date" name="start_date" id="inputDate1"
+                                       class="form-control start_date"
+                                       th:value="${start_date}">
+                            </div>
+                            <b class="col-auto my-1 mx-1 px-2 text-middle">-</b>
+                            <div class="col-3 col-md-4">
+                                <input type="date" name="end_date" id="inputDate2" class="form-control end_date"
+                                       th:value="${end_date}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 회원등급 -->
+                    <div class="form-row h-33 d-flex text-center border">
+                        <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">회원등급</div>
+                        <div class="input-group align-self-center">
+                            <div class="form-group col-3 col-md-auto mx-2">
+                                <select class="form-select" name="studentGrade">
+                                    <option value="0" th:selected="${studentGrade == '0'}">전체</option>
+                                    <option value="1" th:selected="${studentGrade == '1'}">브론즈</option>
+                                    <option value="2" th:selected="${studentGrade == '2'}">실버</option>
+                                    <option value="3" th:selected="${studentGrade == '3'}">골드</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 검색 필드 및 검색어 입력 -->
+                    <div class="form-row h-33 d-flex text-center border">
+                        <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">검색</div>
+                        <div class="input-group align-self-center">
+                            <div class="form-group col-3 col-md-auto mx-2">
+                                <select class="form-select" name="search_field">
+                                    <option value="0" th:selected="${search_field == '0'}">전체</option>
+                                    <option value="1" th:selected="${search_field == '1'}">이름</option>
+                                    <option value="2" th:selected="${search_field == '2'}">이메일</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-4 flex-fill">
+                                <input type="text" id="search_word" name="search_word" class="form-control"
+                                       placeholder="검색어를 입력하세요"
+                                       th:value="${search_word}">
+                            </div>
+                            <div class="form-group col-auto col-md-auto">
+                                <button type="submit" class="btn btn-success">검색하기</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <span>Total: <span th:text="${totalItems}"></span>건</span>
+                    <select id="itemsPerPage" style="margin-left: 10px;" th:onchange="|location.href='?itemsPerPage=' + this.value|">
+                    <option value="5" th:selected="${itemsPerPage == 5}">5</option>
+                        <option value="10" th:selected="${itemsPerPage == 10}">10</option>
+                        <option value="15" th:selected="${itemsPerPage == 15}">15</option>
+                    </select>
+                    <span style="margin-left: 5px;">건씩 보기</span>
+                </div>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>이름</th>
+                        <th>이메일</th>
+                        <th>수강</th>
+                        <th>실결제금액</th>
+                        <th>접속일</th>
+                        <th>가입일</th>
+                        <th>상태</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="student, iterStat : ${studentList}" th:if="${not #lists.isEmpty(studentList)}">
+                        <td th:text="${iterStat.index + 1}"></td>
+                        <td>
+                            <a th:href="@{/templates/students/detail(id=${student.student_id})}" th:text="${student.student_name}"></a>
+                        </td>
+                        <td th:text="${student.student_email}"></td>
+                        <td th:text="${student.enrollment_count} + '건'"></td>
+                        <td th:text="${student.payment_amount_sum} + '원'"></td>
+                        <td th:text="${student.created_at}"></td>
+                        <td th:text="${student.created_at}"></td>
+                        <td th:text="${student.deleted_at == null ? '정상' : '탈퇴'}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(studentList)}" class="text-center">
+                        <td colspan="10">데이터가 존재하지 않습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- 페이지네이션 -->
+                <div th:if="${not #lists.isEmpty(studentList)}">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:if="${currentPage > 1}">
+                            <a class="page-link" th:href="@{/templates/students(page=${currentPage - 1}, itemsPerPage=${itemsPerPage}, state=${state}, start_date=${start_date}, end_date=${end_date}, studentGrade=${studentGrade}, search_field=${search_field}, search_word=${search_word})}">이전</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(startPage, endPage)}" class="page-item" th:classappend="${i == currentPage ? 'active' : ''}">
+                            <a class="page-link" th:href="@{/templates/students(page=${i}, itemsPerPage=${itemsPerPage}, state=${state}, start_date=${start_date}, end_date=${end_date}, studentGrade=${studentGrade}, search_field=${search_field}, search_word=${search_word})}" th:text="${i}"></a>
+                        </li>
+                        <li class="page-item" th:if="${currentPage < maxPage}">
+                            <a class="page-link" th:href="@{/templates/students(page=${currentPage + 1}, itemsPerPage=${itemsPerPage}, state=${state}, start_date=${start_date}, end_date=${end_date}, studentGrade=${studentGrade}, search_field=${search_field}, search_word=${search_word})}">다음</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main><!-- End #main -->
+</div>
+
+<script th:inline="javascript">
+    // 체크박스 상태 변경 함수
+    function handleCheckboxChange(clickedCheckbox, checkboxes) {
+        checkboxes.forEach(checkbox => {
+            if (checkbox !== clickedCheckbox) {
+                checkbox.checked = false;
+            }
+        });
+    }
+
+    $("#itemsPerPage").change(function () {
+        const select = $(this).val()
+        const page = 1;
+        const state = $("#state").val() || "";
+        const start_date = $("#start_date").val() || "";
+        const end_date = $("#end_date").val() || "";
+        const studentGrade = $("#studentGrade").val() || "";
+        const search_field = $("#search_field").val() || "";
+        const search_word = $("#search_word").val() || "";
+
+        location.href = "student?page=" + page + "&itemsPerPage=" + select + "&state=" + state + "&start_date=" + start_date
+            + "&end_date=" + end_date + "&studentGrade=" + studentGrade + "&search_field=" + search_field
+            + "&search_word=" + search_word;
+    });//change end
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxAll = document.getElementById('stateall');
+        const checkboxOk = document.getElementById('stateok');
+        const checkboxXx = document.getElementById('statexx');
+        // 페이지 로드 시 기본 상태 설정 (전체 체크)
+
+
+
+        // 쿼리스트링 값을 가져옴
+        const urlParams = new URLSearchParams(window.location.search);
+        const state = urlParams.get('state'); // state 값
+
+        if ( !state ) {
+            checkboxAll.checked = true;
+            checkboxOk.checked = false;
+            checkboxXx.checked = false;
+        }
+
+        // 상태에 따라 체크박스 초기화
+        if (state === 'option1') {
+            checkboxAll.checked = true;
+        } else if (state === 'option2') {
+            checkboxOk.checked = true;
+        } else if (state === 'option3') {
+            checkboxXx.checked = true;
+        }
+
+        // '전체' 체크박스 클릭 시 나머지 체크박스 해제
+        checkboxAll.addEventListener('change', function () {
+            if (checkboxAll.checked) {
+                handleCheckboxChange(checkboxAll, [checkboxOk, checkboxXx]);
+            }
+        });
+
+        // '정상' 체크박스 클릭 시 '전체'와 '탈퇴' 체크박스 해제
+        checkboxOk.addEventListener('change', function () {
+            if (checkboxOk.checked) {
+                handleCheckboxChange(checkboxOk, [checkboxAll, checkboxXx]);
+            }
+        });
+
+        // '탈퇴' 체크박스 클릭 시 '전체'와 '정상' 체크박스 해제
+        checkboxXx.addEventListener('change', function () {
+            if (checkboxXx.checked) {
+                handleCheckboxChange(checkboxXx, [checkboxAll, checkboxOk]);
+            }
+        });
+
+
+    });
+</script>
+</body>
+</html>

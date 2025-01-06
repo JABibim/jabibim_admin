@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>중앙비빔 Admin</title>
+    <style>
+
+        .remove {
+            width: 20px;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>홈페이지 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{dashboard}">게시판</a></li>
+                <li class="breadcrumb-item active">QnA 상세정보</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">QnA 상세보기</h3>
+                <form>
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">과목명</label>
+                        <div class="col-sm-10" th:text="${qnadata != null ? qnadata.class_name : null}">test class name</div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">과정명</label>
+                        <div class="col-sm-10" th:text="${qnadata != null ? qnadata.course_name : null}">test course name</div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">게시판 타입</label>
+                        <div class="col-sm-10">QnA</div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">회원 아이디</label>
+                        <div class="col-sm-10" th:text="${qnadata != null ? qnadata.student_name : null}">test student_name</div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">제목</label>
+                        <div class="col-sm-10" th:text="${qnadata != null ? qnadata.board_title : null}">test board_title</div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">내용</label>
+                        <div class="col-sm-10 pb-5">
+                            <div id="editor" th:text="${qnadata != null ? qnadata.board_content : null}">test board_content</div>
+                            <input type="hidden" name="board_content" id="board_content" readonly>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">조회수</label>
+                        <div class="col-sm-10" th:text="${qnadata != null ? qnadata.board_read_count : null}">0</div>
+                    </div>
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">등록일</label>
+                        <div class="col-sm-10" th:text="${qnadata != null ? qnadata.created_at : null}">test day</div>
+                    </div>
+                    <div th:if="${detailFile != null ? not #strings.isEmpty(detailFile.board_file_name) : false}">
+                        <label class="col-sm-2 col-form-label">업로드 파일</label>
+                        <span>
+                            <img th:src="@{/assets/images/down.png}" width="10px">
+                            <a th:href="@{'down?filename=' + ${detailFile.board_file_name}}" th:text="${detailFile != null ? detailFile.board_file_name : null}">test</a>
+                        </span>
+                    </div>
+                    <div th:if="${detailFile != null && detailFile.board_file_name != null && detailFile.board_file_name != ''}">
+                        <!-- Your content here -->
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" style="vertical-align: middle;">답변상태</label>
+                        <div class="col-sm-10 d-flex align-items-center">
+                                <span class="badge rounded-pill bg-primary" style="font-size: 0.75rem;"
+                                      th:if="${qnadata?.cnt >= 1}">답변 완료</span>
+                                <span class="badge rounded-pill bg-warning" style="font-size: 0.75rem;"
+                                      th:if="${qnadata?.cnt == 0}">답변 대기</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" style="vertical-align: middle;">노출</label>
+                        <div class="col-sm-10 d-flex align-items-center">
+                                <span class="badge bg-primary" style="font-size: 0.75rem;"
+                                      th:if="${qnadata?.board_exposure_status == 1}">노출</span>
+                                <span class="badge bg-secondary" style="font-size: 0.75rem;"
+                                      th:if="${qnadata?.board_exposure_status ==0}">숨김</span>
+                        </div>
+                    </div>
+                </form>
+                <div>
+                    <button type="reset" class="btn btn-primary btn-sm"
+                            th:onClick="|location.href='/admin/board/qna'|" style="float: right; margin: 5px;">목록</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="card">
+                <div class="card-body">
+                    <!-- General Form Elements -->
+                    <form action="replyProcess" enctype="multipart/form-data" method="post" name="qnaForm" id="save-form">
+
+                        <th:block th:if="${updateData != null}">
+                            <input type="hidden" name="reply_id" th:value="${updateData.board_id}">
+                        </th:block>
+                        <input type="hidden" name="class_id" th:value="${qnadata != null ? qnadata.class_id : null}">
+                        <input type="hidden" name="course_id" th:value="${qnadata != null ? qnadata.course_id: null}">
+                        <input type="hidden" name="board_id" th:value="${qnadata != null ? qnadata.board_id : null}">
+                        <input type="hidden" name="board_re_ref" th:value="${qnadata != null ? qnadata.board_re_ref : null}">
+                        <input type="hidden" name="board_re_lev" th:value="${qnadata != null ? qnadata.board_re_lev : null}">
+                        <input type="hidden" name="board_re_seq" th:value="${qnadata != null ? qnadata.board_re_seq: null}">
+                        <br>
+                        <h3 class="card-title">QnA 답글</h3><br>
+                        <div class="row mb-3">
+                            <label for="board_title" class="col-sm-2 col-form-label">제목</label>
+                            <div class="col-sm-10">
+                                <textarea name="board_title" id="board_title" maxlength="100" rows="1"
+                                          class="form-control"
+                                          th:if="${updateData != null}" th:text="${updateData.board_title}">
+                                             test text
+                                </textarea>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">내용</label>
+                            <div class="col-sm-10 pb-5">
+                                <div id="editor2" th:if="${updateData != null}" th:text="${updateData.board_content}">
+                                </div>
+                                <input type="hidden" name="qna_content" id="qna_content">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label">기존 파일</label>
+                            <div class="col-sm-10">
+                                <span id="fileValue" th:if="${updateFile != null ? updateFile.board_file_name : null}">test file</span>
+                                <img th:src="@{/assets/images/remove.png}"
+                                     alt="파일삭제" class="remove">
+                            </div>
+                            <label for="upfile" class="col-sm-2 col-form-label">파일 업로드</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="file" id="upfile" name="board_file_name">
+                            </div>
+
+                        </div>
+                        <fieldset class="row mb-3">
+                            <legend class="col-form-label col-sm-2 pt-0 fw-bold">노출</legend>
+                            <div class="col-sm-10 d-flex">
+                                <div class="form-check" style="padding-right: 16px;">
+                                    <input class="form-check-input" name="board_exposure_status" type="radio" id="exposure"
+                                           value="1"
+                                           checked>
+                                    <label class="form-check-label" for="exposure">
+                                        노출
+                                    </label>
+                                </div>
+                                <div class="form-check" style="padding-right: 16px;">
+                                    <input class="form-check-input" name="board_exposure_status" type="radio" id="hide"
+                                           value="0">
+                                    <label class="form-check-label" for="hide">
+                                        숨김
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <div style="display: flex; gap: 10px; margin-top: 20px; float: right;">
+
+                            <th:block th:if="${updateData == null}">
+                            <button type="button" id="save-reply-button" class="btn btn-success btn-sm"
+                                    onClick="submitForm('replyProcess')"
+                                    style="float: right; margin: 3px;">답변</button>
+                            </th:block>
+                            <th:block th:if="${updateData != null}">
+                            <button type="button" id="save-button" class="btn btn-success btn-sm"
+                                    onClick="submitForm('update')"
+                                    style="float: right; margin: 3px;">수정</button>
+                            </th:block>
+                            <button type="reset" class="btn btn-danger btn-sm"
+                                    th:if="${updateData != null}"
+                                    style="float: right; margin: 3px;" id="delete">삭제</button>
+
+                            <button type="reset" class="btn btn-secondary btn-sm"
+                                    onClick="location.href='/admin/board/qna'"
+                                    style="float: right; margin: 3px;">취소</button>
+                        </div>
+                    </form>
+                </div>
+            </div><!-- End General Form Elements -->
+            <table class="table table-bordered">
+                <tr th:if="${prernum != null}">
+                    <td class="col-sm-2 col-form-label">이전 글</td>
+                    <td>
+                        <a th:href="@{'detail?id=' + ${pretitle.board_id != null ? pretitle.board_id : 'test'} + '&rnum=' + ${prernum}}" th:text="${pretitle != null ? pretitle.board_title : null}">test</a>
+                    </td>
+                </tr>
+
+                <tr th:if="${nextrnum != null}">
+                    <td class="col-sm-2 col-form-label">다음 글</td>
+                    <td>
+                        <a th:href="@{'detail?id=' + ${nexttitle.board_id != null ? nexttitle.board_id : 'test'} + '&rnum=' + ${nextrnum}}" th:test="${nexttitle != null ? nexttitle.board_title : null}">test</a>
+                    </td>
+                </tr>
+            </table><!-- End Horizontal Form -->
+        </div>
+    </div>
+</main><!-- End #main -->
+</div>
+<script th:src="@{/assets/js/qnaWrite.js}"></script>
+<script>
+
+    function submitForm(action) {
+        var form = document.getElementById('save-form');
+        if (action === 'replyProcess') {
+            form.action = 'replyProcess';
+        } else if (action === 'update') {
+            form.action = 'update';
+        }
+        form.submit();
+    }
+
+    $("#delete").click(function () {
+        const answer = confirm("정말 삭제하시겠습니까?");
+
+        if (answer) {
+            // Thymeleaf 표현식을 사용하여 서버 측 데이터를 JavaScript로 삽입
+            const id = /*[[${updateData != null ? updateData.board_id : null}]]*/ ''; // id를 Thymeleaf에서 받아오기
+
+            const form = $("<form></form>");
+            form.attr("action", "/admin/board/qna/delete");
+            form.attr("method", "post");
+            form.append("<input type='hidden' name='id' value='" + id + "'>");
+            $("body").append(form);
+            form.submit();
+        } else {
+            alert('취소를 선택하셨습니다.');
+        }
+    });
+
+    const result = /*[[${message}]]*/ ''; // message 값을 Thymeleaf에서 받아오기
+    if (result !== '') {
+        alert(result);
+    }
+
+</script>
+
+</body>
+</html>

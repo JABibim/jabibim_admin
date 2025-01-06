@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="utf-8">
+    <title>수강생 관리 > 마케팅정보수신동의 관리</title>
+    <style>
+        .info-box {
+            border-left: 5px solid #FFA500; /* 왼쪽 테두리 오렌지색 */
+            padding: 15px; /* 내부 여백 */
+            background-color: #FFF; /* 흰색 배경 */
+            border-radius: 4px; /* 약간의 둥근 모서리 */
+            font-family: 'Arial', sans-serif; /* 기본 폰트 */
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* 약간의 그림자 */
+        }
+
+        .info-box h5 {
+            margin: 0 0 10px 0; /* 상단 여백 제거, 하단 여백 추가 */
+            font-size: 16px; /* 제목 폰트 크기 */
+            font-weight: bold; /* 굵은 글씨 */
+        }
+
+        .info-box p {
+            margin: 0;
+            line-height: 1.6; /* 텍스트 줄 간격 */
+            font-size: 14px; /* 본문 폰트 크기 */
+            color: #333; /* 텍스트 색상 */
+        }
+
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>마케팅정보수신동의 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">수강생 관리</li>
+                <li class="breadcrumb-item active">마케팅정보수신동의 관리</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <div class="card">
+        <div class="card-body">
+            <div style="margin-top: 30px;">
+                <div class="info-box">
+                    <h5>광고성 정보 수신동의자에게 수신동의 사실을 반드시 알려야 합니다.</h5>
+                    <p>
+                        정보통신망 이용촉진 및 정보보호 등에 관한 법률 제 50조 8항 및 동법 시행령 제62조의3(수신동의 여부의 확인)에 따라 광고성 정보 수신동의 여부를 안내
+                        해야합니다.<br>
+                        광고성 정보란, <strong>메일, SMS</strong>를 통해 회원에게 '영리목적의 광고성 정보'를 의미하고 회원이 수신동의를 했을 경우에 위 조항에
+                        따라 회원이 수신동의 했음을 2년마다 알려야 합니다.<br>
+                        자세한 내용은
+                        <a href="https://www.kisa.or.kr/2060301/form?postSeq=19&page=1"
+                           style="color: blue; text-decoration: underline;">
+                            불법 스팸 방지를 위한 정보통신망법 안내서(제5차 개정판)
+                        </a>를 확인하세요.
+                    </p>
+                </div>
+                <div style="margin-top: 10px;">
+
+                    <form method="get" th:action="@{/student/ad}">
+                        <div class="form-row h-33 d-flex text-center border">
+                            <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">검색</div>
+                            <div class="input-group align-self-center">
+                                <div class="form-group col-3 col-md-auto mx-2">
+                                    <select class="form-select" aria-label="Default select" name="search_field">
+                                        <option th:value="0" th:selected="${search_field == 0}">전체</option>
+                                        <option th:value="1" th:selected="${search_field == 1}">이름</option>
+                                        <option th:value="2" th:selected="${search_field == 2}">이메일</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-4 flex-fill">
+                                    <input type="text" id="search_word" name="search_word" class="form-control"
+                                           th:value="${search_word}" placeholder="검색어를 입력하세요">
+                                </div>
+                                <div class="form-group col-auto col-md-auto">
+                                    <button type="submit" class="btn btn-success">검색하기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div style="margin-top: 30px;"> <!-- 공간을 두기 위해 margin-top 추가 -->
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <span>Total: <span th:text="${totalItems}"></span>건 </span>
+                        <select id="itemsPerPage" style="margin-left: 10px;">
+                            <option th:value="5" th:selected="${itemsPerPage == 5}">5</option>
+                            <option th:value="10" th:selected="${itemsPerPage == 10}">10</option>
+                            <option th:value="15" th:selected="${itemsPerPage == 15}">15</option>
+                        </select>
+                        <span style="margin-left: 5px;">건씩 보기</span>
+                    </div>
+                </div>
+
+
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>이메일</th>
+                        <th>이름</th>
+                        <th>이메일수신동의여부</th>
+                        <th>이메일수신동의처리일</th>
+                        <th>수신동의안내일</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(studentAdList)}" class="text-center">
+                        <td colspan="10">데이터가 존재하지 않습니다.</td>
+                    </tr>
+                    <tr th:each="student : ${studentAdList}">
+                        <td>
+                            <a th:href="@{/detail(id=${student.student_id})}" th:text="${student.student_email}"></a>
+                        </td>
+                        <td th:text="${student.student_name}"></td>
+                        <td th:text="${student.is_ads_agree == 1 ? '동의' : '거부'}"></td>
+                        <td th:text="${student.created_at}"></td>
+                        <td th:text="${student.created_at}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div>
+                    <!-- 페이지네이션 -->
+                    <ul class="pagination justify-content-center" th:if="${!#lists.isEmpty(studentAdList)}">
+                    <li class="page-item" th:if="${currentPage > 1}">
+                            <a class="page-link"
+                               th:href="@{/ad(page=${currentPage - 1}, itemsPerPage=${itemsPerPage}, search_field=${search_field}, search_word=${search_word})}">이전</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(startPage, endPage)}"
+                            th:classappend="${i == currentPage} ? 'active' : ''">
+                            <a class="page-link"
+                               th:href="@{/ad(page=${i}, itemsPerPage=${itemsPerPage}, search_field=${search_field}, search_word=${search_word})}" th:text="${i}"></a>
+                        </li>
+                        <li class="page-item" th:if="${currentPage < maxPage}">
+                            <a class="page-link"
+                               th:href="@{/ad(page=${currentPage + 1}, itemsPerPage=${itemsPerPage}, search_field=${search_field}, search_word=${search_word})}">다음</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</main><!-- End #main -->
+</div>
+
+
+<script th:inline="javascript">
+    $("#itemsPerPage").change(function () {
+        const select = $(this).val();
+        const page = 1;
+        const search_field = $("select[name='search_field']").val();
+        const search_word = $("#search_word").val();
+
+        location.href = "ad?page=" + page + "&itemsPerPage=" + select
+            + "&search_field=" + encodeURIComponent(search_field)
+            + "&search_word=" + encodeURIComponent(search_word);
+    });
+</script>
+</body>
+</html>

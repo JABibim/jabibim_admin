@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+  <meta charset="UTF-8">
+  <title>중앙비빔 Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
+  <style>
+    #reviewlist-body .badge {
+      font-size: 16px;
+    }
+
+    .form-switch {
+      padding-left: 70px;
+    }
+
+    .rating {
+      color: rgb(255, 204, 0);
+    }
+
+    #reviewlist-body tr {
+      cursor: pointer;
+    }
+
+    #review_content, #reply_content {
+      border: none;
+    }
+
+
+  </style>
+</head>
+<body>
+
+<div layout:fragment="content">
+  <main id="main" class="main">
+    <div class="pagetitle">
+      <h1>홈페이지관리</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a th:href="@{dashboard}">게시판</a></li>
+          <li class="breadcrumb-item active">수강평</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <div class="container-fluid">
+      <!--        TODO : 여기를 채워주세요~ START -->
+      <!--        Ajax 사용하지 않고 그냥 게시판 리스트 기능 구현.-->
+
+      <div class="card" id="review-card">
+        <div class="card-body">
+          <div style="margin-top: 30px;">
+            <div class="form_container container">
+              <form type='get' th:action='@{list}'>
+                <div class="form-row h-33 text-center d-flex border">
+                  <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">날짜 검색</div>
+                  <div class="input-group align-self-center">
+                    <div class="col-3 col-md-4">
+                      <label for='reviewDate1' hidden></label><input type="date" id='reviewDate1' name='reviewDate1'
+                                                                     class="form-control start_date"
+                                                                     th:value="${reviewDate1 != '' ? #dates.format(reviewDate1, 'yyyy-MM-dd') : ''}">
+                    </div>
+                    <b class="col-auto my-1 mx-1 px-2 text-middle">-</b>
+                    <div class="col-3 col-md-4">
+                      <label for='reviewDate2' hidden></label><input type="date" id='reviewDate2' name='reviewDate2'
+                                                                     class="form-control end_date"
+                                                                     th:value="${reviewDate2 != '' ? #dates.format(reviewDate2, 'yyyy-MM-dd') : ''}">
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row h-33 border d-flex text-center">
+                  <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">답변 상태</div>
+                  <div class="input-group align-self-center">
+                    <div class="form-group d-flex">
+                      <div class="form-check my-auto mx-1">
+                        <label for="review_status_all"><input class="form-check-input mt-1 ml-1 align-middle"
+                                                              type="radio"
+                                                              name="reply_status" id="review_status_all" value="all"
+                                                              th:checked="${reply_status == 'all' ? true : false}">
+                          전체</label>
+                      </div>
+                      <div class="form-check my-auto mx-1">
+                        <label for="review_status_true"><input class="form-check-input mt-1 ml-1 align-middle"
+                                                               type="radio"
+                                                               name="reply_status" id="review_status_true" value="done"
+                                                               th:checked="${reply_status == 'done' ? true : false}"> 답변
+                          완료 </label>
+                      </div>
+                      <div class="form-check my-auto mx-1">
+                        <label for="review_status_false"><input class="form-check-input mt-1 ml-1 align-middle"
+                                                                type="radio"
+                                                                name="reply_status" id="review_status_false"
+                                                                value="wait"
+                                                                th:checked="${reply_status == 'wait' ? true : false}">
+                          답변 대기 </label>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row h-33 border d-flex text-center">
+                  <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">평점</div>
+                  <div class="input-group align-self-center">
+                    <div class="form-group d-flex">
+                      <div class="form-check my-auto mx-1">
+                        <label for="rating_all"><input class="form-check-input mt-1 ml-1 align-middle" type="radio"
+                                                       name="rating" id="rating_all" value="all"
+                                                       th:checked="${rating == 'all' ? true : false}"> 전체</label>
+                      </div>
+                      <div class="form-check my-auto mx-1">
+                        <label for="under_1"><input class="form-check-input mt-1 ml-1 align-middle" type="radio"
+                                                    name="rating" id="under_1" value="under1"
+                                                    th:checked="${rating == 'under1' ? true : false}"> 1점 미만 </label>
+                      </div>
+                      <div class="form-check my-auto mx-1">
+                        <label for="under_3"><input class="form-check-input mt-1 ml-1 align-middle" type="radio"
+                                                    name="rating" id="under_3" value="1to3"
+                                                    th:checked="${rating == '1to3' ? true : false}"> 1점 이상 3점 미만</label>
+                      </div>
+                      <div class="form-check my-auto mx-1">
+                        <label for="under_4"><input class="form-check-input mt-1 ml-1 align-middle" type="radio"
+                                                    name="rating" id="under_4" value="3to4"
+                                                    th:checked="${rating == '3to4' ? true : false}"> 3점 이상 4점 미만
+                        </label>
+                      </div>
+                      <div class="form-check my-auto mx-1">
+                        <label for="over_4"><input class="form-check-input mt-1 ml-1 align-middle" type="radio"
+                                                   name="rating" id="over_4" value="over4"
+                                                   th:checked="${rating == 'over4' ? true : false}"> 4점 이상 </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row h-33 border d-flex text-center">
+                  <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">공개 여부</div>
+                  <div class="input-group align-self-center">
+                    <div class="form-group d-flex">
+                      <div class="form-check my-auto mx-1">
+                        <label for="review_visible_all"><input class="form-check-input mt-1 ml-1 align-middle"
+                                                               type="radio"
+                                                               name="review_visible" id="review_visible_all" value="all"
+                                                               th:checked="${review_visible == 'all' ? true : false}">
+                          전체</label>
+                      </div>
+                      <div class="form-check my-auto mx-1">
+                        <label for="review_visible_true"><input class="form-check-input mt-1 ml-1 align-middle"
+                                                                type="radio"
+                                                                name="review_visible" id="review_visible_true"
+                                                                value="public"
+                                                                th:checked="${review_visible == 'public' ? true : false}">
+                          공개 </label>
+                      </div>
+                      <div class="form-check my-auto mx-1">
+                        <label for="review_visible_false"><input class="form-check-input mt-1 ml-1 align-middle"
+                                                                 type="radio"
+                                                                 name="review_visible" id="review_visible_false"
+                                                                 value="private"
+                                                                 th:checked="${review_visible == 'private' ? true : false}">
+                          비공개 </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row h-33 d-flex text-center border">
+                  <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">검색</div>
+                  <div class="input-group align-self-center">
+                    <div class="form-group col-3 col-md-auto mx-2">
+                      <select name="review_searchField" class="form-select" aria-label="Default select">
+                        <option value='snect' th:selected="${review_searchField == 'snect' ? true : false}">전체</option>
+                        <option value='s' th:selected="${review_searchField == 's' ? true : false}">제목</option>
+                        <option value='n' th:selected="${review_searchField == 'n' ? true : false}">작성자</option>
+                        <option value='e' th:selected="${review_searchField == 'e' ? true : false}">회원Email</option>
+                        <option value='c' th:selected="${review_searchField == 'c' ? true : false}">등록일</option>
+                        <option value='t' th:selected="${review_searchField == 't' ? true : false}">담당 강사</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-4 flex-fill">
+                      <input type="text" id='search_word' name='search_word' class="form-control"
+                             th:value="${search_word}">
+                    </div>
+                    <div class="form-group col-auto col-md-auto">
+                      <button type="submit" class="btn btn-success">검색하기</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div style="margin-top: 30px;"> <!-- 공간을 두기 위해 margin-top 추가 -->
+              <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <span>Total: [[${listcount}]]건 </span>
+                <select id="itemsPerPage" style="margin-left: 10px;">
+                  <option value="5" th:selected="${limit == 5 ? true : false}">5</option>
+                  <option value="10" th:selected="${limit == 10 ? true : false}">10</option>
+                  <option value="15" th:selected="${limit == 15 ? true : false}">15</option>
+                </select>
+                <span style="margin-left: 5px;">건 씩 보기</span>
+              </div>
+
+              <table class="table table-striped text-center">
+                <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>제목</th>
+                  <th>작성자</th>
+                  <th>회원 Email</th>
+                  <th>평점</th>
+                  <th>등록일</th>
+                  <th>담당 강사</th>
+                  <th>답변 상태</th>
+                  <th>공개 여부</th>
+                </tr>
+                </thead>
+
+                <tbody id='reviewlist-body' th:if="${listcount > 0}">
+                <th:block th:with="num=${listcount - (page - 1) * limit}">
+                  <tr th:each="review, iterStat : ${reviewlist}">
+                    <td th:text="${num - (iterStat.index)}">No.</td>
+                    <td th:text="${review.getReviewSubject()}">제목</td>
+                    <td th:text="${review.getStudentName()}">작성자</td>
+                    <td th:text="${review.getStudentEmail()}">회원 Email</td>
+                    <td th:text="${review.getReviewRating()}">평점</td>
+                    <td th:text="${review.getCreatedAt()}">등록일</td>
+                    <td th:text="${review.getTeacherName()}">담당 강사</td>
+                    <td th:text="${review.getReplyStatus() > 0 ? '완료' : '미완료'}">답변 상태</td>
+                    <td th:text="${review.getReviewExposureStat() == 0 ? '비공개' : '공개'}">공개 여부</td>
+                  </tr>
+                </th:block>
+                </tbody>
+                <tbody th:if="${listcount == 0}">
+                <tr>조회 결과가 없습니다.</tr>
+                </tbody>
+
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <th:block th:if="${listcount > 0}">
+        <th:block
+            th:replace="~{fragments/paging :: paging('list',|&limit=${limit}&reviewDate1=${reviewDate1}&reviewDate2=${reviewDate2}&reply_status=${reply_status}&rating=${rating}&review_visible=${review_visible}&review_searchField=${review_searchField}&search_word=${search_word}|)}"
+      </th:block>
+    </div>
+  </main><!-- End #main -->
+</div>
+<!--         TODO : 여기를 채워주세요~ END -->
+</body>
+</html>

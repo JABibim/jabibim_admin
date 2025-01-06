@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.PrivacyMapper">
+
+    <insert id="insertPrivacy">
+        INSERT INTO privacy_term
+        (privacy_term_id, created_at, privacy_term_subject, privacy_term_name,
+         privacy_term_content, privacy_term_expiration_date, privacy_term_effective_date, privacy_term_status)
+        VALUES
+            (#{privacyTermId}, NOW(), #{privacyTermSubject}, #{privacyTermName},
+             #{privacyTermContent}, #{privacyTermExpirationDate}, #{privacyTermEffectiveDate}, #{privacyTermStatus})
+    </insert>
+
+</mapper>
