@@ -1,0 +1,11 @@
+package com.jabibim.admin.mybatis.mapper;
+
+import com.jabibim.admin.domain.Academy;
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
+
+@Mapper
+public interface AcademyMapper {
+    public List<Academy> getAcademyList();
+}
