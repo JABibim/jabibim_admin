@@ -39,4 +39,10 @@ public class PrivacyServiceImpl implements PrivacyService {
         dao.insertPrivacy(privacy);
     }
 
+    @Override
+    public Privacy getLatestPrivacyPolicy() {
+        // 최신 본문을 데이터베이스에서 가져옴
+        return dao.getLatestPrivacyPolicy();
+    }
+
 }
