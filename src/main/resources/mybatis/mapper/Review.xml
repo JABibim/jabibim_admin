@@ -11,97 +11,110 @@
     </select>
 
     <select id="getSearchListCount" resultType="int">
-        SELECT count(*)
-        FROM review r
-        INNER JOIN teacher t
-        ON r.teacher_id = t.teacher_id
-        INNER JOIN student s
-        ON r.student_id = s.student_id
-        WHERE r.academy_id=#{academyId}
-        AND r.review_re_lev=0
-        AND r.deleted_at IS NULL
-        <include refid="search_"/>
+        SELECT COUNT(*)
+        FROM (SELECT j.*
+                FROM (SELECT r.*, t.teacher_name, s.student_name, s.student_email, c.reply_status
+                        FROM (SELECT * FROM review WHERE academy_id=#{academyId}) r
+                        INNER JOIN (SELECT * FROM teacher WHERE academy_id=#{academyId}) t
+                        ON r.teacher_id = t.teacher_id
+                        INNER JOIN (SELECT * FROM student WHERE academy_id=#{academyId}) s
+                        ON r.student_id = s.student_id
+                        INNER JOIN (SELECT review_re_ref, COUNT(CASE WHEN review_re_lev > 0 THEN 1 END) AS reply_status
+                                        FROM review
+                                        WHERE academy_id=#{academyId}
+                                        GROUP BY review_re_ref) c
+                        ON r.review_re_ref = c.review_re_ref
+                        WHERE r.review_re_lev=0
+                        AND r.deleted_at IS null
+                ) j
+        <where>
+            <include refid="search_"/>
+        </where>
+                ) c
     </select>
 
     <select id="getSearchList" resultType="reviewListVO">
-        SELECT t.*, c.review_status
-        FROM  (SELECT  j.*
-                FROM (SELECT ROW_NUMBER() OVER(ORDER BY review_re_ref DESC) AS rnum, r.*, t.teacher_name, s.student_name, s.student_email
-                        FROM review r
-                        INNER JOIN teacher t
+        SELECT *
+        FROM (SELECT *
+                FROM (SELECT r.*, t.teacher_name, s.student_name, s.student_email, c.reply_status
+                        FROM (SELECT * FROM review WHERE academy_id=#{academyId}) r
+                        INNER JOIN (SELECT * FROM teacher WHERE academy_id=#{academyId}) t
                         ON r.teacher_id = t.teacher_id
-                        INNER JOIN student s
+                        INNER JOIN (SELECT * FROM student WHERE academy_id=#{academyId}) s
                         ON r.student_id = s.student_id
-                        WHERE r.academy_id=#{academyId}
-                        AND r.review_re_lev=0
-                        AND r.deleted_at IS NULL
-                        <include refid="search_"/>
-                        ) j
-                WHERE rnum &lt;=#{end}) t
-        ,(SELECT review_re_ref, COUNT(CASE WHEN review_re_lev > 0 THEN 1 END) as review_status
-          FROM review
-          GROUP BY review_re_ref) c
-        WHERE rnum BETWEEN #{start} AND #{end}
-        AND t.review_re_ref = c.review_re_ref
+                        INNER JOIN (SELECT review_re_ref, COUNT(CASE WHEN review_re_lev > 0 THEN 1 END) AS reply_status
+                                        FROM review
+                                        WHERE academy_id=#{academyId}
+                                    GROUP BY review_re_ref) c
+                        ON r.review_re_ref = c.review_re_ref
+                        WHERE r.review_re_lev=0
+                        AND r.deleted_at IS null
+                        ORDER BY r.review_re_ref DESC) j
+        <where>
+            <include refid="search_"/>
+        </where>
+        ) w
+          LIMIT #{limit} OFFSET #{offset}
     </select>
 
 
     <sql id="search_">
         <if test="reviewDate1 != null">
-            and r.created_at &gt;= #{reviewDate1}
+            AND DATE(created_at) &gt;= #{reviewDate1}
             <if test="reviewDate2 != null">
-            and r.created_at &lt;= #{reviewDate2}
+            AND DATE(created_at) &lt;= #{reviewDate2}
             </if>
         </if>
-        <if test="reviewDate2 != null">
-            and r.created_at &lt;= #{reviewDate2}
+        <if test="reviewDate1 == null and reviewDate2 != null">
+            AND DATE(created_at) &lt;= #{reviewDate2}
         </if>
         <if test="reply_status != null">
             <if test="reply_status == 'done'">
-                and r.reply_status > 0
+                AND reply_status &gt; 0
             </if>
             <if test="reply_status == 'wait'">
-                and r.reply_status = 0
+                AND reply_status = 0
             </if>
         </if>
 
         <if test="rating != null">
             <if test="rating == 'under1'">
-                and r.review_rating &lt; 10
+                AND review_rating &lt; 10
             </if>
             <if test="rating == '1to3'">
-                and r.review_rating &gt;= 10
-                and r.review_rating &lt; 30
+                AND review_rating &gt;= 10
+                AND review_rating &lt; 30
             </if>
             <if test="rating == '3to4'">
-                and r.review_rating &gt;= 30
-                and r.review_rating &lt; 40
+                AND review_rating &gt;= 30
+                AND review_rating &lt; 40
             </if>
             <if test="rating == 'over4'">
-                and r.review_rating &gt;= 40
+                AND review_rating &gt;= 40
             </if>
         </if>
         <if test="review_visible != null">
             <if test="review_visible == 'public'">
-                and r.review_exposure_stat = 1
+                AND review_exposure_stat = 1
             </if>
             <if test="review_visible == 'private'">
-                and r.review_exporsure_stat = 0
+                AND review_exposure_stat = 0
             </if>
         </if>
 
         <if test="review_searchField != null and search_word != null">
-            and
+            AND (
             <foreach collection="review_searchField" item="data" separator="or">
                 <choose>
-                    <when test='data == "s"'>r.review_subject</when>
-                    <when test='data == "n"'>s.student_name</when>
-                    <when test='data == "e"'>s.student_email</when>
-                    <when test='data == "c"'>r.created_at</when>
-                    <when test='data == "t"'>t.teacher_name</when>
+                    <when test='data == "s"'> review_subject</when>
+                    <when test='data == "n"'> student_name</when>
+                    <when test='data == "e"'> student_email</when>
+                    <when test='data == "c"'> DATE_FORMAT(created_at, '%y-%m-%d')</when>
+                    <when test='data == "t"'> teacher_name</when>
                 </choose>
-                like #{search_word}
+                LIKE #{search_word}
             </foreach>
+            )
         </if>
     </sql>
 </mapper>

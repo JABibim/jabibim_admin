@@ -40,11 +40,11 @@ public class ReviewServiceImpl implements ReviewService {
 //    String academyId = dao.getAcademyId(teacherEmail);
     map.put("academyId", "f236923c-4746-4b5a-8377-e7c5b53799c2");
 
-    int startrow = (page - 1) * limit + 1;
-    int endrow = startrow + limit - 1;
+//    int startrow = (page - 1) * limit + 1;
+//    int endrow = startrow + limit - 1;
 
-    map.put("start", startrow);
-    map.put("end", endrow);
+    map.put("offset", (page - 1) * limit);  // offset
+    map.put("limit", limit);         // limit
 
     List<ReviewListVO> list = dao.getSearchList(map);
 
@@ -56,11 +56,11 @@ public class ReviewServiceImpl implements ReviewService {
     HashMap<String, Object> map = new HashMap<>();
 
     if (!hm.get("reviewDate1").isEmpty()) {
-      map.put("reviewDate1", " TO_DATE('" + hm.get("reviewDate1") + "','YY/MM/DD') ");
+      map.put("reviewDate1", hm.get("reviewDate1"));
     }
 
     if (!hm.get("reviewDate2").isEmpty()) {
-      map.put("reviewDate2", " TO_DATE('" + hm.get("reviewDate2") + "','YY/MM/DD') ");
+      map.put("reviewDate2", hm.get("reviewDate2"));
     }
 
     if (!hm.get("reply_status").equals("all")) {

@@ -28,9 +28,13 @@
     #review_content, #reply_content {
       border: none;
     }
-
-
   </style>
+  <script>
+    function limitChanged(limit) {
+      $('#limit').val(limit);
+      $('form').submit();
+    }
+  </script>
 </head>
 <body>
 
@@ -184,6 +188,7 @@
                     <div class="form-group col-auto col-md-auto">
                       <button type="submit" class="btn btn-success">검색하기</button>
                     </div>
+                    <input type="hidden" name="limit" id="limit" th:value="${limit}">
                   </div>
                 </div>
               </form>
@@ -192,7 +197,7 @@
             <div style="margin-top: 30px;"> <!-- 공간을 두기 위해 margin-top 추가 -->
               <div style="display: flex; align-items: center; margin-bottom: 10px;">
                 <span>Total: [[${listcount}]]건 </span>
-                <select id="itemsPerPage" style="margin-left: 10px;">
+                <select id="itemsPerPage" name="limit" style="margin-left: 10px;" th:onchange="limitChanged(this.options[selectedIndex].text)">
                   <option value="5" th:selected="${limit == 5 ? true : false}">5</option>
                   <option value="10" th:selected="${limit == 10 ? true : false}">10</option>
                   <option value="15" th:selected="${limit == 15 ? true : false}">15</option>
@@ -200,7 +205,7 @@
                 <span style="margin-left: 5px;">건 씩 보기</span>
               </div>
 
-              <table class="table table-striped text-center">
+              <table class="table table-striped text-center" th:if="${listcount > 0}">
                 <thead>
                 <tr>
                   <th>No.</th>
@@ -215,7 +220,7 @@
                 </tr>
                 </thead>
 
-                <tbody id='reviewlist-body' th:if="${listcount > 0}">
+                <tbody id='reviewlist-body'>
                 <th:block th:with="num=${listcount - (page - 1) * limit}">
                   <tr th:each="review, iterStat : ${reviewlist}">
                     <td th:text="${num - (iterStat.index)}">No.</td>
@@ -230,21 +235,21 @@
                   </tr>
                 </th:block>
                 </tbody>
-                <tbody th:if="${listcount == 0}">
-                <tr>조회 결과가 없습니다.</tr>
-                </tbody>
-
               </table>
+                <div class="container" th:if="${listcount == 0}">
+                  <div class="text-center">
+                    <h1>조회 결과가 없습니다.</h1>
+                  </div>
+                </div>
             </div>
           </div>
         </div>
       </div>
       <th:block th:if="${listcount > 0}">
-        <th:block
-            th:replace="~{fragments/paging :: paging('list',|&limit=${limit}&reviewDate1=${reviewDate1}&reviewDate2=${reviewDate2}&reply_status=${reply_status}&rating=${rating}&review_visible=${review_visible}&review_searchField=${review_searchField}&search_word=${search_word}|)}"
+        <th:block th:replace="~{fragments/paging :: paging('list',|&limit=${limit}&reviewDate1=${reviewDate1}&reviewDate2=${reviewDate2}&reply_status=${reply_status}&rating=${rating}&review_visible=${review_visible}&review_searchField=${review_searchField}&search_word=${search_word}|)}"/>
       </th:block>
     </div>
-  </main><!-- End #main -->
+  </main><!-- End #main -->]
 </div>
 <!--         TODO : 여기를 채워주세요~ END -->
 </body>
