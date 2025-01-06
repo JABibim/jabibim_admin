@@ -23,7 +23,6 @@
         WHERE rnum &gt;= #{start} AND rnum &lt;= #{end}
     </select>
 
-
     <insert id="insertPrivacy">
         INSERT INTO privacy_term
         (privacy_term_id, created_at, privacy_term_subject, privacy_term_name,
@@ -32,5 +31,12 @@
             (#{privacyTermId}, NOW(), #{privacyTermSubject}, #{privacyTermName},
              #{privacyTermContent}, #{privacyTermExpirationDate}, #{privacyTermEffectiveDate}, #{privacyTermStatus})
     </insert>
+
+    <select id="getLatestPrivacyPolicy" resultType="com.jabibim.admin.domain.Privacy">
+        SELECT *
+        FROM privacy_term
+        ORDER BY PRIVACY_TERM_EFFECTIVE_DATE DESC
+            LIMIT 1
+    </select>
 
 </mapper>

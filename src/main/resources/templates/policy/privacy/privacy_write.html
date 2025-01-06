@@ -111,16 +111,29 @@
                 $.ajax({
                     type: "POST",
                     url: "/admin/policy/privacy/previous",
-                    dataType: "json",
+                    beforeSend : function(xhr)
+                    {   //데이터를 전송하기 전에 헤더에 csrf값을 설정합니다.
+                        xhr.setRequestHeader(header, token);
+                    },
+                    dataType: 'json',
                     success: function (data) {
-                        if (data && data.privacy_policy_content) {
-                            quill.root.innerHTML = data.privacy_policy_content;
+                        if (data && data.privacyTermContent) {
+                            console.log(data.privacyTermContent);
+                            quill.root.innerHTML = data.privacyTermContent;
                         } else {
                             alert("이전 본문이 없습니다.");
                         }
                     },
-                    error: function () {
-                        console.log("이전 본문 불러오기 에러");
+                    error: function (xhr, status, errorThrown) {
+                        // 상태 코드와 응답 텍스트 확인
+                        console.log("상태 코드: " + status);  // 예: "404", "500" 등
+                        console.log("에러 메시지: " + errorThrown);  // 예: "Not Found", "Internal Server Error" 등
+                        console.log("응답 본문: " + xhr.responseText);  // 서버의 응답 본문 확인
+
+                        // 추가적으로 서버에서 반환된 에러 메시지를 사용자에게 출력할 수 있습니다.
+                        if (xhr.responseText) {
+                            alert("서버 오류: " + xhr.responseText);
+                        }
                     }
                 });
             });
