@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.List;
@@ -28,7 +29,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.formLogin((formLogin) -> formLogin.loginPage("/member/login").loginProcessingUrl("/member/loginProcess").usernameParameter("email").passwordParameter("password").successHandler(loginSuccessHandler).failureHandler(loginFailHandler));
+        http.formLogin((formLogin) -> formLogin.loginPage("/member/login")
+            .loginProcessingUrl("/member/loginProcess")
+            .usernameParameter("email")
+            .passwordParameter("password")
+            .successHandler(loginSuccessHandler)
+            .failureHandler(loginFailHandler));
 
         return http.build(); // Spring SecurityFilterChain 객체를 반환하면 앞으로 모든 http 요청에 대해서 작동하게된다.
     }
@@ -42,5 +48,10 @@ public class SecurityConfig {
     public List<AuthenticationProvider> authenticationProviders() {
         // 사용할 Provider로 작성하고 아래에 넣어주면, SpringSecurity가 순차적으로 Provider를 수행
         return List.of(adminAuthenticationProvider);
+    }
+
+    @Bean
+    public BCryptPasswordEncoder encodePassword() {
+        return new BCryptPasswordEncoder();
     }
 }
