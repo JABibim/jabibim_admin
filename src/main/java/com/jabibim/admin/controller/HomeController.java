@@ -10,18 +10,10 @@ public class HomeController {
         return "redirect:/login";
     }
 
-    @GetMapping(value = "/login")
-    public String loginForm() {
-        return "member/login";
-    }
-
-    @GetMapping(value = "/admin/login")
-    public String adminLoginForm() {
-        return "admin/login";
-    }
-
     @GetMapping(value = "/dashboard")
     public String dashBoard() {
         return "dashboard";
     }
+
+
 }

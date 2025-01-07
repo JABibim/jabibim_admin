@@ -21,22 +21,22 @@
                                     <h5 class="card-title text-center pb-0 fs-4">Admin Login</h5>
                                 </div>
 
-                                <form class="row g-3 needs-validation" th:action="@{/member/loginProcess}"
+                                <form class="row g-3 needs-validation" th:action="@{/login}"
                                       method="post" novalidate>
                                     <input type="hidden" name="uri" value="${param.uri}">
                                     <div class="col-12">
-                                        <label for="email" class="form-label">Email</label>
+                                        <label for="adminEmail" class="form-label">Email</label>
                                         <div class="input-group has-validation">
                                             <span class="input-group-text" id="inputGroupPrepend">@</span>
-                                            <input type="email" name="email" class="form-control" id="email"
+                                            <input type="email" name="email" class="form-control" id="adminEmail"
                                                    th:value="${emailInput}" required>
                                             <div class="invalid-feedback">이메일을 입력해주세요.</div>
                                         </div>
                                     </div>
 
                                     <div class="col-12">
-                                        <label for="password" class="form-label">Password</label>
-                                        <input type="password" name="password" class="form-control" id="password"
+                                        <label for="adminPassword" class="form-label">Password</label>
+                                        <input type="password" name="password" class="form-control" id="adminPassword"
                                                required>
                                         <div class="invalid-feedback">비밀번호를 입력해주세요.</div>
                                     </div>
