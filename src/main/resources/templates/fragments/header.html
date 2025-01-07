@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <th:block th:fragment="Header">
     <script th:inline="javascript">
@@ -64,7 +64,7 @@
             <ul class="d-flex align-items-center">
 
                 <!-- START 어드민 메뉴 -->
-                <th:block th:if="${session.isAdmin == true}">
+                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
                     <li class="nav-item dropdown">
                         <a class="nav-link nav-icon" href="#" id="adminMenuBtn" data-bs-toggle="modal"
                            data-bs-target="#passwordConfirmModal">
