@@ -35,8 +35,26 @@
     <select id="getLatestTermPolicy" resultType="com.jabibim.admin.domain.Term">
         SELECT *
         FROM service_term
-        ORDER BY SREVICE_TERM_EFFECTIVE_DATE DESC
+        ORDER BY service_term_effective_date DESC
             LIMIT 1
+    </select>
+
+    <select id="getDetail" parameterType="int" resultType="term">
+        SELECT *
+        FROM (SELECT
+                  ROW_NUMBER() OVER (ORDER BY service_term_effective_date DESC) AS rnum,
+                      service_term_id, service_term_subject, service_term_name, service_term_content, service_term_expiration_date, service_term_effective_date
+              FROM service_term
+             ) AS subquery
+        WHERE rnum = #{rnum}
+    </select>
+
+    <select id="getMaxRnum" resultType="int">
+        SELECT MAX(rnum)
+        FROM (
+                 SELECT ROW_NUMBER() OVER (ORDER BY service_term_effective_date DESC) AS rnum
+                 FROM service_term
+             ) AS subquery
     </select>
 
 </mapper>

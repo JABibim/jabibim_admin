@@ -230,8 +230,25 @@ public class PolicyController {
     }
 
     @GetMapping(value="/service/detail")
-    public String serviceDetail() {
-        return "policy/service/service_detail";
+    public ModelAndView serviceDetail(int rnum, ModelAndView mv,
+                                      HttpServletRequest request) {
+
+        Term term = termService.getDetail(rnum);
+        int maxRnum = termService.getMaxRnum();
+
+        if (term == null) {
+            logger.info("상세보기 실패");
+
+            mv.setViewName("error/error");
+            mv.addObject("url", request.getRequestURI());
+            mv.addObject("message", "상세보기 실패입니다.");
+        } else {
+            logger.info("상세보기 성공");
+            mv.setViewName("policy/service/service_detail");
+            mv.addObject("serviceData", term);
+            mv.addObject("maxRnum", maxRnum);
+        }
+        return mv;
     }
 
 }

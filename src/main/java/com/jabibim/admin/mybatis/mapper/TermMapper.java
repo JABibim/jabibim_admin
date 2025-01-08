@@ -20,4 +20,7 @@ public interface TermMapper {
 
     public Term getLatestTermPolicy();
 
+    Term getDetail(int rnum);
+
+    int getMaxRnum();
 }

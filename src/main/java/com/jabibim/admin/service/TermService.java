@@ -1,6 +1,5 @@
 package com.jabibim.admin.service;
 
-import com.jabibim.admin.domain.Privacy;
 import com.jabibim.admin.domain.Term;
 
 import java.util.List;
@@ -17,5 +16,7 @@ public interface TermService {
 
     public Term getLatestTermPolicy();
 
+    Term getDetail(int rnum);
 
+    int getMaxRnum();
 }
