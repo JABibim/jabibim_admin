@@ -1,5 +1,6 @@
 package com.jabibim.admin.service;
 
+import com.jabibim.admin.domain.Privacy;
 import com.jabibim.admin.domain.Term;
 import com.jabibim.admin.mybatis.mapper.TermMapper;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,16 @@ public class TermServiceImpl implements TermService {
     public Term getLatestTermPolicy() {
         // 최신 본문을 데이터베이스에서 가져옴
         return dao.getLatestTermPolicy();
+    }
+
+    @Override
+    public Term getDetail(int rnum) {
+        return dao.getDetail(rnum);
+    }
+
+    @Override
+    public int getMaxRnum() {
+        return dao.getMaxRnum();
     }
 
 
