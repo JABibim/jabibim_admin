@@ -45,4 +45,14 @@ public class PrivacyServiceImpl implements PrivacyService {
         return dao.getLatestPrivacyPolicy();
     }
 
+    @Override
+    public Privacy getDetail(int rnum) {
+        return dao.getDetail(rnum);
+    }
+
+    @Override
+    public int getMaxRnum() {
+        return dao.getMaxRnum();
+    }
+
 }

@@ -17,5 +17,9 @@ public interface PrivacyMapper {
     // 글 등록하기
     public void insertPrivacy(Privacy privacy);
 
-    Privacy getLatestPrivacyPolicy();
+    public Privacy getLatestPrivacyPolicy();
+
+    public Privacy getDetail(int rnum);
+
+    int getMaxRnum();
 }
