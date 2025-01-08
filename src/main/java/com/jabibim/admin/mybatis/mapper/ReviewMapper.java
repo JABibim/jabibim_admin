@@ -27,4 +27,8 @@ public interface ReviewMapper {
   void insertReply(Review reply);
 
   int deleteReview(Review review);
+
+  int updateExposureStat(Review r);
+
+  int updateReply(Review r);
 }
