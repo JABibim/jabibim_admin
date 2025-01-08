@@ -101,7 +101,7 @@
                             <img th:src="@{/img/default_profile.jpg}" alt="Profile" class="rounded-circle">
                         </th:block>
                         <th:block th:if="${not #strings.isEmpty(teacherImgName)}">
-                            <img th:src="@{/img/default_profile.jpg}" alt="Profile" class="rounded-circle">
+                            <img th:src="@{|/resources/static/uploadFiles/profileImageUpload/${teacherImgName}|}"  alt="Profile" class="rounded-circle">
                         </th:block>
                         <span class="d-none d-md-block dropdown-toggle ps-2"></span>
                     </a><!-- End Profile Image Icon -->

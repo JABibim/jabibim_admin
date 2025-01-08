@@ -19,9 +19,26 @@
         set teacher_img_origin = #{teacherImgOrigin},
             teacher_phone = #{teacherPhone},
             teacher_email = #{teacherEmail}
-        where teacher_id = #{id}
+        where teacher_id = #{teacherId}
 
     </update>
 
+    <update id="updatePassword">
+        update teacher
+        set teacher_password = #{teacherPassword}
+        where teacher_id = #{teacherId}
+    </update>
+
+    <select id="getTeacherById">
+        select *
+        from teacher
+        where teacher_id = #{teacherId}
+    </select>
+
+    <update id="updateProfileImage">
+        update teacher
+        set teacher_img_name = #{teacherImgName}
+        where teacher_id = #{teacherId}
+    </update>
 
 </mapper>
