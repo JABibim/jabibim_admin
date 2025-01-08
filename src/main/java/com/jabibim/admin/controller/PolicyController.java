@@ -1,9 +1,11 @@
 package com.jabibim.admin.controller;
 
 import com.jabibim.admin.domain.Privacy;
-import com.jabibim.admin.domain.PrivacyPage;
+import com.jabibim.admin.domain.PolicyPage;
+import com.jabibim.admin.domain.Term;
 import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.service.PrivacyService;
+import com.jabibim.admin.service.TermService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
@@ -22,9 +24,11 @@ public class PolicyController {
     private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
 
     private PrivacyService privacyService;
+    private TermService termService;
 
-    public PolicyController(PrivacyService privacyService) {
+    public PolicyController(PrivacyService privacyService, TermService termService) {
         this.privacyService = privacyService;
+        this.termService = termService;
     }
 
     @GetMapping(value="/privacy")
@@ -38,7 +42,7 @@ public class PolicyController {
         int listcount = privacyService.getListCount();
         List<Privacy> list = privacyService.getPrivacyList(page, limit);
 
-        PrivacyPage result = new PrivacyPage(page, limit, listcount);
+        PolicyPage result = new PolicyPage(page, limit, listcount);
 
         mv.setViewName("policy/privacy/privacy_list");
         mv.addObject("page", page);
@@ -62,7 +66,7 @@ public class PolicyController {
 
         int listcount = privacyService.getListCount(); //총 리스트 수를 받아옴
         List<Privacy> list = privacyService.getPrivacyList(page, limit); // 리스트를 받아옴
-        PrivacyPage result = new PrivacyPage(page, limit, listcount);
+        PolicyPage result = new PolicyPage(page, limit, listcount);
 
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("page", page);
@@ -140,8 +144,84 @@ public class PolicyController {
     }
 
     @GetMapping(value="/service")
-    public String serviceList() {
-        return "policy/service/service_list";
+    public ModelAndView serviceList(
+            @RequestParam(defaultValue = "1") int page,
+            ModelAndView mv,
+            HttpSession session) {
+        session.setAttribute("referer", "list");
+        int limit =10;
+
+        int listcount = termService.getListCount();
+        List<Term> list = termService.getTermList(page, limit);
+
+        PolicyPage result = new PolicyPage(page, limit, listcount);
+
+        mv.setViewName("policy/service/service_list");
+        mv.addObject("page", page);
+        mv.addObject("maxpage", result.getMaxpage());
+        mv.addObject("startpage", result.getStartpage());
+        mv.addObject("endpage", result.getEndpage());
+        mv.addObject("listcount", listcount);
+        mv.addObject("servicelist", list);
+        mv.addObject("limit",limit);
+        return mv;
+    }
+
+    @ResponseBody
+    @PostMapping(value="/list_ajax2")
+    public Map<String, Object> ServiceListAjax(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ){
+
+        int listcount = termService.getListCount(); //총 리스트 수를 받아옴
+        List<Term> list = termService.getTermList(page, limit); // 리스트를 받아옴
+        PolicyPage result = new PolicyPage(page, limit, listcount);
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("page", page);
+        map.put("maxpage", result.getMaxpage());
+        map.put("startpage", result.getStartpage());
+        map.put("endpage", result.getEndpage());
+        map.put("listcount", listcount);
+        map.put("servicelist", list);
+        map.put("limit",limit);
+
+        System.out.println("Returned JSON Data: " + map);
+        return map;
+    }
+
+    @ResponseBody
+    @PostMapping("/service/previous")
+    public Map<String, Object> getContent() {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 이전 본문 내용을 데이터베이스에서 가져오는 로직
+            Term previousPolicy = termService.getLatestTermPolicy(); // 최신 본문 불러오기
+            if (previousPolicy != null && previousPolicy.getServiceTermContent() != null) {
+                response.put("serviceTermContent", previousPolicy.getServiceTermContent());
+            } else {
+                response.put("serviceTermContent", null); // 본문 내용이 없을 경우
+            }
+        } catch (Exception e) {
+            // 예외 처리
+            e.printStackTrace();
+            response.put("serviceTermContent", null);
+        }
+        return response;
+    }
+
+    @PostMapping(value="/service/add")
+    public String addService(Term term, HttpServletRequest request) {
+        // UUID 생성
+        String serviceTermId = UUIDGenerator.getUUID();
+
+        // 생성한 UUID를 Privacy 객체에 설정
+        term.setServiceTermId(serviceTermId);
+        termService.insertTerm(term);
+        logger.info(term.toString());
+        return "redirect:/policy/service";
     }
 
     @GetMapping(value="/service/write")
