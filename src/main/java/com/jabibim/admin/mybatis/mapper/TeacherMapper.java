@@ -4,9 +4,15 @@ import com.jabibim.admin.domain.Teacher;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-@Mapper
+import java.util.HashMap;
+import java.util.List;
+
+@Mapper  //쿼리 쓰는곳
 public interface TeacherMapper {
-    Teacher getTeachers();
+
+    int getTeacherCount(HashMap<String, Object> params);
+
+    List<Teacher> getTeacherList(HashMap<String, Object> map);
 
     Teacher teacherInfo(String id);
 
@@ -17,4 +23,5 @@ public interface TeacherMapper {
     Teacher getTeacherById(String teacherId);
 
     int updateProfileImage(@Param("teacherId") String teacherId, @Param("teacherImgName") String teacherImgName);
+
 }

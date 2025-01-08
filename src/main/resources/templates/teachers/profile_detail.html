@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="utf-8">
+    <title>약력 관리 > 약력 상세조회</title>
+    <style>
+        .btn-right {
+            float: right;
+            margin-top: 20px;
+            margin-right: 20px;
+        }
+        .btn-back {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-back:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>약력관리</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/dashboard}">약력 관리</a></li>
+                    <li class="breadcrumb-item active">약력 상세조회</li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
+
+        <div class="container">
+            <div class="form_container container">
+                <div class="card">
+                    <div class="card-body">
+                        <div style="margin-top: 30px;">
+                            <div class="row mb-3 align-items-center">
+                                <label class="col-sm-2 col-form-label">약력 보기</label>
+                                <div class="col-sm-10 preview-container">
+                                    <img th:src="@{'/careerUpload/' + ${careerDetail.career_origin}}" alt="career_image" id="careerImage" style="width:150px">
+                                </div>
+                            </div>
+                            <!-- 리스트로 돌아가기 버튼 -->
+                            <a th:href="@{/teacher/profile}" class="btn-back btn-right">리스트로 돌아가기</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main><!-- End #main -->
+</div>
+
+</body>
+</html>

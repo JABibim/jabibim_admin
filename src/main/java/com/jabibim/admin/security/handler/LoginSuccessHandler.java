@@ -26,6 +26,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         boolean isAdmin = authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ADMIN"));
 
+        System.out.println("isAdmin: " + isAdmin);
         if (isAdmin) {
             session.setAttribute("isAdmin", true);
             session.setAttribute("id", "ADMIN");

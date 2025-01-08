@@ -4,11 +4,13 @@ import com.jabibim.admin.domain.Teacher;
 import com.jabibim.admin.mybatis.mapper.TeacherMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.HashMap;
+import java.util.List;
 
+  
 @Service
 public class TeacherServiceImpl implements TeacherService {
 
@@ -18,6 +20,33 @@ public class TeacherServiceImpl implements TeacherService {
     public TeacherServiceImpl(TeacherMapper dao, TeacherMapper teacherMapper) {
         this.dao = dao;
         this.teacherMapper = teacherMapper;
+    }
+
+
+    @Override
+    public int getTeacherCount(String state, String search_field, String search_word) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("state", state);
+        params.put("search_field", search_field);
+        params.put("search_word", search_word);
+        return dao.getTeacherCount(params);
+    }
+
+    @Override
+    public List<Teacher> getTeacherList(int page, int limit, String academyId, boolean isAdmin, String state, String search_field, String search_word) {
+        int startrow = (page - 1) * limit + 1;
+        int endrow = startrow + limit - 1;
+
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("start", startrow);
+        params.put("end", endrow);
+        params.put("academyId", academyId);
+        params.put("isAdmin", isAdmin);
+        params.put("state", state);
+        params.put("search_field", search_field);
+        params.put("search_word", search_word);
+
+        return dao.getTeacherList(params);
     }
 
     @Override
