@@ -1,44 +1,36 @@
 package com.jabibim.admin.dto;
 
-import com.jabibim.admin.domain.Review;
+import lombok.*;
 
-public class ReviewListVO extends Review {
+import java.time.LocalDateTime;
+
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class ReviewListVO {
+
+  private String reviewId;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
+  private LocalDateTime deletedAt;
+  private int reviewReRef;
+  private int reviewReLev;
+  private String reviewSubject;
+  private String reviewPassword;
+  private String reviewContent;
+  private int reviewRating;
+  private int reviewReadcount;
+  private int reviewExposureStat;
+  private String academyId;
+  private String courseId;
+  private String teacherId;
+  private String studentId;
   private String teacherName;
   private String studentName;
   private String studentEmail;
   private int replyStatus;
 
-  public ReviewListVO() {}
-
-  public String getTeacherName() {
-    return teacherName;
-  }
-
-  public void setTeacherName(String teacherName) {
-    this.teacherName = teacherName;
-  }
-
-  public String getStudentName() {
-    return studentName;
-  }
-
-  public void setStudentName(String studentName) {
-    this.studentName = studentName;
-  }
-
-  public String getStudentEmail() {
-    return studentEmail;
-  }
-
-  public void setStudentEmail(String studentEmail) {
-    this.studentEmail = studentEmail;
-  }
-
-  public int getReplyStatus() {
-    return replyStatus;
-  }
-
-  public void setReplyStatus(int replyStatus) {
-    this.replyStatus = replyStatus;
-  }
 }
