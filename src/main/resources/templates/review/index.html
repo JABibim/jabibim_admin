@@ -223,12 +223,13 @@
                 <tbody id='reviewlist-body'>
                 <th:block th:with="num=${listcount - (page - 1) * limit}">
                   <tr th:each="review, iterStat : ${reviewlist}">
+
                     <td th:text="${num - (iterStat.index)}">No.</td>
-                    <td th:text="${review.getReviewSubject()}">제목</td>
+                    <td><a th:href="@{|detail?reviewid=${review.getReviewId()}|}">[[${review.getReviewSubject}]]</a></td>
                     <td th:text="${review.getStudentName()}">작성자</td>
                     <td th:text="${review.getStudentEmail()}">회원 Email</td>
                     <td th:text="${review.getReviewRating()}">평점</td>
-                    <td th:text="${review.getCreatedAt()}">등록일</td>
+                    <td th:text="${#temporals.format(review.getCreatedAt(),'yyyy.MM.dd HH:mm:ss')}">등록일</td>
                     <td th:text="${review.getTeacherName()}">담당 강사</td>
                     <td th:text="${review.getReplyStatus() > 0 ? '완료' : '미완료'}">답변 상태</td>
                     <td th:text="${review.getReviewExposureStat() == 0 ? '비공개' : '공개'}">공개 여부</td>

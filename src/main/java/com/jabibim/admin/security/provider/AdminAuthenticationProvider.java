@@ -31,7 +31,7 @@ public class AdminAuthenticationProvider implements AuthenticationProvider {
         if (adminEmail.isPresent()) {
             if (password.equals(adminPassword)) {
                 // spring security에서 기본적으로 사용하는 인증 토큰
-                return new UsernamePasswordAuthenticationToken(email, password, List.of(() -> "ADMIN"));
+                return new UsernamePasswordAuthenticationToken(email, password, List.of(() -> "ROLE_ADMIN"));
             } else {
                 // 비밀번호가 일치하지 않는 경우 던지는 예외
                 throw new BadCredentialsException("관리자 계정 비밀번호를 확인해주세요.");
