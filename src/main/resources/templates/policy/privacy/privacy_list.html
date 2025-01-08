@@ -3,14 +3,32 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/default}">
-
-
 <head>
     <meta charset="UTF-8">
     <title>중앙비빔 Admin</title>
+    <style>
+        select.form-control{
+            width:auto;
+            margin-bottom: 2em;
+            display:inline-block
+        }
+
+        .rows{
+            text-align: right;
+        }
+
+        .gray{
+            color: gray;
+        }
+
+
+    </style>
 </head>
+
 <body>
 <div layout:fragment="content">
+    <script th:src="@{/js/jquery-3.7.1.js}"></script>
+    <script th:src="@{/js/privacy.js}"></script>
 <main id="main" class="main">
     <div class="pagetitle">
         <h1>개인정보처리방침 관리</h1>
@@ -24,20 +42,52 @@
 
     <div class="card">
         <div class="card-body">
-
-                <table th:if="${listcount > 0}" class="table" id="privacy-list-table">
+            <th:block th:if="${listcount >0 }">
+                <br>
+            <div class="rows">
+                <span>줄보기</span>
+                <select class="form-control" id="viewcount">
+                    <option value="1">1</option>
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="7">7</option>
+                    <option value="10" selected>10</option>
+                </select>
+            </div>
+                <table class="table" id="privacy-list-table">
                     <thead>
                     <tr>
                         <th>번호</th>
+                        <th>제목</th>
+                        <th>작성자</th>
                         <th data-type="date" data-format="YYYY/MM/DD">시행일자</th>
-                        <th style="text-align: right; padding-right: 55px"></th>
                     </tr>
                     </thead>
                     <tbody>
-
+                    <th:block th:with="num=${listcount-(page-1)*limit}">
+                        <th:block th:each="p, iterStat : ${privacylist}">
+                            <tr>
+                                <td><span th:text="${num - (iterStat.index)}"></span></td>
+                                <td>
+                                    <div>
+                                        <a th:href="@{'/policy/privacy/detail?rnum=' + ${p.rnum}}">
+                                            <span th:text="${p.privacyTermSubject}"></span>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td><div th:text="${p.privacyTermName}"></div></td>
+                                <td><div th:text="${p.privacyTermEffectiveDate}"></div></td>
+                            </tr>
+                        </th:block>
+                    </th:block>
                     </tbody>
                 </table>
-                <h6 th:if="${listcount == null}" style="text-align: center; margin-top: 2rem;">등록된 글이 없습니다.</h6>
+                <div class="listcount">
+                    <span>글 개수 : [[${listcount}]]</span>
+                </div>
+                <th:block th:replace="~{fragments/policyPaging :: paging('list', '')}"/>
+            </th:block>
+                <h6 th:if="${listcount == 0}" style="text-align: center; margin-top: 2rem;">등록된 글이 없습니다.</h6>
             <button type="button" class="btn btn-outline-primary btn-sm" style="float: right"
                     th:onclick="|location.href='privacy/write'|">신규등록
             </button>
@@ -46,6 +96,5 @@
 
 </main><!-- End #main -->
 </div>
-<script th:src="@{/static/js/privacy.js}"></script>
 </body>
 </html>

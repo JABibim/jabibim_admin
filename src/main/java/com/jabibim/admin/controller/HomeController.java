@@ -1,8 +1,10 @@
 package com.jabibim.admin.controller;
 
+
 import com.jabibim.admin.domain.Teacher;
 import com.jabibim.admin.service.TeacherServiceImpl;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,4 +31,11 @@ public class HomeController {
         model.addAttribute("teacherImgName", teacherInfo.getTeacherImgName());
         return "dashboard";
     }
+
+    @GetMapping("/message")
+    public String message(HttpServletRequest request) {
+        return "message/message_modal";
+    }
+
+
 }

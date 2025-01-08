@@ -1,6 +1,7 @@
 package com.jabibim.admin.mybatis.mapper;
 
 import com.jabibim.admin.domain.Privacy;
+import com.jabibim.admin.domain.Term;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -8,18 +9,18 @@ import java.util.List;
 
 
 @Mapper
-public interface PrivacyMapper {
+public interface TermMapper {
     //  글의 갯수 구하기
     public int getListCount();
 
-    public List<Privacy> getPrivacyList(HashMap<String, Integer> map);
+    public List<Term> getTermList(HashMap<String, Integer> map);
 
     // 글 등록하기
-    public void insertPrivacy(Privacy privacy);
+    public void insertTerm(Term term);
 
-    public Privacy getLatestPrivacyPolicy();
+    public Term getLatestTermPolicy();
 
-    public Privacy getDetail(int rnum);
+    Term getDetail(int rnum);
 
     int getMaxRnum();
 }

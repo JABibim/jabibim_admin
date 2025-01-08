@@ -1,6 +1,9 @@
 package com.jabibim.admin.service;
 
+import com.jabibim.admin.domain.Review;
+import com.jabibim.admin.dto.ReviewDetailVO;
 import com.jabibim.admin.dto.ReviewListVO;
+import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.mybatis.mapper.ReviewMapper;
 import com.jabibim.admin.security.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
@@ -40,15 +44,100 @@ public class ReviewServiceImpl implements ReviewService {
 //    String academyId = dao.getAcademyId(teacherEmail);
     map.put("academyId", "f236923c-4746-4b5a-8377-e7c5b53799c2");
 
-    int startrow = (page - 1) * limit + 1;
-    int endrow = startrow + limit - 1;
+//    int startrow = (page - 1) * limit + 1;
+//    int endrow = startrow + limit - 1;
 
-    map.put("start", startrow);
-    map.put("end", endrow);
+    map.put("offset", (page - 1) * limit);  // offset
+    map.put("limit", limit);         // limit
 
     List<ReviewListVO> list = dao.getSearchList(map);
 
     return list;
+  }
+
+  @Override
+  public List<ReviewDetailVO> getReviewDetails(String reviewId) {
+
+    int ref = dao.getReviewRef(reviewId);
+    //    String teacherEmail = securityUtil.getCurrentUsername();
+    //    String academyId = dao.getAcademyId(teacherEmail);
+
+    String academyId = "f236923c-4746-4b5a-8377-e7c5b53799c2";
+
+    List<ReviewDetailVO> list = dao.getReviewDetails(ref, academyId);
+    return list;
+  }
+
+  @Override
+  public boolean insertReply(Review reply) {
+
+    Optional<Review> origin = dao.getReviewById(reply.getReviewId());
+
+    if (origin.isPresent()) {
+      // 원본 글의 정보를 기반으로 답변 글 정보 갱신
+      // 답변 글에 새 UUID 등록
+      reply.setReviewId(UUIDGenerator.getUUID());
+      reply.setReviewReRef(origin.get().getReviewReRef());
+      reply.setReviewReLev(1);
+      reply.setAcademyId(origin.get().getAcademyId());
+      reply.setCourseId(origin.get().getCourseId());
+      reply.setTeacherId(origin.get().getTeacherId());
+      reply.setStudentId(origin.get().getStudentId());
+      dao.insertReply(reply);
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public int deleteReview(String reviewId) {
+    Optional<Review> review = dao.getReviewById(reviewId);
+    if (review.isPresent()) {
+      int result = dao.deleteReview(review.get());
+      return result;
+    }
+    return 0;
+  }
+
+  @Override
+  public int deleteReply(String replyId, String replyPassword) {
+    Optional<Review> review = dao.getReviewById(replyId);
+    if (review.isPresent() && review.get().getReviewPassword().equals(replyPassword)) {
+      int result = dao.deleteReview(review.get());
+      return result;
+    } else if (review.isPresent() && !review.get().getReviewPassword().equals(replyPassword)) {
+      return -1;
+    }
+    return 0;
+  }
+
+  @Override
+  public boolean updateExposureStat(String reviewId, int isActive) {
+    Optional<Review> review = dao.getReviewById(reviewId);
+    if (review.isPresent()) {
+      Review r = review.get();
+      r.setReviewExposureStat(isActive);
+      int result = dao.updateExposureStat(r);
+      if (result == 1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean updateReply(Review reply, String replyPassword) {
+    Optional<Review> origin = dao.getReviewById(reply.getReviewId());
+    if (origin.isPresent() && origin.get().getReviewPassword().equals(replyPassword)) {
+      Review r = origin.get();
+      r.setReviewContent(reply.getReviewContent());
+      r.setReviewSubject(reply.getReviewSubject());
+      int result = dao.updateReply(r);
+      if (result == 1) {
+        return true;
+      }
+    }
+    return false;
   }
 
 
@@ -56,11 +145,11 @@ public class ReviewServiceImpl implements ReviewService {
     HashMap<String, Object> map = new HashMap<>();
 
     if (!hm.get("reviewDate1").isEmpty()) {
-      map.put("reviewDate1", " TO_DATE('" + hm.get("reviewDate1") + "','YY/MM/DD') ");
+      map.put("reviewDate1", hm.get("reviewDate1"));
     }
 
     if (!hm.get("reviewDate2").isEmpty()) {
-      map.put("reviewDate2", " TO_DATE('" + hm.get("reviewDate2") + "','YY/MM/DD') ");
+      map.put("reviewDate2", hm.get("reviewDate2"));
     }
 
     if (!hm.get("reply_status").equals("all")) {
