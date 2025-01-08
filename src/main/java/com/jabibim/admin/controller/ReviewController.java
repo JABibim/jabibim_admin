@@ -8,6 +8,7 @@ import com.jabibim.admin.dto.ReviewListVO;
 import com.jabibim.admin.service.ReviewService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import netscape.javascript.JSObject;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -45,13 +46,13 @@ public class ReviewController {
   // 그냥 검색 조건 없이 리뷰 목록 출력
   @GetMapping("/list")
   public ModelAndView reviewList(ModelAndView mv, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int limit,
-                           @RequestParam(defaultValue="") String reviewDate1,
-                           @RequestParam(defaultValue="") String reviewDate2,
-                           @RequestParam(defaultValue="all") String reply_status,
-                           @RequestParam(defaultValue="all") String rating,
-                           @RequestParam(defaultValue="all") String review_visible,
-                           @RequestParam(defaultValue="snect") String review_searchField,
-                           @RequestParam(defaultValue="") String search_word) {
+                                 @RequestParam(defaultValue = "") String reviewDate1,
+                                 @RequestParam(defaultValue = "") String reviewDate2,
+                                 @RequestParam(defaultValue = "all") String reply_status,
+                                 @RequestParam(defaultValue = "all") String rating,
+                                 @RequestParam(defaultValue = "all") String review_visible,
+                                 @RequestParam(defaultValue = "snect") String review_searchField,
+                                 @RequestParam(defaultValue = "") String search_word) {
 
     // 검색조건 hashmap 에 저장하여 서비스에 전달
     HashMap<String, String> hm = new HashMap<>();
@@ -72,14 +73,14 @@ public class ReviewController {
 //      logger.info(reviewListVO.toString());
 //    }
 
-    PaginationResult result =new PaginationResult(page, limit, listcount);
+    PaginationResult result = new PaginationResult(page, limit, listcount);
 
     // 날짜 전환을 위한 SimpleDateFormat
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     Date start = null;
     Date end = null;
-    
+
     try {
       if (!reviewDate1.isEmpty()) {
         // input type=date 를 위해 날짜타입으로 전환
@@ -113,19 +114,26 @@ public class ReviewController {
   }
 
   @PostMapping("/detail/replyupdate")
-  public String updateReply(Review reply) {
+  public String updateReply(Review reply, @RequestParam(required=true) String replyPassword, RedirectAttributes rattr, HttpServletRequest request) {
 
-    return null;
-  }
+    boolean result = reviewService.updateReply(reply, replyPassword);
+    String message = "수정에 성공했습니다.";
+    String url = "history.back()";
 
-  @PostMapping("/detail/reviewupdate")
-  public String updateReview(Review review) {
+    if (!result) {
+      message = "수정에 실패했습니다. 비밀번호를 체크해주세요.";
+      url = "history.back()";
+    }
 
-    return null;
+
+      rattr.addFlashAttribute("message", message);
+      rattr.addFlashAttribute("url", url);
+
+    return "redirect:/message";
   }
 
   @GetMapping("/detail")
-  public ModelAndView reviewDetail(@RequestParam(required=true) String reviewid, ModelAndView mv, Authentication auth) {
+  public ModelAndView reviewDetail(@RequestParam(required = true) String reviewid, ModelAndView mv, Authentication auth) {
 
 
     List<ReviewDetailVO> list = reviewService.getReviewDetails(reviewid);
@@ -154,26 +162,25 @@ public class ReviewController {
     if (result) {
       logger.info(reply.toString());
       rattr.addFlashAttribute("message", "답변이 정상적으로 등록되었습니다.");
-      rattr.addFlashAttribute("url", request.getContextPath() + "/board/review/detail?reviewid=" + originId);
     } else {
       rattr.addFlashAttribute("message", "답변 등록에 실패했습니다.");
-      rattr.addFlashAttribute("url", "history.back()");
     }
-      return "redirect:/message";
+      rattr.addFlashAttribute("url", "history.back()");
+    return "redirect:/message";
   }
 
   @PostMapping("/detail/reviewdelete")
   @ResponseBody
-  public String deleteReview(@RequestParam(required=true) String reviewId
-                             ,HttpServletRequest request
-                             ,HttpServletResponse response
-                             ,ModelMap model) throws Exception {
+  public String deleteReview(@RequestParam(required = true) String reviewId
+      , HttpServletRequest request
+      , HttpServletResponse response
+      , ModelMap model) throws Exception {
     JsonObject jsonObject = new JsonObject();
 
     int result = reviewService.deleteReview(reviewId);
     if (result > 0) {
       jsonObject.addProperty("message", "삭제에 성공했습니다.");
-      jsonObject.addProperty("url",request.getContextPath() + "/board/review/list");
+      jsonObject.addProperty("url", request.getContextPath() + "/board/review/list");
     } else {
       jsonObject.addProperty("message", "삭제에 실패했습니다.");
       jsonObject.addProperty("url", "location.reload(true)");
@@ -188,11 +195,11 @@ public class ReviewController {
 
   @PostMapping("/detail/replydelete")
   @ResponseBody
-  public String deleteReply(@RequestParam(required=true) String replyId
-      , @RequestParam(required=true) String replyPassword
-      ,HttpServletRequest request
-      ,HttpServletResponse response
-      ,ModelMap model) throws Exception {
+  public String deleteReply(@RequestParam(required = true) String replyId
+      , @RequestParam(required = true) String replyPassword
+      , HttpServletRequest request
+      , HttpServletResponse response
+      , ModelMap model) throws Exception {
     JsonObject jsonObject = new JsonObject();
 
     int result = reviewService.deleteReply(replyId, replyPassword);
@@ -203,7 +210,7 @@ public class ReviewController {
     } else {
       jsonObject.addProperty("message", "비밀번호가 일치하지 않습니다.");
     }
-      jsonObject.addProperty("url", "location.reload(true)");
+    jsonObject.addProperty("url", "location.reload(true)");
 
     response.setContentType("text/html;charset=utf-8");
     PrintWriter out = response.getWriter();
@@ -212,4 +219,23 @@ public class ReviewController {
     return null;
   }
 
+  @ResponseBody
+  @PostMapping("/detail/updatestat")
+  public String updateExposureStat(@RequestParam(required = true) String reviewId
+                                    , @RequestParam(required = true) int isActive
+                                    , HttpServletRequest request
+                                    , HttpServletResponse response) throws Exception {
+
+    boolean result = reviewService.updateExposureStat(reviewId, isActive);
+
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("result", result);
+    jsonObject.addProperty("isActive", isActive);
+
+    PrintWriter out = response.getWriter();
+    out.write(jsonObject.toString());
+
+    return null;
   }
+
+}

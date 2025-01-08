@@ -111,6 +111,35 @@ public class ReviewServiceImpl implements ReviewService {
     return 0;
   }
 
+  @Override
+  public boolean updateExposureStat(String reviewId, int isActive) {
+    Optional<Review> review = dao.getReviewById(reviewId);
+    if (review.isPresent()) {
+      Review r = review.get();
+      r.setReviewExposureStat(isActive);
+      int result = dao.updateExposureStat(r);
+      if (result == 1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean updateReply(Review reply, String replyPassword) {
+    Optional<Review> origin = dao.getReviewById(reply.getReviewId());
+    if (origin.isPresent() && origin.get().getReviewPassword().equals(replyPassword)) {
+      Review r = origin.get();
+      r.setReviewContent(reply.getReviewContent());
+      r.setReviewSubject(reply.getReviewSubject());
+      int result = dao.updateReply(r);
+      if (result == 1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
 
   private static HashMap<String, Object> searchMap(HashMap<String, String> hm) {
     HashMap<String, Object> map = new HashMap<>();

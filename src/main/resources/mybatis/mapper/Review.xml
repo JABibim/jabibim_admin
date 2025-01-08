@@ -177,4 +177,17 @@
     </if>
   </delete>
 
+  <update id="updateExposureStat">
+    UPDATE review
+    SET review_exposure_stat=#{reviewExposureStat}
+    WHERE academy_id=#{academyId}
+    AND review_id=#{reviewId}
+  </update>
+
+  <update id="updateReply">
+    UPDATE review
+    SET review_subject=#{reviewSubject}, review_content=#{reviewContent}, updated_at=CURRENT_TIMESTAMP()
+    WHERE academy_id=#{academyId}
+    AND review_id=#{reviewId}
+  </update>
 </mapper>

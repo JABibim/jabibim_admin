@@ -20,4 +20,8 @@ public interface ReviewService {
   int deleteReview(String reviewId);
 
   int deleteReply(String replyId, String replyPassword);
+
+  boolean updateExposureStat(String reviewId, int isActive);
+
+  boolean updateReply(Review reply, String replyPassword);
 }
