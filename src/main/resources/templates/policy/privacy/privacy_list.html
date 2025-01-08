@@ -70,7 +70,7 @@
                                 <td><span th:text="${num - (iterStat.index)}"></span></td>
                                 <td>
                                     <div>
-                                        <a th:href="@{'detail?subject=' + ${p.privacyTermSubject}}">
+                                        <a th:href="@{'/policy/privacy/detail?rnum=' + ${p.rnum}}">
                                             <span th:text="${p.privacyTermSubject}"></span>
                                         </a>
                                     </div>

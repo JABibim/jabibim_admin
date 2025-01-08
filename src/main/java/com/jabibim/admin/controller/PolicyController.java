@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -119,8 +118,25 @@ public class PolicyController {
     }
 
     @GetMapping(value="/privacy/detail")
-    public String privacyDetail() {
-        return "policy/privacy/privacy_detail";
+    public ModelAndView privacyDetail(int rnum, ModelAndView mv,
+                                      HttpServletRequest request) {
+
+        Privacy privacy = privacyService.getDetail(rnum);
+        int maxRnum = privacyService.getMaxRnum();
+
+        if (privacy == null) {
+            logger.info("상세보기 실패");
+
+            mv.setViewName("error/error");
+            mv.addObject("url", request.getRequestURI());
+            mv.addObject("message", "상세보기 실패입니다.");
+        } else {
+            logger.info("상세보기 성공");
+            mv.setViewName("policy/privacy/privacy_detail");
+            mv.addObject("privacyData", privacy);
+            mv.addObject("maxRnum", maxRnum);
+        }
+        return mv;
     }
 
     @GetMapping(value="/service")

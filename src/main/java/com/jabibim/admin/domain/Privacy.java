@@ -24,15 +24,6 @@ public class Privacy {
     private String privacyTermStatus;
     private String academyId;
 
-    // Getter & Setter
-    public int getRnum() {
-        return rnum;
-    }
-
-    public void setRnum(int rnum) {
-        this.rnum = rnum;
-    }
-
     public String getPrivacyTermId() {
         return privacyTermId;
     }
@@ -99,6 +90,14 @@ public class Privacy {
 
     public String getAcademyId() {
         return academyId;
+    }
+
+    public int getRnum() {
+        return rnum;
+    }
+
+    public void setRnum(int rnum) {
+        this.rnum = rnum;
     }
 
     public void setAcademyId(String academyId) {

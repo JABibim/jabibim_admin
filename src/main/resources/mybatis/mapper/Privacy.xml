@@ -39,4 +39,22 @@
             LIMIT 1
     </select>
 
+    <select id="getDetail" parameterType="int" resultType="privacy">
+        SELECT *
+        FROM (SELECT
+              ROW_NUMBER() OVER (ORDER BY privacy_term_effective_date DESC) AS rnum,
+              privacy_term_id, privacy_term_subject,privacy_term_name, privacy_term_content, privacy_term_expiration_date, privacy_term_effective_date
+              FROM privacy_term
+             ) AS subquery
+        WHERE rnum = #{rnum}
+    </select>
+
+    <select id="getMaxRnum" resultType="int">
+        SELECT MAX(rnum)
+        FROM (
+                 SELECT ROW_NUMBER() OVER (ORDER BY privacy_term_effective_date DESC) AS rnum
+                 FROM privacy_term
+             ) AS subquery
+    </select>
+
 </mapper>
