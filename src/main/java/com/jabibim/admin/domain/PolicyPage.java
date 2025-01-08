@@ -1,11 +1,11 @@
 package com.jabibim.admin.domain;
 
-public class PrivacyPage {
+public class PolicyPage {
     private int maxpage;
     private int startpage;
     private int endpage;
 
-    public PrivacyPage(int page, int limit, int listcount ) {
+    public PolicyPage(int page, int limit, int listcount ) {
 
         //총 페이지수
         int maxpage = (listcount + limit -1) /limit;

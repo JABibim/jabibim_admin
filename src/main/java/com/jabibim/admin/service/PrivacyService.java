@@ -5,6 +5,7 @@ import com.jabibim.admin.domain.Privacy;
 import java.util.List;
 
 public interface PrivacyService {
+
     // 글의 갯수 구하기
     public int getListCount();
 
@@ -13,5 +14,9 @@ public interface PrivacyService {
 
     public void insertPrivacy(Privacy privacy);
 
-    Privacy getLatestPrivacyPolicy();
+    public Privacy getLatestPrivacyPolicy();
+
+    public Privacy getDetail(int rnum);
+
+    int getMaxRnum();
 }

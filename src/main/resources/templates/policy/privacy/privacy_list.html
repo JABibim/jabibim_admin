@@ -70,7 +70,7 @@
                                 <td><span th:text="${num - (iterStat.index)}"></span></td>
                                 <td>
                                     <div>
-                                        <a th:href="@{'detail?subject=' + ${p.privacyTermSubject}}">
+                                        <a th:href="@{'/policy/privacy/detail?rnum=' + ${p.rnum}}">
                                             <span th:text="${p.privacyTermSubject}"></span>
                                         </a>
                                     </div>
@@ -85,7 +85,7 @@
                 <div class="listcount">
                     <span>글 개수 : [[${listcount}]]</span>
                 </div>
-                <th:block th:replace="~{fragments/privacyPaging :: paging('list', '')}"/>
+                <th:block th:replace="~{fragments/policyPaging :: paging('list', '')}"/>
             </th:block>
                 <h6 th:if="${listcount == 0}" style="text-align: center; margin-top: 2rem;">등록된 글이 없습니다.</h6>
             <button type="button" class="btn btn-outline-primary btn-sm" style="float: right"
