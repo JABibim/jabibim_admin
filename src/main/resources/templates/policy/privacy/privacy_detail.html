@@ -19,16 +19,40 @@
             </ol>
         </nav>
     </div>
-
     <div class="container">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">개인정보처리방침</h5>
-                <th:block th:if="${privacydata != null and privacydata.rnum != null and maxRnum != null and privacydata.rnum < maxRnum}">
-                    <a th:href="@{'detail?rnum=' + ${privacydata.rnum} + 1}" th:text="이전 개인정보 처리방침 보기"></a>
+
+
+            <form>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">작성자</label>
+                    <div class="col-sm-10" th:text="${privacyData.privacyTermName}"></div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">제목</label>
+                    <div class="col-sm-10" th:text="${privacyData.privacyTermSubject}"></div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">시행 일자</label>
+                    <div class="col-sm-10" th:text="${privacyData.privacyTermEffectiveDate}"></div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">상실 일자</label>
+                    <div class="col-sm-10" th:text="${privacyData.privacyTermExpirationDate}"></div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">내용</label>
+                    <div class="col-sm-10 pb-5">
+                        <div id="editor" th:utext="${privacyData.privacyTermContent}"></div>
+                    </div>
+                </div>
+            </form>
+                <th:block th:if="${privacyData.rnum < maxRnum}">
+                    <a th:href="@{'/policy/privacy/detail?rnum=' + ${privacyData.rnum + 1}}" th:text="'이전 개인정보 처리방침 보기'"></a>
                 </th:block>
-                <th:block th:text="${privacydata != null ? privacydata.privacy_policy_content : null}"/>
-                <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/admin/policy/privacy'|" style="float: right">목록</button>
+            <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/admin/policy/privacy'|" style="float: right">목록</button>
             </div>
         </div>
     </div>

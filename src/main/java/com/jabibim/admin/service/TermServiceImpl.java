@@ -1,17 +1,18 @@
 package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Privacy;
-import com.jabibim.admin.mybatis.mapper.PrivacyMapper;
+import com.jabibim.admin.domain.Term;
+import com.jabibim.admin.mybatis.mapper.TermMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 
 @Service
-public class PrivacyServiceImpl implements PrivacyService {
-    private PrivacyMapper dao;
+public class TermServiceImpl implements TermService {
+    private TermMapper dao;
 
-    public PrivacyServiceImpl(PrivacyMapper dao) {
+    public TermServiceImpl(TermMapper dao) {
         this.dao = dao;
     }
 
@@ -21,8 +22,8 @@ public class PrivacyServiceImpl implements PrivacyService {
     }
 
     @Override
-    public List<Privacy> getPrivacyList(int page, int limit) {
-       // double i =1/0;
+    public List<Term> getTermList(int page, int limit) {
+        // double i =1/0;
         HashMap<String, Integer> map = new HashMap<>();
 
         int startRow = (page - 1) * limit + 1;
@@ -31,22 +32,22 @@ public class PrivacyServiceImpl implements PrivacyService {
         map.put("start", startRow);
         map.put("end", endRow);
 
-        return dao.getPrivacyList(map);
+        return dao.getTermList(map);
     }
 
     @Override
-    public void insertPrivacy(Privacy privacy) {
-        dao.insertPrivacy(privacy);
+    public void insertTerm(Term term) {
+        dao.insertTerm(term);
     }
 
     @Override
-    public Privacy getLatestPrivacyPolicy() {
+    public Term getLatestTermPolicy() {
         // 최신 본문을 데이터베이스에서 가져옴
-        return dao.getLatestPrivacyPolicy();
+        return dao.getLatestTermPolicy();
     }
 
     @Override
-    public Privacy getDetail(int rnum) {
+    public Term getDetail(int rnum) {
         return dao.getDetail(rnum);
     }
 
@@ -54,5 +55,6 @@ public class PrivacyServiceImpl implements PrivacyService {
     public int getMaxRnum() {
         return dao.getMaxRnum();
     }
+
 
 }

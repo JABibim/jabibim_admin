@@ -1,15 +1,16 @@
-package com.jabibim.admin.domain;
+package com.jabibim.admin.dto;
 
+import com.jabibim.admin.domain.Review;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class Review {
+public class ReviewDetailVO {
 
   private String reviewId;
   private LocalDateTime createdAt;
@@ -27,5 +28,10 @@ public class Review {
   private String courseId;
   private String teacherId;
   private String studentId;
-
+  private String teacherEmail;
+  private String teacherPhone;
+  private String teacherName;
+  private String studentEmail;
+  private String studentName;
+  private String courseName;
 }
