@@ -9,4 +9,37 @@
         where teacher_email = #{teacherEmail}
     </select>
 
+    <select id="getTeacherList" resultType="teacher">
+        select teacher_id
+             , teacher_name
+             , teacher_phone
+             , teacher_email
+             , teacher_job
+             , teacher_img_name
+             , teacher_img_origin
+             , auth_role
+             , academy_id
+        from teacher
+        where academy_id like #{academyId}
+    </select>
+
+    <insert id="addTeacher">
+        insert into teacher
+        ( academy_id
+        , teacher_id
+        , created_at
+        , teacher_name
+        , teacher_phone
+        , teacher_email
+        , teacher_password
+        , auth_role)
+        values ( #{academyId}
+               , #{teacherId}
+               , current_timestamp
+               , #{teacherName}
+               , #{teacherPhone}
+               , #{teacherEmail}
+               , #{teacherPassword}
+               , #{authRole})
+    </insert>
 </mapper>

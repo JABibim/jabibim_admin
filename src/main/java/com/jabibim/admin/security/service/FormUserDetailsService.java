@@ -31,7 +31,10 @@ public class FormUserDetailsService implements UserDetailsService {
 
         AccountDto accountDto = new AccountDto();
         accountDto.setId(teacher.getTeacherId());
+        accountDto.setAcademyId(teacher.getAcademyId());
         accountDto.setUsername(teacher.getTeacherEmail());
+        accountDto.setName(teacher.getTeacherName());
+        accountDto.setEmail(teacher.getTeacherEmail());
         accountDto.setPassword(teacher.getTeacherPassword());
         accountDto.setRoles(teacher.getAuthRole());
 

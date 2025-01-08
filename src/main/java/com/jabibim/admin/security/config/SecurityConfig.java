@@ -52,6 +52,12 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.accessDeniedHandler(new FormAccessDeniedHandler("/denied")))
         ;
 
+        http.logout((logout) -> logout
+                .logoutSuccessUrl("/login")
+                .logoutUrl("/logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("remember-me", "JSESSION_ID"));
+
         return http.build();
     }
 }

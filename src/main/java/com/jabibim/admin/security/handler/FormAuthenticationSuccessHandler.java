@@ -1,9 +1,11 @@
 package com.jabibim.admin.security.handler;
 
+import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.security.util.FnUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
@@ -26,10 +28,10 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);
 
+        setSession(authentication, request);
+
         // TODO 추후 IP가 필요한 경우 사용 가능 ( 시간은 추가해야함 )
-        // principal = AccountDto(id=ADMIN, username=abcd1234@naver.com, password=$2a$10$6kGaYEczpa1PDdp1Wc2NjuWo/dcxHHYPieHjO8wS3M8A.T7tsoybG, roles=TEACHER)
         Object principal = authentication.getPrincipal();
-        // ipAddr = 0:0:0:0:0:0:0:1
         String ipAddr = FnUtil.getIpAddr(request);
 
         if (savedRequest != null) {
@@ -39,5 +41,17 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
         } else {
             redirectStrategy.sendRedirect(request, response, getDefaultTargetUrl());
         }
+    }
+
+    private void setSession(Authentication authentication, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        AccountDto account = (AccountDto) authentication.getPrincipal();
+
+        session.setAttribute("isAdmin", account.getId().equals("ADMIN"));
+        session.setAttribute("id", account.getId());
+        session.setAttribute("aid", account.getAcademyId());
+        session.setAttribute("role", account.getRoles());
+        session.setAttribute("name", account.getName());
+        session.setAttribute("email", account.getEmail());
     }
 }

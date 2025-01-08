@@ -1,19 +1,22 @@
-function addNewTeacher(academyId, teacherName, postalCode, address, detailAddress, phone, email, password) {
+function addNewTeacher(academyId, teacherName, teacherPhone, teacherEmail, teacherPassword, authRole) {
     $('#spinner').show();
+
     $.ajax({
-        data: {academyId, teacherName, postalCode, address, detailAddress, phone, email, password},
-        url: 'manageTeacher/addNewTeacher',
+        data: JSON.stringify({academyId, teacherName, teacherPhone, teacherEmail, teacherPassword, authRole}),
+        url: 'manageTeacher/add',
         dataType: 'json',
+        contentType: 'application/json',
+        type: 'POST',
         cache: false,
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader(header, token);
+        },
         success: function (data) {
             $('#card').remove();
-
             $('#spinner').hide();
-
             getTeacherList(academyId);
         }, error: function () {
             $('#spinner').hide();
-
             showToast('학원 강사 추가 Ajax 호출 도중 에러가 발생했습니다.');
             console.log('학원 강사 추가 Ajax 호출 도중 에러가 발생했습니다.');
         }
@@ -33,8 +36,8 @@ function displayAcademyList(academyList) {
         output += `<option value="0" selected disabled>학원을 선택해주세요.</option>`;
 
         for (let i = 0; i < academyList.length; i++) {
-            const {academy_id, academy_name} = academyList[i];
-            output += `<option value="${academy_id}">${academy_name}</option>`
+            const {academyId, academyName} = academyList[i];
+            output += `<option value="${academyId}">${academyName}</option>`
         }
     }
 
@@ -65,12 +68,9 @@ function getTeacherList(academyId) {
         url: 'manageTeacher/getTeacherList',
         dataType: 'json',
         cache: false,
-        success: function (data) {
+        success: function (res) {
             $('#card').remove();
-
-            let teacherList = data.teacherList;
-
-            displayCard(academyId, teacherList);
+            displayCard(academyId, res.data.teacherList);
         }, error: function () {
             $('#spinner').hide();
 
@@ -162,10 +162,10 @@ function displayCard(academyId, data) {
     output += `<ul>`;
 
     for (let i = 0; i < data.length; i++) {
-        const {teacher_id, teacher_name, teacher_email, teacher_password, job_id} = data[i];
+        const {teacherId, teacherName, teacherEmail, teacherPassword} = data[i];
         output += `
-            <li data-bs-toggle="tooltip" data-bs-placement="top" title="pwd : ${teacher_password}">
-                ${teacher_id} ---- ${teacher_email} ---- ${teacher_name}
+            <li data-bs-toggle="tooltip" data-bs-placement="top" title="pwd : ${teacherPassword}">
+                ${teacherId} ---- ${teacherEmail} ---- ${teacherName}
             </li>
         `;
     }
@@ -180,58 +180,48 @@ function displayCard(academyId, data) {
                             <div class="tab-pane fade profile-edit" id="profile-edit">
                                 <h5 class="card-title">강사 정보</h5>
                                 <form>
-                                    <input type="hidden" value="${academyId}" id="academyId">
+                                    <input type="hidden" value="${academyId}" id="academyId" name="academyId">
                                 
                                     <div class="row mb-3">
-                                        <label for="about" class="col-md-4 col-lg-3 col-form-label">이름</label>
+                                        <label for="teacherName" class="col-md-4 col-lg-3 col-form-label">이름</label>
                                         <div class="col-md-8 col-lg-9">
-                                            <input name="teacher_name" type="text" class="form-control" id="teacher_name">
+                                            <input type="text" class="form-control" id="teacherName" name="teacherName">
                                         </div>
                                     </div>
                                     
                                     <div class="row mb-3">
-                                        <label for="Country" class="col-md-4 col-lg-3 col-form-label">이메일</label>
+                                        <label for="teacherPhone" class="col-md-4 col-lg-3 col-form-label">전화번호</label>
                                         <div class="col-md-8 col-lg-9">
-                                            <input type="email" class="form-control" id="email" name="email">
+                                            <input type="text" class="form-control" id="teacherPhone" name="teacherPhone">
                                         </div>
                                     </div>
                                     
                                     <div class="row mb-3">
-                                        <label for="Country" class="col-md-4 col-lg-3 col-form-label">임시 비밀번호</label>
+                                        <label for="teacherEmail" class="col-md-4 col-lg-3 col-form-label">이메일</label>
                                         <div class="col-md-8 col-lg-9">
-                                            <input type="password" class="form-control" id="password" name="password">
+                                            <input type="email" class="form-control" id="teacherEmail" name="teacherEmail">
                                         </div>
                                     </div>
                                     
                                     <div class="row mb-3">
-                                        <label for="Address" class="col-md-4 col-lg-3 col-form-label">주소</label>
-                                        <div class="col-md-8 col-lg-9 d-flex flex-column flex-sm-row justify-content-between">
-                                            <div class="me-1 col-md-2 mb-2 mb-sm-0">
-                                                <input name="postal_code" type="text" class="form-control" id="postal_code" placeholder="우편번호" value="" readonly>
-                                            </div>
-                                            <div class="me-1 col-md-8 mb-2 mb-sm-0">
-                                                <input name="address" type="text" class="form-control" id="address" placeholder="주소를 입력해주세요." value="" readonly >
-                                            </div>
-                                            <button class="btn btn-success d-flex align-items-center justify-content-center" id="callApiBtn" type="button">
-                                                <span class="d-none d-sm-inline">주소검색</span>
-                                                <i class="bi bi-search d-inline d-sm-none"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row mb-3">
-                                        <label for="Address" class="col-md-4 col-lg-3 col-form-label">상세주소</label>
+                                        <label for="teacherPassword" class="col-md-4 col-lg-3 col-form-label">임시 비밀번호</label>
                                         <div class="col-md-8 col-lg-9">
-                                            <input name="detail_address" type="text" class="form-control" id="detail_address" placeholder="상세주소를 입력해주세요.">
+                                            <input type="password" class="form-control" id="teacherPassword" name="teacherPassword">
                                         </div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <label for="Job" class="col-md-4 col-lg-3 col-form-label">전화번호</label>
-                                        <div class="col-md-8 col-lg-9">
-                                            <input type="text" class="form-control" id="phone" name="phone">
+                                        <label for="authRole" class="col-md-4 col-lg-3 col-form-label">시스템 권한</label>
+                                        <div class="d-flex justify-content-between" id="authRoleSelect">
+                                            <div class="flex-grow-1 me-2" id="authRoleList">
+                                                <select class="form-select" aria-label="Default select example" id="authRole" name="authRole">
+                                                    <option value="0" selected disabled>권한을 선택해주세요.</option>
+                                                    <option value="ROLE_MANAGER">ROLE_MANAGER</option>
+                                                    <option value="ROLE_LECTURER">ROLE_LECTURER</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </div>                              
                                     
                                     <div style="text-align: right">
                                         <button type="button" class="btn btn-primary" id="teacherAddBtn">신규 강사 등록</button>
@@ -257,31 +247,29 @@ $(document).ready(function () {
 
     $(document).on('click', '#teacherAddBtn', function () {
         let academyId = $('#academyId').val();
-        let teacherName = $('#teacher_name').val();
-        let postalCode = $('#postal_code').val();
-        let address = $('#address').val();
-        let detailAddress = $('#detail_address').val();
-        let phone = $('#phone').val();
-        let email = $('#email').val();
-        let password = $('#password').val();
+        let teacherName = $('#teacherName').val();
+        let teacherPhone = $('#teacherPhone').val();
+        let teacherEmail = $('#teacherEmail').val();
+        let teacherPassword = $('#teacherPassword').val();
+        let authRole = $('#authRole').val();
 
-        if (!validCheck(teacherName, '강사이름')) {
+        if (!validCheck(teacherName, '강사 이름')) {
             return;
         }
-        if (!validCheck(postalCode, '우편번호')) {
+        if (!validCheck(teacherPhone, '휴대폰 번호')) {
             return;
         }
-        if (!validCheck(address, '주소')) {
+        if (!validCheck(teacherEmail, '이메일')) {
             return;
         }
-        if (!validCheck(phone, '휴대폰번호')) {
+        if (!validCheck(teacherPassword, '비밀번호')) {
             return;
         }
-        if (!validCheck(email, '이메일')) {
+        if (!validCheck(authRole, '강사 권한')) {
             return;
         }
 
-        addNewTeacher(academyId, teacherName, postalCode, address, detailAddress, phone, email, password);
+        addNewTeacher(academyId, teacherName, teacherPhone, teacherEmail, teacherPassword, authRole);
     })
 
     $(document).on('click', '#callApiBtn', function (event) {

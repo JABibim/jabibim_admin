@@ -10,7 +10,7 @@
             $('#confirmPasswordBtn').click(function () {
                 let enteredPassword = $('#adminPassword').val();
                 $.ajax({
-                    url: "setting/checkAdminPass",
+                    url: "/setting/checkAdminPass",
                     method: "POST",
                     data: {password: enteredPassword},
                     beforeSend: function (xhr) {

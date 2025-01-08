@@ -11,7 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AccountDto {
     private String id;
+    private String academyId;
     private String username;
+    private String name;
+    private String email;
     private String password;
     private String roles;
 }

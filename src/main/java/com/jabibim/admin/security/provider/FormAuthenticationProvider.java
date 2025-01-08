@@ -41,7 +41,10 @@ public class FormAuthenticationProvider implements AuthenticationProvider {
             AccountDto accountDto = new AccountDto();
             accountDto.setId("ADMIN");
             accountDto.setUsername("ADMIN");
+            accountDto.setAcademyId("ADMIN");
             accountDto.setRoles("ROLE_ADMIN");
+            accountDto.setName("ADMIN");
+            accountDto.setEmail(loginEmail);
             accountDto.setPassword(passwordEncoder.encode(adminPassword));
 
             if (!passwordEncoder.matches(password, accountDto.getPassword())) {
