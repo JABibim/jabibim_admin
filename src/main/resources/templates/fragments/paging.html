@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th=”http://www.thymeleaf.org”>
+  <meta charset="UTF-8">
+  <th:block th:fragment="paging(url, params)">
+    <div class="center-block mt-5">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" th:if="${page <= 1}">
+          <a class="page-link gray">처음</a>
+        </li>
+
+        <li class="page-item" th:if="${page <= 1}">
+          <a class="page-link gray">&lt;&lt;&nbsp;</a>
+        </li>
+
+        <li class="page-item" th:if="${page <= 1}">
+          <a class="page-link gray">이전&nbsp;</a>
+        </li>
+
+        <li class="page-item" th:if="${page > 1}">
+          <a th:href="@{|${url}?page=1${params}|}" class="page-link">처음</a>
+        </li>
+
+        <li class="page-item" th:if="${page > 1}">
+          <a th:href="@{|${url}?page=${page - 10 >= 1 ? page - 10 : 1}${params}|}" class="page-link">&lt;&lt;&nbsp;</a>
+        </li>
+
+        <li class="page-item" th:if="${page > 1}">
+          <a th:href="@{|${url}?page=${page - 1}${params}|}" class="page-link">이전&nbsp;</a>
+        </li>
+
+        <li th:class="${a == page} ? 'page-item active' : 'page-item'"
+              th:each="a : ${#numbers.sequence(startpage, endpage)}">
+          <a th:href="${a != page} ? |${url}?page=${a}${params}|"
+             class="page-link">
+            <span th:text="${a}"></span>
+          </a>
+        </li>
+
+        <li class="page-item" th:if="${page >= maxpage}">
+          <a class="page-link gray">&nbsp;다음</a>
+        </li>
+
+        <li class="page-item" th:if="${page >= maxpage}">
+          <a class="page-link gray">&nbsp;&gt;&gt;</a>
+        </li>
+
+        <li class="page-item" th:if="${page >= maxpage}">
+          <a class="page-link gray">마지막</a>
+        </li>
+
+        <li class="page-item" th:if="${page < maxpage}">
+          <a th:href="@{|${url}?page=${page + 1}${params}|}" class="page-link">&nbsp;다음</a>
+        </li>
+
+        <li class="page-item" th:if="${page < maxpage}">
+          <a th:href="@{|${url}?page=${page + 10 <= maxpage ? page + 10 : maxpage}${params}|}" class="page-link">&nbsp;&gt;&gt;</a>
+        </li>
+
+        <li class="page-item" th:if="${page < maxpage}">
+          <a th:href="@{|${url}?page=${maxpage}${params}|}" class="page-link">마지막</a>
+        </li>
+      </ul>
+    </div>
+  </th:block>
+</html>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.ReviewMapper">
+
+    <select id="getAcademyId" resultType="String">
+        SELECT academy_id
+        FROM teacher
+        WHERE teacher_email=#{teacherEmail}
+        <!-- 또는 선생 email 로 검색 -->
+    </select>
+
+    <select id="getSearchListCount" resultType="int">
+        SELECT COUNT(*)
+        FROM (SELECT j.*
+                FROM (SELECT r.*, t.teacher_name, s.student_name, s.student_email, c.reply_status
+                        FROM (SELECT * FROM review WHERE academy_id=#{academyId}) r
+                        INNER JOIN (SELECT * FROM teacher WHERE academy_id=#{academyId}) t
+                        ON r.teacher_id = t.teacher_id
+                        INNER JOIN (SELECT * FROM student WHERE academy_id=#{academyId}) s
+                        ON r.student_id = s.student_id
+                        INNER JOIN (SELECT review_re_ref, COUNT(CASE WHEN review_re_lev > 0 THEN 1 END) AS reply_status
+                                        FROM review
+                                        WHERE academy_id=#{academyId}
+                                        GROUP BY review_re_ref) c
+                        ON r.review_re_ref = c.review_re_ref
+                        WHERE r.review_re_lev=0
+                        AND r.deleted_at IS null
+                ) j
+        <where>
+            <include refid="search_"/>
+        </where>
+                ) c
+    </select>
+
+    <select id="getSearchList" resultType="reviewListVO">
+        SELECT *
+        FROM (SELECT *
+                FROM (SELECT r.*
+                           , t.teacher_name
+                           , s.student_name
+                           , s.student_email
+                           , c.reply_status
+                        FROM (SELECT * FROM review WHERE academy_id=#{academyId}) r
+                        INNER JOIN (SELECT * FROM teacher WHERE academy_id=#{academyId}) t
+                        ON r.teacher_id = t.teacher_id
+                        INNER JOIN (SELECT * FROM student WHERE academy_id=#{academyId}) s
+                        ON r.student_id = s.student_id
+                        INNER JOIN (SELECT review_re_ref
+                                            , COUNT(CASE WHEN review_re_lev > 0 THEN 1 END) AS reply_status
+                                     FROM review
+                                     WHERE academy_id=#{academyId}
+                                     GROUP BY review_re_ref) c
+                        ON r.review_re_ref = c.review_re_ref
+                        WHERE r.review_re_lev=0
+                        AND r.deleted_at IS null
+                        ORDER BY r.review_re_ref DESC) j
+        <where>
+            <include refid="search_"/>
+        </where>
+        ) w
+          LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+
+    <sql id="search_">
+        <if test="reviewDate1 != null">
+            AND DATE(created_at) &gt;= #{reviewDate1}
+            <if test="reviewDate2 != null">
+            AND DATE(created_at) &lt;= #{reviewDate2}
+            </if>
+        </if>
+        <if test="reviewDate1 == null and reviewDate2 != null">
+            AND DATE(created_at) &lt;= #{reviewDate2}
+        </if>
+        <if test="reply_status != null">
+            <if test="reply_status == 'done'">
+                AND reply_status &gt; 0
+            </if>
+            <if test="reply_status == 'wait'">
+                AND reply_status = 0
+            </if>
+        </if>
+
+        <if test="rating != null">
+            <if test="rating == 'under1'">
+                AND review_rating &lt; 10
+            </if>
+            <if test="rating == '1to3'">
+                AND review_rating &gt;= 10
+                AND review_rating &lt; 30
+            </if>
+            <if test="rating == '3to4'">
+                AND review_rating &gt;= 30
+                AND review_rating &lt; 40
+            </if>
+            <if test="rating == 'over4'">
+                AND review_rating &gt;= 40
+            </if>
+        </if>
+        <if test="review_visible != null">
+            <if test="review_visible == 'public'">
+                AND review_exposure_stat = 1
+            </if>
+            <if test="review_visible == 'private'">
+                AND review_exposure_stat = 0
+            </if>
+        </if>
+
+        <if test="review_searchField != null and search_word != null">
+            AND (
+            <foreach collection="review_searchField" item="data" separator="or">
+                <choose>
+                    <when test='data == "s"'> review_subject</when>
+                    <when test='data == "n"'> student_name</when>
+                    <when test='data == "e"'> student_email</when>
+                    <when test='data == "c"'> DATE_FORMAT(created_at, '%y-%m-%d')</when>
+                    <when test='data == "t"'> teacher_name</when>
+                </choose>
+                LIKE #{search_word}
+            </foreach>
+            )
+        </if>
+    </sql>
+
+  <select id="getReviewDetails" resultType="reviewDetailVO">
+    SELECT r.*
+            , t.teacher_email
+            , t.teacher_phone
+            , t.teacher_name
+            , s.student_email
+            , s.student_name
+            , c.course_name
+    FROM (SELECT * FROM review WHERE academy_id=#{academyId}) r
+    INNER JOIN (SELECT * FROM teacher WHERE academy_id=#{academyId}) t
+    ON r.teacher_id = t.teacher_id
+    INNER JOIN (SELECT * FROM student WHERE academy_id=#{academyId}) s
+    ON r.student_id = s.student_id
+    INNER JOIN (SELECT course_id ,course_name FROM course where academy_id=#{academyId}) c
+    ON r.course_id = c.course_id
+    WHERE r.review_re_ref = #{ref}
+    ORDER BY r.review_re_lev
+  </select>
+
+  <select id="getReviewRef" resultType="int">
+    SELECT review_re_ref
+    FROM review
+    WHERE review_id = #{reviewId}
+  </select>
+
+
+  <select id="getReviewById" resultType="review">
+    SELECT *
+    FROM review
+    WHERE review_id=#{reviewId}
+  </select>
+
+  <insert id="insertReply">
+    INSERT INTO review
+    VALUES(#{reviewId}, CURRENT_TIMESTAMP(),
+           null, null,
+           #{reviewReRef}, 1,
+           #{reviewSubject}, #{reviewPassword},
+           #{reviewContent}, null,
+           0, #{reviewExposureStat},
+           #{academyId}, #{courseId},
+           #{teacherId}, #{studentId})
+  </insert>
+
+
+  <delete id="deleteReview">
+    DELETE FROM review
+    WHERE academy_id=#{academyId}
+    AND review_re_ref=#{reviewReRef}
+    <if test="reviewReLev > 0">
+    AND review_re_lev > 0
+    </if>
+  </delete>
+
+  <update id="updateExposureStat">
+    UPDATE review
+    SET review_exposure_stat=#{reviewExposureStat}
+    WHERE academy_id=#{academyId}
+    AND review_id=#{reviewId}
+  </update>
+
+  <update id="updateReply">
+    UPDATE review
+    SET review_subject=#{reviewSubject}, review_content=#{reviewContent}, updated_at=CURRENT_TIMESTAMP()
+    WHERE academy_id=#{academyId}
+    AND review_id=#{reviewId}
+  </update>
+</mapper>

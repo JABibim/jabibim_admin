@@ -6,20 +6,15 @@
 <head>
     <meta charset="UTF-8">
     <title>중앙비빔 Admin</title>
-
+    <style>
+        #editor {
+            height: 300px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+    </style>
 </head>
-<script>
-    $(function(){
-        $('form[name=save-form]').submit(function(){
-            const $content = $('#editor');
-            if($content.val().trim()==''){
-                alert('제목을 입력하세요');
-                $content.focus();
-                return false;
-            }
-        })
-    })
-</script>
+
 <body>
 <div layout:fragment="content">
 <main id="main" class="main">
@@ -36,26 +31,64 @@
     <div class="container">
         <div class="card">
         <div class="card-body">
+            <br>
             <div style="display: flex; justify-content: space-between; margin-bottom: 10px; float: right;">
                <button type="button" class="btn btn-secondary btn-sm" id="pre-button">이전 본문내용 불러오기</button>
             </div>
             <br>
             <br>
-            <form id="save-form" action="add" method="post" name="serviceform">
-            <div class="form-row h-33 text-center d-flex border">
-                <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">시행 일자</div>
-                <div class="input-group align-self-center">
-                    <div class="col-3 col-md-4">
-                        <label class="w-100" for="inputDate1">
-                            <input type="date" id="inputDate1" class="form-control start_date" name="service_term_effective_date" required>
-                        </label>
+            <form id="save-form" th:action="@{/policy/service/add}" method="post" name="serviceform">
+                <div class="form-row h-33 text-center d-flex border">
+                    <!-- 시행 일자 -->
+                    <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">시행 일자</div>
+                    <div class="input-group align-self-center">
+                        <div class="col-3 col-md-4">
+                            <label class="w-100" for="serviceTermEffectiveDate">
+                                <input type="date" id="serviceTermEffectiveDate" class="form-control start_date" name="serviceTermEffectiveDate" required>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">상실 일자</div>
+                    <div class="input-group align-self-center">
+                        <div class="col-3 col-md-4">
+                            <label class="w-100" for="serviceTermExpirationDate">
+                                <input type="date" id="serviceTermExpirationDate" class="form-control start_date" name="serviceTermExpirationDate" required>
+                            </label>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-form-label align-self-center col-auto fw-bold border" style="text-align: center">내용</div>
-            <div id="editor" style="height: 300px;"></div>
+                <!-- 작성자 -->
+                <div class="form-row h-33 text-center d-flex border">
+                    <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">작성자</div>
+                    <div class="input-group align-self-center">
+                        <div class="col-3 col-md-10">
+                            <label class="w-100" for="serviceTermName">
+                                <input name="serviceTermName" id="serviceTermName" readOnly
+                                       type="text" class="form-control" th:value="admin">
+                                <!--                                <input name="serviceTermName" id="serviceTermName" readOnly-->
+                                <!--                                       type="text" class="form-control" th:value="${session.id}">-->
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-            <input type="hidden" id="content" name="content">
+                <!-- 제목 -->
+                <div class="form-row h-33 text-center d-flex border">
+                    <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">제목</div>
+                    <div class="input-group align-self-center">
+                        <div class="col-3 col-md-10">
+                            <label class="w-100" for="serviceTermSubject">
+                                <input name="serviceTermSubject" id="serviceTermSubject"
+                                       type="text" class="form-control"
+                                       placeholder="Enter serviceTermSubject">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-form-label align-self-center col-auto fw-bold border" style="text-align: center">내용</div>
+                <div id="editor"></div>
+                <input type="hidden" id="serviceTermContent" name="serviceTermContent">
 
             <div style="display: flex; gap: 10px; margin-top: 20px; float: right;">
             <button type="button" id="save-button" class="btn btn-primary btn-sm">등록</button>
@@ -66,69 +99,77 @@
         </div>
     </div>
 </main><!-- End #main -->
-</div>
 <script>
 
-    const quill = new Quill('#editor', {
-        theme: 'snow'
-    });
-
-    // '이전 본문내용 불러오기' 버튼 클릭 시 서버에서 최신 본문 내용 가져오기
-    document.querySelector('#pre-button').addEventListener('click', function() {
-        getPreviousPolicy();
-    });
-
-    function getPreviousPolicy() {
-        $.ajax({
-            type: "POST",
-            url: "/admin/policy/service/previous",
-            dataType: "json",
-            success: function(data) {
-                console.log(data);
-                console.log(data.service_term_content);
-                if (data && data.service_term_content) {
-
-                    quill.root.innerHTML = data.service_term_content;
-                } else {
-                    alert("이전 본문이 없습니다.");
-                }
-            },
-            error: function() {
-                console.log("이전 본문 불러오기 에러");
-            }
+    document.addEventListener("DOMContentLoaded", function () {
+        const quill = new Quill('#editor', {
+            theme: 'snow'
         });
-    }
 
-    // '등록' 버튼 클릭 시 Quill 에디터 내용을 숨겨진 input에 저장하고 폼 제출
-    $('#save-button').on('click', function(event) {
-        event.preventDefault();
+        // '이전 본문내용 불러오기' 버튼
+        document.querySelector('#pre-button').addEventListener('click', function () {
+            $.ajax({
+                type: "POST",
+                url: "/admin/policy/service/previous",
+                beforeSend : function(xhr)
+                {   //데이터를 전송하기 전에 헤더에 csrf값을 설정합니다.
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data && data.serviceTermContent) {
+                        console.log(data.serviceTermContent);
+                        quill.root.innerHTML = data.serviceTermContent;
+                    } else {
+                        alert("이전 본문이 없습니다.");
+                    }
+                },
+                error: function (xhr, status, errorThrown) {
+                    // 상태 코드와 응답 텍스트 확인
+                    console.log("상태 코드: " + status);  // 예: "404", "500" 등
+                    console.log("에러 메시지: " + errorThrown);  // 예: "Not Found", "Internal Server Error" 등
+                    console.log("응답 본문: " + xhr.responseText);  // 서버의 응답 본문 확인
 
-        // Quill 에디터의 HTML 내용 가져오기
-        let content = quill.root.innerHTML;
+                    // 추가적으로 서버에서 반환된 에러 메시지를 사용자에게 출력할 수 있습니다.
+                    if (xhr.responseText) {
+                        alert("서버 오류: " + xhr.responseText);
+                    }
+                }
+            });
+        });
 
-        // 시행일자가 선택되었는지 확인
-        let effectiveDate = $('#inputDate1').val();
-        if (!effectiveDate) {
-            alert('시행일자를 선택하세요');
-            $('#inputDate1').focus();
-            return false;
-        }
+        // '등록' 버튼
+        $('#save-button').on('click', function (event) {
+            event.preventDefault();
+            let content = quill.root.innerHTML;
+            let effectiveDate = $('#serviceTermEffectiveDate').val();
+            let expirationDate = $('#serviceTermExpirationDate').val();
+            let subject=$('#serviceTermSubject').val();
 
-        // Quill 에디터의 내용이 비어있는지 확인
-        if (content.trim() === '' || content === '<p><br></p>') {
-            alert('내용을 입력하세요');
-            return false;
-        }
+            if (!effectiveDate) {
+                alert('시행일자를 선택하세요');
+                return false;
+            }
+            if (!expirationDate) {
+                alert('상실일자를 선택하세요');
+                return false;
+            }
+            if (!subject) {
+                alert('제목을 입력하세요');
+                return false;
+            }
+            if (content.trim() === '' || content === '<p><br></p>') {
+                alert('내용을 입력하세요');
+                return false;
+            }
 
+            $('#serviceTermContent').val(content);
 
-        // 숨겨진 input 요소에 데이터 설정
-        $('#content').val(content);
-        $('#service_term_effective_date').val($('#inputDate1').val());
-
-        // form을 submit하여 서버에 데이터 전송
-        $('#save-form').submit();
+            $('#save-form').submit();
+        });
     });
-</script>
 
+</script>
+</div>
 </body>
 </html>

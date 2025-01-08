@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layouts/default}">
+<head>
+  <style>
+    .card {
+      max-width: 1300px;
+      margin-left: 350px;
+      margin-top: 50px;
+    }
+
+    .card-body {
+      padding: 20px; /* 전체적인 패딩 추가 */
+    }
+
+    .row {
+      margin-bottom: 10px; /* 각 항목 사이에 여백 추가 */
+    }
+
+    .row.mb-2.mt-6.py-2 {
+      position: relative;
+      top: 20px; /* 버튼을 살짝 아래로 내리기 */
+    }
+
+    #review_editor {
+      height: auto;
+      max-height: 250px; /* 고정된 최대 높이 설정 */
+    }
+
+  </style>
+  <script>
+    $(function() {
+      $('#reviewDelete').on('click', function() {
+        const reviewId = this.getAttribute('deleteId');
+        console.log(reviewId);
+        reviewDelete(reviewId);
+      })
+
+      $('#replyDelete').on('click', function() {
+        const replyId = this.getAttribute('deleteId');
+        console.log(replyId);
+        replyDelete(replyId);
+      })
+
+
+      $('form').not('#writeForm').on('change', 'input[name="reviewExposureStat"]', function () {
+        if (!confirm(!$(this).is(':checked') ? '해당 게시글을 숨기시겠습니까?' : '해당 게시글을 공개하시겠습니까?')) {
+          $(this).prop('checked', !$(this).is(':checked'));
+          return false;
+        } else {
+
+          const reviewId = $(this).attr('id'); // board_id
+          let isActive = $(this).is(':checked') ? 1 : 0; // 해당 과정의 활성화 여부
+          updateReviewExposure(reviewId, isActive);
+        }
+
+      })
+
+      $('#replyForm').on('submit', function() {
+        const password = $('#replyPassword').val().trim();
+        if (!confirm('정말 답변을 수정하시겠습니까?')) {
+          return false;
+        } else if (password === '' || password == null) {
+          alert('비밀번호를 입력하세요');
+          $('#replyPassword').focus();
+          return false;
+        }
+      })
+    });
+
+    function reviewDelete(reviewId) {
+      if (confirm("정말 해당 리뷰를 삭제하시겠습니까?")) {
+        // 모달 창 띄워서 삭제한다고 문자 입력?
+        $.ajax({
+          type: "POST",
+          url: "detail/reviewdelete",
+          data: {"reviewId": reviewId},
+          beforeSend: function (xhr) {
+            xhr.setRequestHeader(header, token);
+          },
+          dataType: "json",
+          success: function (data) {
+            console.log(data);
+            alert(data.message);
+
+            if (data.url === 'location.reload(true)') {
+              location.reload(true);
+            } else {
+              location.href = data.url;
+            }
+
+          },
+          error: function (request, status, error) {
+            alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+          }
+        })
+      }
+    }
+
+
+    function replyDelete(replyId) {
+      if (confirm("정말 해당 답변을 삭제하시겠습니까?")) {
+        const replyPassword = $('#replyPassword').val().trim();
+
+        if (replyPassword === '' || replyPassword == null) {
+          alert('비밀번호를 입력하세요');
+          $('#replyPassword').focus();
+          return false;
+        }
+
+        // 모달 창 띄워서 삭제한다고 문자 입력?
+        $.ajax({
+          type: "POST",
+          url: "detail/replydelete",
+          data: {
+            "replyId": replyId,
+            "replyPassword" : replyPassword
+          },
+          beforeSend: function (xhr) {
+            xhr.setRequestHeader(header, token);
+          },
+          dataType: "json",
+          success: function (data) {
+            console.log(data);
+            alert(data.message);
+
+            if (data.url === 'location.reload(true)') {
+              location.reload(true);
+            } else {
+              location.href = data.url;
+            }
+
+          },
+          error: function (request, status, error) {
+            alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+          }
+        })
+      }
+    }
+
+    function updateReviewExposure(reviewId, isActive) {
+      $.ajax({
+        url: "detail/updatestat",
+        type: "POST",
+        cache: false,
+        data: {
+          "reviewId": reviewId,
+          "isActive": isActive
+        },
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader(header, token);
+        },
+        dataType: "json",
+        success: function (data) {
+          console.log(data);
+          if (data.result) {
+            alert("공개 여부 상태가 변경되었습니다.");
+          } else {
+            alert("공개 여부 상태 변경에 실패했습니다.");
+            $('"#' + reviewId + '"').prop('checked', data.is_active == 1 ? false : true);
+          }
+        },
+        error: function(request, status, error) {
+          alert("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);        }
+      });
+    }
+
+
+
+
+  </script>
+
+</head>
+
+<div class="card" layout:fragment="content">
+  <!--<c:set var="review" value="${list[0]}"/>-->
+  <!--<c:set var="reply" value="${list[1]}"/>-->
+  <!--<c:choose>-->
+  <!--    <c:when test="${!empty review}">-->
+  <div class="card-body" th:if="${!detaillist.isEmpty()}">
+    <th:block th:with="review=${detaillist[0]}">
+      <h5 class="card-title">수강평</h5>
+      <!-- Multi Columns Form -->
+      <form class="row g-3" th:action="@{/board/review/detail/reviewupdate}" method="post">
+        <div class="col-md-6">
+          <label for="refName" class="form-label">작성자</label>
+          <input type="text" class="form-control" id="refName" th:value="${review.studentName}" readonly>
+          <input type="hidden" th:value="${review.reviewId}" name="reviewId">
+        </div>
+        <div class="col-md-6">
+          <label for="refEmail" class="form-label">Email</label>
+          <input type="email" class="form-control" id="refEmail" th:value="${review.studentEmail}" readonly>
+        </div>
+        <div class="col-md-6">
+          <label for="refSubject" class="form-label">제목</label>
+          <input type="text" class="form-control" id="refSubject" th:value="${review.reviewSubject}" readonly>
+        </div>
+        <div class="col-md-4">
+          <label for="refDate" class="form-label">작성일</label>
+          <input type="text" class="form-control" id="refDate"
+                 th:value="${#temporals.format(review.getCreatedAt(),'yyyy.MM.dd HH:mm:ss')}" readonly>
+        </div>
+        <div class="col-md-4">
+          <label for="refReadcount" class="form-label">조회수</label>
+          <input type="text" class="form-control" id="refReadcount" th:value="${review.reviewReadcount}" readonly>
+        </div>
+        <div class="col-md-2"></div>
+        <div class="col-md-6">
+          <label class="form-label">평점</label><br>
+          <!-- 좀 더 심플하게 수정 -->
+          <th:block th:if="${review.reviewRating == 5 ? true : false}">
+            <i class="bi bi-star-half"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i
+              class="bi bi-star"></i><i class="bi bi-star"></i>
+          </th:block>
+          <th:block th:if="${review.reviewRating == 10 ? true : false}">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i
+              class="bi bi-star"></i><i class="bi bi-star"></i>
+          </th:block>
+          <th:block th:if="${review.reviewRating == 15 ? true : false}">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i><i class="bi bi-star"></i><i
+              class="bi bi-star"></i><i class="bi bi-star"></i>
+          </th:block>
+          <th:block th:if="${review.reviewRating == 20 ? true : false}">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i><i
+              class="bi bi-star"></i><i class="bi bi-star"></i>
+          </th:block>
+          <th:block th:if="${review.reviewRating == 25 ? true : false}">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i><i
+              class="bi bi-star"></i><i class="bi bi-star"></i>
+          </th:block>
+          <th:block th:if="${review.reviewRating == 30 ? true : false}">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+              class="bi bi-star"></i><i class="bi bi-star"></i>
+          </th:block>
+          <th:block th:if="${review.reviewRating == 35 ? true : false}">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"><i
+              class="bi bi-star-half"></i></i><i class="bi bi-star"></i>
+          </th:block>
+          <th:block th:if="${review.reviewRating == 40 ? true : false}">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+              class="bi bi-star-fill"></i><i class="bi bi-star"></i>
+          </th:block>
+          <th:block th:if="${review.reviewRating == 45 ? true : false}">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+              class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+          </th:block>
+          <th:block th:if="${review.reviewRating == 50 ? true : false}">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+              class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+          </th:block>
+        </div>
+        <div class="col-12">
+          <div class="form-check">
+            <label class="form-check-label" th:for="${review.reviewId}">
+              <input class="form-check-input" type="checkbox" th:id="${review.reviewId}" name="reviewExposureStat"
+                     th:checked="${review.reviewExposureStat == 1 ? true : false}" value="1">게시글 공개
+            </label>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-floating">
+                <textarea class="form-control" placeholder="내용" id="refContent" name="reviewContent"
+                          style="height: 100px;" th:text="${review.reviewContent}" readonly></textarea>
+            <label for="refContent">내용</label>
+          </div>
+        </div>
+        <div class="text-center d-flex flex-row-reverse">
+          <button type="button" class="btn btn-danger mx-3" id="reviewDelete" th:deleteId='${review.reviewId}'>삭제</button>
+<!--          <button type="button" class="btn btn-info text-white mx-3" id="reviewUpdate">수정-->
+            <!--      th:onclick="reviewUpdate(${review.reviewId})"-->
+<!--          </button>-->
+        </div>
+      </form><!-- End Multi Columns Form -->
+    </th:block>
+  </div>
+
+  <!--        <c:if test="${!empty reply}">-->
+  <div class="card-body" th:if="${#lists.size(detaillist) == 2}">
+    <th:block th:with="reply=${detaillist[1]}">
+      <h5 class="card-title">답변</h5>
+      <!-- Multi Columns Form -->
+      <form class="row g-3" th:action="@{/board/review/detail/replyupdate}" method="post" id="replyForm">
+        <div class="col-md-6">
+          <label for="replyName" class="form-label">담당자</label>
+          <input type="text" class="form-control" id="replyName" th:value="${reply.teacherName}" readonly>
+          <input type="hidden" name="reviewId" th:value="${reply.reviewId}" readonly>
+        </div>
+        <div class="col-md-6">
+          <label for="teacherEmail" class="form-label">Email</label>
+          <input type="email" class="form-control" id="teacherEmail" th:value="${reply.teacherEmail}" readonly>
+        </div>
+        <div class="col-md-6">
+          <label for="replySubject" class="form-label">제목</label>
+          <input type="text" class="form-control" id="replySubject" th:value="${reply.reviewSubject}" name="reviewSubject">
+        </div>
+        <div class="col-md-4">
+          <label for="replyDate" class="form-label">작성일</label>
+          <input type="text" class="form-control" id="replyDate"
+                 th:value="${#temporals.format(reply.createdAt, 'yyyy.MM.dd HH:mm:ss')}" readonly>
+        </div>
+        <div class="col-md-4">
+          <label for="replyPassword" class="form-label">비밀번호</label>
+          <input type="password" class="form-control" id="replyPassword" name="replyPassword">
+        </div>
+        <div class="col-12">
+          <div class="form-check">
+            <label class="form-check-label" th:for="${reply.reviewId}">
+              <input class="form-check-input" type="checkbox" th:id="${reply.reviewId}" name="reviewExposureStat" value="1"
+                     th:checked="${reply.reviewExposureStat == 1 ? true : false}">게시글 공개
+            </label>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="form-floating">
+                <textarea class="form-control" placeholder="내용" id="replyContent" name="reviewContent"
+                          style="height: 100px;" th:text="${reply.reviewContent}" ></textarea>
+            <label for="replyContent">내용</label>
+          </div>
+        </div>
+        <div class="text-center d-flex flex-row-reverse">
+          <button type="button" class="btn btn-danger mx-3" id="replyDelete" th:deleteId="${reply.reviewId}">
+            삭제
+          </button>
+          <button type="submit" class="btn btn-info text-white mx-3" id="replyUpdate">수정
+          </button>
+        </div>
+      </form><!-- End Multi Columns Form -->
+    </th:block>
+  </div>
+  <!--        </c:if>-->
+  <!--        <c:if test="${sessionScope.id == review.teacher_id && empty reply}">-->
+  <th:block th:if="${#lists.size(detaillist) == 1}">
+    <th:block th:with="incharge=${detaillist[0].getTeacherEmail()}, name=${detaillist[0].getTeacherName()}">
+      <div class="card-body" th:if="${incharge == #authentication.name or isAdmin}">
+        <!-- 담당 강사거나 어드민 role(추후 manager role로)이면 작성할 수 있다. -->
+        <h5 class="card-title">답변</h5>
+        <!-- Multi Columns Form -->
+        <form class="row g-3" th:action="@{/board/review/detail/reply}" method="post" id="writeForm">
+          <div class="col-md-6">
+            <label for="writeName" class="form-label">담당자</label>
+            <input type="text" class="form-control" id="writeName" th:value="${name}" readonly>
+          </div>
+          <div class="col-md-6">
+            <label for="writeEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="writeEmail" th:value="${incharge}" readonly>
+            <input type="hidden" th:value="${detaillist[0].getReviewId()}" name="reviewId">
+          </div>
+          <div class="col-12">
+            <label for="writeSubject" class="form-label">제목</label>
+            <input type="text" class="form-control" id="writeSubject" name="reviewSubject" required>
+          </div>
+          <div class="col-md-6">
+            <label for="writePassword" class="form-label">Password</label>
+            <input type="password" class="form-control" id="writePassword" name="reviewPassword">
+          </div>
+          <div class="col-12">
+            <div class="form-check">
+              <label class="form-check-label" for="writeStat">
+                <input class="form-check-input" type="checkbox" id="writeStat" name="reviewExposureStat" value="1"
+                       checked>게시글 공개
+              </label>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="form-floating">
+                <textarea class="form-control" placeholder="내용" id="writeContent" name="reviewContent"
+                          style="height: 100px;" required></textarea>
+              <label for="writeContent">내용</label>
+            </div>
+          </div>
+          <div class="text-center d-flex flex-row-reverse">
+            <button type="reset" class="btn btn-danger mx-3">취소</button>
+            <button type="submit" class="btn btn-info text-white mx-3">등록</button>
+          </div>
+        </form><!-- End Multi Columns Form -->
+      </div>
+    </th:block>
+  </th:block>
+  <!--        </c:if>-->
+  <!--    </c:when>-->
+
+  <!--    <c:otherwise>-->
+  <div class="card-body pt-3" th:if="${detaillist.isEmpty()}">
+    <div class="tab-content pt-2">
+      <h1>해당 게시글이 존재하지 않습니다.</h1>
+    </div>
+  </div>
+  <!--    </c:otherwise>-->
+  <!--</c:choose>-->
+
+</div>
+</html>
