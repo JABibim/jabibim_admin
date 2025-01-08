@@ -32,6 +32,8 @@ public class HomeController {
         return "dashboard";
     }
 
+
+
     @GetMapping("/message")
     public String message(HttpServletRequest request) {
         return "message/message_modal";

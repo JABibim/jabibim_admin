@@ -5,35 +5,6 @@
     <meta charset="UTF-8">
     <title>중앙비빔 LMS</title>
     <th:block th:replace="~{fragments/headerImport :: HeaderImportFragment}"></th:block>
-    <!-- Font Awesome CDN 추가 -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <style>
-        /* 관리자 버튼 스타일 */
-        .admin-login-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            background-color: rgba(108, 117, 125, 0.7); /* 회색 톤 + 투명도 */
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            cursor: pointer;
-        }
-
-        .admin-login-btn:hover {
-            background-color: rgba(108, 117, 125, 1); /* 투명도 제거 */
-            transform: scale(1.1); /* 약간 커지게 */
-        }
-    </style>
 </head>
 <body>
 <main>
@@ -43,37 +14,29 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
 
-                        <div class="d-flex justify-content-center py-4">
-                            <a href="#" class="logo d-flex align-items-center w-auto">
-                                <span class="d-none d-lg-block">중앙비빔 LMS</span>
-                            </a>
-                        </div>
-
                         <div class="card mb-3">
 
                             <div class="card-body">
                                 <div class="pt-4 pb-2">
-
-                                    <h5 class="card-title text-center pb-0 fs-4">Login</h5>
-                                    <p class="text-center small">이메일과 비밀번호를 입력해주세요.</p>
+                                    <h5 class="card-title text-center pb-0 fs-4">Admin Login</h5>
                                 </div>
 
                                 <form class="row g-3 needs-validation" th:action="@{/login}"
                                       method="post" novalidate>
                                     <input type="hidden" name="uri" value="${param.uri}">
                                     <div class="col-12">
-                                        <label for="email" class="form-label">Email</label>
+                                        <label for="adminEmail" class="form-label">Email</label>
                                         <div class="input-group has-validation">
                                             <span class="input-group-text" id="inputGroupPrepend">@</span>
-                                            <input type="email" name="email" class="form-control" id="email"
+                                            <input type="email" name="email" class="form-control" id="adminEmail"
                                                    th:value="${emailInput}" required>
                                             <div class="invalid-feedback">이메일을 입력해주세요.</div>
                                         </div>
                                     </div>
 
                                     <div class="col-12">
-                                        <label for="password" class="form-label">Password</label>
-                                        <input type="password" name="password" class="form-control" id="password"
+                                        <label for="adminPassword" class="form-label">Password</label>
+                                        <input type="password" name="password" class="form-control" id="adminPassword"
                                                required>
                                         <div class="invalid-feedback">비밀번호를 입력해주세요.</div>
                                     </div>
@@ -97,11 +60,6 @@
         </section>
     </div>
 </main>
-
-<!-- 관리자 로그인 버튼 -->
-<!--<button class="admin-login-btn" onclick="location.href='/admin/login'">-->
-<!--    <i class="fas fa-wrench"></i>-->
-<!--</button>-->
 
 <th:block th:replace="~{fragments/footerImport :: FooterImportFragment}"></th:block>
 </body>

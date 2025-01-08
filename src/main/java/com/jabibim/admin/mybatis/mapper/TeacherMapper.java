@@ -4,11 +4,16 @@ import com.jabibim.admin.domain.Teacher;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.HashMap;
 
 @Mapper  //쿼리 쓰는곳
 public interface TeacherMapper {
+    Teacher getTeacherByEmail(String email);
+
+    List<Teacher> getTeacherList(String academyId);
+
+    void addTeacher(Teacher teacher);
 
     int getTeacherCount(HashMap<String, Object> params);
 
