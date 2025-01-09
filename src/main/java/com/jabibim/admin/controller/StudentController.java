@@ -84,9 +84,4 @@ public class StudentController {
         return "students/studentgrade";
     }
 
-    @GetMapping("/resignhist")  //오류수정필요
-    public String resignhist() {
-        return "students/studentresignhist";
-    }
-
 }

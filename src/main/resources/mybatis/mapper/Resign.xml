@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.ResignMapper">
+
+
+  <select id="getResignedStudentCount" resultType="int">
+    SELECT count(*)
+    FROM (SELECT j.*
+          FROM (SELECT s.*, DATE_ADD(deleted_at, INTERVAL 5 YEAR) AS deletion_date
+                FROM student s
+                WHERE academy_id = #{academyId}
+                AND deleted_at IS NOT NULL) j
+    <where>
+      <include refid="search_"/>
+    </where>
+  ) r
+  </select>
+
+  <select id="getResignedStudentList" resultType="resignListVO">
+    SELECT *
+    FROM (SELECT *
+          FROM (SELECT s.*, DATE_ADD(deleted_at, INTERVAL 5 YEAR) AS deletion_date
+          FROM student s
+          WHERE academy_id = #{academyId}
+          AND deleted_at IS NOT NULL
+          ORDER BY deleted_at DESC) r
+          <where>
+            <include refid="search_"/>
+          </where>
+          ) j
+    LIMIT #{limit} OFFSET #{offset}
+  </select>
+
+
+  <sql id="search_">
+    <if test="resignDate1 != null">
+      <if test="dateField == 'withdrawal'">
+        AND DATE(deleted_at) &gt;= #{resignDate1}
+        <if test="resignDate2 != null">
+          AND DATE(deleted_at) &lt;= #{resignDate2}
+        </if>
+      </if>
+      <if test="dateField == 'deletionDue'">
+        AND DATE(deletion_date) &gt;= #{resignDate1}
+        <if test="resignDate2 != null">
+          AND DATE(deletion_date) &lt;= #{resignDate2}
+        </if>
+      </if>
+    </if>
+
+    <if test="resignDate1 == null and resignDate2 != null">
+      <if test="dateField == 'withdrawal'">
+        AND DATE(deleted_at) &lt;= #{resignDate2}
+      </if>
+      <if test="dateField == 'deletionDue'">
+        AND DATE(deletion_date) &lt;= #{resignDate2}
+      </if>
+    </if>
+
+    <if test="searchWord != null and searchField != null">
+      AND (
+      <foreach collection="searchField" item="data" separator="or">
+        <choose>
+          <when test='data == "n"'> student_name</when>
+          <when test='data == "e"'> student_email</when>
+          <when test='data == "r"'> DATE_FORMAT(deleted_at, '%y-%m-%d')</when>
+          <when test='data == "d"'> DATE_FORMAT(deletion_date, '%y-%m-%d')</when>
+        </choose>
+        LIKE #{searchWord}
+      </foreach>
+      )
+    </if>
+  </sql>
+
+  <select id="getResignedStudentDataList" resultType="student">
+    SELECT student_id
+    FROM student
+    WHERE deleted_at IS NOT NULL
+    AND DATE_ADD(deleted_at, INTERVAL 5 YEAR) &lt;= #{date}
+  </select>
+
+
+  <delete id="deleteResignedStudentData">
+    DELETE
+    FROM student
+    WHERE student_id = #{studentId}
+  </delete>
+
+
+</mapper>

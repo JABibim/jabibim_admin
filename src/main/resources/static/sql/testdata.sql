@@ -273,6 +273,9 @@ UNLOCK TABLES;
 -- Table structure for table `enrollment`
 --
 
+# 수강 테이블 생성 => 학생 마이페이지에서 수강 목록을 위한 테이블
+# 컬럼 자유롭게 추가
+
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `enrollment` (
@@ -280,11 +283,14 @@ CREATE TABLE `enrollment` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
+  `enrollment_status` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT 'INIT', #수강상태  INIT:수강전 COMPLETED:수강완료 CANCELED:수강취소
   `academy_id` varchar(36) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `student_id` varchar(36) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `course_id` varchar(36) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL
+  `course_id` varchar(36) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  CONSTRAINT chk_enrollment_status CHECK (`enrollment_status` IN ('INIT', 'COMPLETED', 'CANCELED'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `grade`
