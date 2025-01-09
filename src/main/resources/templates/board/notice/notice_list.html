@@ -16,6 +16,8 @@
 </head>
 <body>
 <div layout:fragment="content">
+    <script th:src="@{/js/jquery-3.7.1.js}"></script>
+    <script th:src="@{/js/noticeList.js}"></script>
 <main id="main" class="main">
     <div class="pagetitle">
         <h1>공지사항 관리</h1>
@@ -58,10 +60,7 @@
     </div>
 </main><!-- End #main -->
 </div>
-<script>
-    let isAdmin = /*[[${session.isAdmin}]]*/ false;
-</script>
-<script th:src="@{/static/js/noticeList.js}"></script>
+
 <!-- 위로가기 버튼입니다 -->
 <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
     <i class="bi bi-arrow-up-short"></i>
