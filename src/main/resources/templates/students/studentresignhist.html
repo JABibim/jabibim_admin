@@ -30,8 +30,13 @@
             color: #333; /* 텍스트 색상 */
         }
     </style>
-
-    <script th:src="@{${pageContext.request.contextPath}/assets/js/resignHist.js}"></script>
+    <script>
+        function limitChanged(limit) {
+            $('#limit').val(limit);
+            $('form').submit();
+        }
+    </script>
+<!--    <script th:src="@{/assets/js/resignHist.js}"></script>-->
 </head>
 <body>
 <div layout:fragment="content">
@@ -60,19 +65,28 @@
                 <div style="margin-top: 10px;">
                     <!-- 폼 섹션, 필요시 주석을 해제하고 구현 -->
 
-                    <form th:action="@{/student/resignhist}" method="post">
-                        <div class="form-row h-33 border d-flex text-center">
-                            <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">탈퇴상태</div>
+                    <form th:action="@{list}" method="get">
+                        <div class="form-row h-33 text-center d-flex border">
+                            <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">날짜 검색</div>
                             <div class="input-group align-self-center">
-                                <div class="form-group d-flex">
-                                    <div class="form-check my-auto mx-1">
-                                        <label for="resign"><input class="form-check-input mt-1 ml-1 align-middle" type="checkbox"
-                                                                  name="order" id="resign" value="option1" checked> 탈퇴 </label>
-                                    </div>
-                                    <div class="form-check my-auto mx-1">
-                                        <label for="delete"><input class="form-check-input mt-1 ml-1 align-middle" type="checkbox"
-                                                                   name="order" id="delete" value="option2"> 삭제 </label>
-                                    </div>
+                                <div class="col-3 col-md-4">
+                                    <label for='resignDate1' hidden></label><input type="date" id='resignDate1' name='resignDate1'
+                                                                                   class="form-control start_date"
+                                                                                   th:value="${resignDate1 != '' ? #dates.format(resignDate1, 'yyyy-MM-dd') : ''}">
+                                </div>
+                                <b class="col-auto my-1 mx-1 px-2 text-middle">-</b>
+                                <div class="col-3 col-md-4">
+                                    <label for='resignDate2' hidden></label><input type="date" id='resignDate2' name='resignDate2'
+                                                                                   class="form-control end_date"
+                                                                                   th:value="${resignDate2 != '' ? #dates.format(resignDate2, 'yyyy-MM-dd') : ''}">
+                                </div>
+                                <div class="col-3 col-md-2">
+                                    <label for="dateField1">
+                                        <input id="dateField1" type="radio" name="dateField" value="withdrawal" th:checked="${dateField == 'withdrawal' ? true : false}"> 탈퇴 신청일
+                                    </label>
+                                    <label for="dateField2">
+                                        <input id="dateField2" type="radio" name="dateField" value="deletionDue" th:checked="${dateField == 'deletionDue' ? true : false}"> 삭제 예정일
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -81,34 +95,40 @@
                             <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">검색</div>
                             <div class="input-group align-self-center">
                                 <div class="form-group col-3 col-md-auto mx-2">
-                                    <select class="form-select" aria-label="Default select" name="searchType">
-                                        <option value="0" th:selected="${searchType == 0}">회원명</option>
-                                        <option value="1" th:selected="${searchType == 1}">회원아이디</option>
-                                    </select>
+                                    <label for="searchField" hidden></label>
+                                        <select class="form-select" name="searchField" id="searchField">
+                                            <option value="nerd" th:selected="${searchField == 'nerd'}">전체</option>
+                                            <option value="n" th:selected="${searchField == 'n'}">회원 이름</option>
+                                            <option value="e" th:selected="${searchField == 'e'}">회원 이메일</option>
+                                            <option value="r" th:selected="${searchField == 'r'}">탈퇴 날짜</option>
+                                            <option value="d" th:selected="${searchField == 'd'}">삭제 날짜</option>
+                                        </select>
                                 </div>
-                                <div class="form-group col-4 flex-fill">
-                                    <input type="text" id="search_word" name="search" class="form-control" placeholder="검색어를 입력하세요" th:value="${search}">
+                                <div class="form-group col-4 flex-fill form-floating">
+                                    <input type="text" id="search_word" name="searchWord" class="form-control" th:value="${searchWord}"><label for="search_word">검색어</label>
+                                </div>
                                 </div>
                                 <div class="form-group col-auto col-md-auto">
                                     <button type="submit" class="btn btn-success">검색하기</button>
+                                    <input type="hidden" th:value="${limit}" name="limit" id="limit">
                                 </div>
                             </div>
-                        </div>
                     </form>
                 </div>
 
                 <div style="margin-top: 30px;">
                     <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                        <span>Total: <span th:text="${totalItems}"></span> 건 </span>
-                        <select id="itemsPerPage" style="margin-left: 10px;" th:value="${itemsPerPage}" onchange="updateItemsPerPage()" style="margin-left: 10px;">
-                            <option value="5" th:selected="${itemsPerPage == 5}">5</option>
-                            <option value="10" th:selected="${itemsPerPage == 10}">10</option>
-                            <option value="15" th:selected="${itemsPerPage == 15}">15</option>
+                        <span>Total: <span th:text="${listcount}"></span> 건 </span>
+                        <label for="itemsPerPage" hidden></label>
+                        <select id="itemsPerPage" style="margin-left: 10px;" th:onchange="limitChanged(this.options[selectedIndex].text)" name="limit">
+                            <option value="5" th:selected="${limit == 5 ? true : false}">5</option>
+                            <option value="10" th:selected="${limit == 10 ? true : false}">10</option>
+                            <option value="15" th:selected="${limit == 15 ? true : false}">15</option>
                         </select>
                         <span style="margin-left: 5px;">건씩 보기</span>
                     </div>
 
-                    <table class="table" id="resignHistory-table">
+                    <table class="table table-striped" id="resignHistory-table">
                         <thead>
                         <tr>
                             <th>No.</th>
@@ -119,12 +139,12 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="student, iterStat : ${studentList}">
+                        <tr th:each="student, iterStat : ${studentlist}">
                             <td th:text="${iterStat.count}"></td>
-                            <td th:text="${student.name}"></td>
-                            <td th:text="${student.email}"></td>
-                            <td th:text="${student.joinDate}"></td>
-                            <td th:text="${student.resignDate}"></td>
+                            <td th:text="${student.studentName}"></td>
+                            <td th:text="${student.studentEmail}"></td>
+                            <td th:text="${student.createdAt}"></td>
+                            <td th:text="${student.deletedAt}"></td>
                         </tr>
                         </tbody>
                     </table>
