@@ -105,10 +105,10 @@ $(function () {
 
     $(document).on('click', '.writeBtn', function () {
         // [chan] 아카데미 정보가 없는 어드민 계정으로는 강의홈페이지에 노출될 공지사항을 작성할 수 없습니다.
-        if (isAdmin) {
-            showToast('어드민 계정으로는 강의홈페이지 공지사항을 등록할 수 없습니다.');
-            return;
-        }
+        // if (isAdmin) {
+        //     showToast('어드민 계정으로는 강의홈페이지 공지사항을 등록할 수 없습니다.');
+        //     return;
+        // }
 
         location.href = `notice/write`;
     })

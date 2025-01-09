@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.BoardMapper">
+
+    <select id="getCourseList" resultType="CourseListDTO">
+        select course_id, course_name
+        from course
+    </select>
+
+    <insert id="insertNotice">
+        INSERT INTO board
+        (board_id, created_at, board_subject, board_content, board_notice,
+         board_exposure_stat, board_type_id, board_re_ref, board_re_lev, board_re_seq,
+         course_id, board_password, board_file_name, board_file_origin)
+        VALUES
+        (#{boardId}, NOW(), #{boardSubject}, #{boardContent}, #{boardNotice},
+         #{boardExposureStat}, #{boardTypeId},
+         ( SELECT MAX(rnum) + 1
+            FROM (SELECT COUNT(*) AS rnum
+                  FROM board
+                  WHERE board_type_id = #{boardTypeId}
+                  AND deleted_at IS NULL) AS subquery),
+         #{boardReLev},#{boardReSeq},
+         #{courseId},#{boardPassword},#{boardFileName},#{boardFileOrigin})
+    </insert>
+
+</mapper>
