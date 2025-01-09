@@ -3,12 +3,12 @@ $(document).ready(function() {
         theme: 'snow'
     });
 
-    $('#board_file_name').change(function (){
-        console.log($(this).val());
-
-        const inputFile = $(this).val().split('\\');
-        $('#fileValue').text(inputFile[inputFile.length - 1]);
-    })
+    $('#upfile').change(function(){
+        console.log($(this).val()) // c:\fakepath\upload.png <- 자체적으로 관리하는 경로, paper path
+        const inputfile = $(this).val().split('\\'); // \ 기준으로 분할
+        $('#filevalue').text(inputfile[inputfile.length - 1]);
+        // 분할된 배열에서 마지막 인덱스 선택하여 <span>에 text 노드 추가
+    });
 
     // '등록' 버튼 클릭 시 Quill 에디터 내용을 숨겨진 input에 저장하고 폼 제출
     $('#save-button').on('click', function(event) {
@@ -18,10 +18,13 @@ $(document).ready(function() {
         let content = quill.root.innerHTML;
 
         // 유효성 검사
-        let courseId = $('#course_id').val().trim();
-        let boardTitle = $('#board_title').val().trim();
+        let courseId = $('#courseId').val().trim();
+        let boardTitle = $('#boardSubject').val().trim();
+        let fixedChecked = $('#fixed').is(':checked');
+        let unfixedChecked = $('#unfixed').is(':checked');
         let exposureChecked = $('#exposure').is(':checked');
         let hideChecked = $('#hide').is(':checked');
+
 
         // 유효성 검사
         if (!courseId) {
@@ -49,8 +52,14 @@ $(document).ready(function() {
             return false;
         }
 
+        if (!fixedChecked && !unfixedChecked) {
+            alert("고정 또는 비고정을 선택해주세요.");
+            $('#fixed').focus();
+            return false;
+        }
+
         // Quill editor의 내용을 hidden input에 저장
-        $('#board_content').val(content);
+        $('#boardContent').val(content);
 
         // 폼 제출
         $('#save-form').submit();

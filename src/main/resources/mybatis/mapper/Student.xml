@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.TeacherMapper">
+
+<!--    <select id="getStudentCount" parameterType="map" resultType="int">-->
+<!--        SELECT COUNT(DISTINCT S.STUDENT_ID) AS STUDENT_COUNT-->
+<!--        FROM STUDENT S-->
+<!--        LEFT JOIN (-->
+<!--        SELECT STUDENT_ID, COUNT(ENROLLMENT_ID) AS ENROLLMENT_COUNT-->
+<!--        FROM ENROLLMENT-->
+<!--        WHERE ENROLLMENT_STATUS = 'COMPLETED'-->
+<!--        GROUP BY STUDENT_ID-->
+<!--        ) E ON S.STUDENT_ID = E.STUDENT_ID-->
+<!--        LEFT JOIN (-->
+<!--        SELECT E.STUDENT_ID, SUM(P.PAYMENT_AMOUNT) AS PAYMENT_AMOUNT_SUM-->
+<!--        FROM ENROLLMENT E-->
+<!--        JOIN PAYMENT P ON E.ENROLLMENT_ID = P.ENROLLMENT_ID-->
+<!--        WHERE P.PAYMENT_STATUS = '1'-->
+<!--        GROUP BY E.STUDENT_ID-->
+<!--        ) P ON S.STUDENT_ID = P.STUDENT_ID-->
+<!--        <where>-->
+<!--            &lt;!&ndash; 상태에 따른 조건 &ndash;&gt;-->
+<!--            <if test="state == 'option1'">-->
+<!--                &lt;!&ndash; 조건 없음 &ndash;&gt;-->
+<!--            </if>-->
+<!--            <if test="state == 'option2'">-->
+<!--                AND S.DELETED_AT IS NULL-->
+<!--            </if>-->
+<!--            <if test="state == 'option3'">-->
+<!--                AND S.DELETED_AT IS NOT NULL-->
+<!--            </if>-->
+
+<!--            &lt;!&ndash; 관리자 여부에 따른 조건 &ndash;&gt;-->
+<!--            <if test="!isAdmin">-->
+<!--                AND S.ACADEMY_ID = #{academyId}-->
+<!--            </if>-->
+
+<!--            &lt;!&ndash; 날짜 조건 &ndash;&gt;-->
+<!--            <if test="startDate != null and endDate != null">-->
+<!--                AND S.CREATED_AT BETWEEN STR_TO_DATE(#{startDate}, '%y/%m/%d') AND STR_TO_DATE(#{endDate}, '%y/%m/%d')-->
+<!--            </if>-->
+<!--            <if test="startDate != null and endDate == null">-->
+<!--                AND S.CREATED_AT >= STR_TO_DATE(#{startDate}, '%y/%m/%d')-->
+<!--            </if>-->
+<!--            <if test="startDate == null and endDate != null">-->
+<!--                AND S.CREATED_AT <= STR_TO_DATE(#{endDate}, '%y/%m/%d')-->
+<!--            </if>-->
+
+<!--            &lt;!&ndash; 학년 조건 &ndash;&gt;-->
+<!--            <if test='studentGrade == "0"'>-->
+<!--                AND GRADE_ID IN (-->
+<!--                SELECT GRADE_ID-->
+<!--                FROM GRADE-->
+<!--                WHERE ACADEMY_ID = #{academyId}-->
+<!--                )-->
+<!--            </if>-->
+<!--            <if test='studentGrade == "1"'>-->
+<!--                AND GRADE_ID = (-->
+<!--                SELECT GRADE_ID-->
+<!--                FROM GRADE-->
+<!--                WHERE ACADEMY_ID = #{academyId} AND GRADE_NAME = 'Bronze'-->
+<!--                )-->
+<!--            </if>-->
+<!--            <if test='studentGrade == "2"'>-->
+<!--                AND GRADE_ID = (-->
+<!--                SELECT GRADE_ID-->
+<!--                FROM GRADE-->
+<!--                WHERE ACADEMY_ID = #{academyId} AND GRADE_NAME = 'Silver'-->
+<!--                )-->
+<!--            </if>-->
+<!--            <if test='studentGrade == "3"'>-->
+<!--                AND GRADE_ID = (-->
+<!--                SELECT GRADE_ID-->
+<!--                FROM GRADE-->
+<!--                WHERE ACADEMY_ID = #{academyId} AND GRADE_NAME = 'Gold'-->
+<!--                )-->
+<!--            </if>-->
+
+<!--            &lt;!&ndash; 검색 조건 &ndash;&gt;-->
+<!--            <if test='search_field == "0"'>-->
+<!--                AND (TEACHER_NAME LIKE CONCAT('%', #{search_word}, '%')-->
+<!--                OR TEACHER_EMAIL LIKE CONCAT('%', #{search_word}, '%'))-->
+<!--            </if>-->
+<!--            <if test='search_field == "1"'>-->
+<!--                AND TEACHER_NAME LIKE CONCAT('%', #{search_word}, '%')-->
+<!--            </if>-->
+<!--            <if test='search_field == "2"'>-->
+<!--                AND TEACHER_EMAIL LIKE CONCAT('%', #{search_word}, '%')-->
+<!--            </if>-->
+<!--        </where>-->
+<!--    </select>-->
+
+<!--    <select id="getStudentList" parameterType="map" resultType="Student">-->
+<!--        SELECT *-->
+<!--        FROM (-->
+<!--        SELECT ROW_NUMBER() OVER (ORDER BY S.STUDENT_NAME) AS rnum,-->
+<!--        S.STUDENT_NAME,-->
+<!--        S.STUDENT_ID,-->
+<!--        S.STUDENT_EMAIL,-->
+<!--        S.CREATED_AT,-->
+<!--        S.DELETED_AT,-->
+<!--        IFNULL(E.ENROLLMENT_COUNT, 0) AS ENROLLMENT_COUNT,-->
+<!--        IFNULL(P.PAYMENT_AMOUNT_SUM, 0) AS PAYMENT_AMOUNT_SUM-->
+<!--        FROM STUDENT S-->
+<!--        LEFT JOIN (-->
+<!--        SELECT STUDENT_ID, COUNT(ENROLLMENT_ID) AS ENROLLMENT_COUNT-->
+<!--        FROM ENROLLMENT-->
+<!--        WHERE ENROLLMENT_STATUS = 'COMPLETED'-->
+<!--        GROUP BY STUDENT_ID-->
+<!--        ) E ON S.STUDENT_ID = E.STUDENT_ID-->
+<!--        LEFT JOIN (-->
+<!--        SELECT E.STUDENT_ID, SUM(P.PAYMENT_AMOUNT) AS PAYMENT_AMOUNT_SUM-->
+<!--        FROM ENROLLMENT E-->
+<!--        JOIN PAYMENT P ON E.ENROLLMENT_ID = P.ENROLLMENT_ID-->
+<!--        WHERE P.PAYMENT_STATUS = 'SUCCESS'-->
+<!--        GROUP BY E.STUDENT_ID-->
+<!--        ) P ON S.STUDENT_ID = P.STUDENT_ID-->
+<!--        <where>-->
+<!--            &lt;!&ndash; 상태 조건 &ndash;&gt;-->
+<!--            <if test="state == 'option2'">-->
+<!--                S.DELETED_AT IS NULL-->
+<!--            </if>-->
+<!--            <if test="state == 'option3'">-->
+<!--                S.DELETED_AT IS NOT NULL-->
+<!--            </if>-->
+<!--            &lt;!&ndash; 관리자 여부 &ndash;&gt;-->
+<!--            <if test="!isAdmin">-->
+<!--                AND S.ACADEMY_ID = #{academyId}-->
+<!--            </if>-->
+<!--            &lt;!&ndash; 날짜 조건 &ndash;&gt;-->
+<!--            <if test="startDate != null and endDate != null">-->
+<!--                AND S.CREATED_AT BETWEEN STR_TO_DATE(#{startDate}, '%y/%m/%d') AND STR_TO_DATE(#{endDate}, '%y/%m/%d')-->
+<!--            </if>-->
+<!--            <if test="startDate != null and endDate == null">-->
+<!--                AND S.CREATED_AT >= STR_TO_DATE(#{startDate}, '%y/%m/%d')-->
+<!--            </if>-->
+<!--            <if test="startDate == null and endDate != null">-->
+<!--                AND S.CREATED_AT <= STR_TO_DATE(#{endDate}, '%y/%m/%d')-->
+<!--            </if>-->
+<!--            &lt;!&ndash; 학년 조건 &ndash;&gt;-->
+<!--            <if test='studentGrade == "0"'>-->
+<!--                AND S.GRADE_ID IN (-->
+<!--                SELECT GRADE_ID-->
+<!--                FROM GRADE-->
+<!--                WHERE ACADEMY_ID = #{academyId}-->
+<!--                )-->
+<!--            </if>-->
+<!--            <if test='studentGrade == "1"'>-->
+<!--                AND S.GRADE_ID = (-->
+<!--                SELECT GRADE_ID-->
+<!--                FROM GRADE-->
+<!--                WHERE ACADEMY_ID = #{academyId} AND GRADE_NAME = 'Bronze'-->
+<!--                )-->
+<!--            </if>-->
+<!--            <if test='studentGrade == "2"'>-->
+<!--                AND S.GRADE_ID = (-->
+<!--                SELECT GRADE_ID-->
+<!--                FROM GRADE-->
+<!--                WHERE ACADEMY_ID = #{academyId} AND GRADE_NAME = 'Silver'-->
+<!--                )-->
+<!--            </if>-->
+<!--            <if test='studentGrade == "3"'>-->
+<!--                AND S.GRADE_ID = (-->
+<!--                SELECT GRADE_ID-->
+<!--                FROM GRADE-->
+<!--                WHERE ACADEMY_ID = #{academyId} AND GRADE_NAME = 'Gold'-->
+<!--                )-->
+<!--            </if>-->
+<!--            &lt;!&ndash; 검색 조건 &ndash;&gt;-->
+<!--            <if test='search_field == "0"'>-->
+<!--                AND (TEACHER_NAME LIKE CONCAT('%', #{search_word}, '%')-->
+<!--                OR TEACHER_EMAIL LIKE CONCAT('%', #{search_word}, '%'))-->
+<!--            </if>-->
+<!--            <if test='search_field == "1"'>-->
+<!--                AND TEACHER_NAME LIKE CONCAT('%', #{search_word}, '%')-->
+<!--            </if>-->
+<!--            <if test='search_field == "2"'>-->
+<!--                AND TEACHER_EMAIL LIKE CONCAT('%', #{search_word}, '%')-->
+<!--            </if>-->
+<!--        </where>-->
+<!--        ) AS subquery-->
+<!--        WHERE rnum BETWEEN #{start} AND #{end}-->
+<!--    </select>-->
+
+
+</mapper>

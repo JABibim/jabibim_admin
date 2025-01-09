@@ -7,13 +7,14 @@
     <meta charset="UTF-8">
     <title>중앙비빔 Admin</title>
     <style>
-    #fileValue {
-    display: none;
-    }
+    #upfile{display:none}
+    img{width:20px;}
     </style>
 </head>
 <body>
 <div layout:fragment="content">
+    <script th:src="@{/js/jquery-3.7.1.js}"></script>
+    <script th:src="@{/js/noticeWrite.js}"></script>
 <main id="main" class="main">
     <div class="pagetitle">
         <h1>홈페이지 관리</h1>
@@ -29,31 +30,25 @@
         <div class="card">
             <div class="card-body">
                 <!-- General Form Elements -->
-                <form action="writeProcess" enctype="multipart/form-data" method="post" name="noticeForm" id="save-form">
+                <form th:action="@{/board/notice/add}" enctype="multipart/form-data" method="post" name="noticeForm" id="save-form">
                     <br>
                     <h3 class="card-title">공지사항 등록</h3><br>
                     <div class="row mb-3">
-                        <label for="board_title" class="col-sm-2 col-form-label">과정명</label>
+                        <label for="courseId" class="col-sm-2 col-form-label fw-bold">과정명</label>
                         <div class="col-sm-10">
-                            <select class="form-select" aria-label="Default select example" id="course_id"
-                                    name="course_id">
-                                <th:block th:each=" course, interSat : ${courselist}">
-                                    <option th:value="${noticedata != null ? noticedata.course_id : null}" th:text="${noticedata != null ? noticedata.course_name : null}">test course name</option>
-                                </th:block>
+                            <select class="form-select" aria-label="과정 선택" id="courseId" name="courseId">
+                                <option th:each="course : ${courselist}"
+                                        th:value="${course.courseId}"
+                                        th:text="${course.courseName}">
+                                </option>
                             </select>
                         </div>
                     </div>
+                    <input type="hidden" class="form-control" id="boardTypeId" name="boardTypeId" value="notice">
                     <div class="row mb-3">
-                        <label for="board_type_id" class="col-sm-2 col-form-label">게시물 타입</label>
+                        <label for="boardSubject" class="col-sm-2 col-form-label fw-bold">제목</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="board_type_id" name="board_type_id" th:value="notice" readonly>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <label for="board_title" class="col-sm-2 col-form-label">제목</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="board_title" name="board_title">
+                            <input type="text" class="form-control" id="boardSubject" name="boardSubject">
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -61,21 +56,41 @@
                         <div class="col-sm-10 pb-5">
                             <div id="editor"></div>
 
-                            <input type="hidden" name="board_content" id="board_content">
+                            <input type="hidden" name="boardContent" id="boardContent">
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <label for="board_file_name" class="col-sm-2 col-form-label">파일 업로드</label>
-                        <div class="col-sm-10">
-                            <input class="form-control" type="file" id="board_file_name" name="board_file_name">
-                        </div>
-                        <span id="fileValue"></span>
+                    <div class="form-group">
+                        <label for="upfile" class="col-sm-2 col-form-label fw-bold">파일첨부
+                            <img th:src="@{/img/attach.png}" alt="파일첨부">
+                            <input type="file" id="upfile" name="uploadfile">
+                        </label>
+                        <span id="filevalue"></span>
                     </div>
+                    <fieldset class="row mb-3">
+                        <legend class="col-form-label col-sm-2 pt-0 fw-bold">상단 고정</legend>
+                        <div class="col-sm-10 d-flex">
+                            <div class="form-check" style="padding-right: 16px;">
+                                <input class="form-check-input" name="boardNotice" type="radio" id="fixed"
+                                       value="1"
+                                       checked>
+                                <label class="form-check-label" for="fixed">
+                                    고정
+                                </label>
+                            </div>
+                            <div class="form-check" style="padding-right: 16px;">
+                                <input class="form-check-input" name="boardNotice" type="radio" id="unfixed"
+                                       value="0">
+                                <label class="form-check-label" for="unfixed">
+                                    비고정
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
                     <fieldset class="row mb-3">
                         <legend class="col-form-label col-sm-2 pt-0 fw-bold">노출</legend>
                         <div class="col-sm-10 d-flex">
                             <div class="form-check" style="padding-right: 16px;">
-                                <input class="form-check-input" name="board_exposure_status" type="radio" id="exposure"
+                                <input class="form-check-input" name="boardExposureStatus" type="radio" id="exposure"
                                        value="1"
                                        checked>
                                 <label class="form-check-label" for="exposure">
@@ -83,7 +98,7 @@
                                 </label>
                             </div>
                             <div class="form-check" style="padding-right: 16px;">
-                                <input class="form-check-input" name="board_exposure_status" type="radio" id="hide"
+                                <input class="form-check-input" name="boardExposureStatus" type="radio" id="hide"
                                        value="0">
                                 <label class="form-check-label" for="hide">
                                     숨김
@@ -91,6 +106,13 @@
                             </div>
                         </div>
                     </fieldset>
+                    <div class="row mb-3">
+                        <label for="boardPassword" class="col-sm-2 col-form-label fw-bold">비밀번호</label>
+                        <div class="col-sm-10">
+                            <input name="boardPassword" id="boardPassword" type="password" maxlength="30"
+                                   class="form-control" placeholder="Enter board_pass">
+                        </div>
+                    </div>
                     <div style="display: flex; gap: 10px; margin-top: 20px; float: right;">
                         <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/admin/board/notice'|">목록</button>
                         <button type="button" id="save-button" class="btn btn-primary btn-sm">등록</button>
@@ -102,6 +124,6 @@
     </div>
 </main><!-- End #main -->
 </div>
-<script th:src="@{/assets/js/noticeWrite.js}"></script>
+
 </body>
 </html>

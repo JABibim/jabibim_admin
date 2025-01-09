@@ -9,8 +9,6 @@ function getAcademyList() {
         dataType: 'json',
         cache: false,
         success: function (data) {
-            console.log('======================> data : ', data);
-
             $('#academySelect').remove();
 
             $('#spinner').hide();
@@ -68,15 +66,15 @@ function callDaumAddressApi() {
     }).open();
 }
 
-function validCheckAcademyRegisNum(academyRegisNum) {
+function validCheckAcademyRegisNum(businessRegisNum) {
     return new Promise((resolve, reject) => {
         $.ajax({
-            data: {academyRegisNum},
-            url: 'manageAcademy/checkRegisNum',
+            data: {businessRegisNum},
+            url: 'manageAcademy/checkBusinessRegisNum',
             dataType: 'json',
             cache: false,
-            success: function (data) {
-                if (data.isValidAcademyRegisNum) {
+            success: function (response) {
+                if (response) {
                     resolve(true);
                 } else {
                     resolve(false);
@@ -91,19 +89,33 @@ function validCheckAcademyRegisNum(academyRegisNum) {
     });
 }
 
-function insertNewAcademy(academyName, createdAt, postalCode, address, detailAddress, academyRegisNum) {
+function addNewAcademy(newAcademyName, newAcademyOwner, newAcademyContect, newRegisteredAt, newAcademyPostalcode, newAcademyAddress, newDetailAcademyAddress, newBusinessRegisNum) {
     $.ajax({
-        data: {academyName, createdAt, postalCode, address, detailAddress, academyRegisNum},
+        data: JSON.stringify({
+            academyName: newAcademyName,
+            academyOwner: newAcademyOwner,
+            academyContect: newAcademyContect,
+            registeredAt: newRegisteredAt,
+            academyAddress: newAcademyAddress,
+            academyDetailAddr: newDetailAcademyAddress,
+            academyPostalcode: newAcademyPostalcode,
+            businessRegisNum: newBusinessRegisNum
+        }),
         url: 'manageAcademy/add',
         dataType: 'json',
+        contentType: 'application/json',
+        type: 'POST',
         cache: false,
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader(header, token);
+        },
         success: function (data) {
             $('#card').remove();
 
             showToast('학원 정보가 정상적으로 추가되었습니다.');
             getAcademyList();
 
-            displayCard(data.newAcademyDetailInfo);
+            displayCard(data);
         }, error: function () {
             showToast('학원 추가 Ajax 호출 도중 에러가 발생했습니다.');
             console.log('학원 추가 Ajax 호출 도중 에러가 발생했습니다.');
@@ -187,23 +199,25 @@ function showToast(message) {
 
 function displayCard(data) {
     const {
-        academy_id,
-        academy_name,
-        academy_address,
-        created_at,
-        deleted_at,
-        academy_regis_num,
-        detail_address,
-        postal_code
-    } = data;
+        academyId,
+        academyName,
+        academyOwner,
+        academyAddress,
+        academyDetailAddr,
+        academyPostalcode,
+        academyContect,
+        businessRegisNum,
+        registeredAt,
+        deletedAt
+    } = data.academy;
 
-    let createdAtParts = created_at && created_at.split(' ')[0].split('-');
-    let formattedCreatedDate = createdAtParts[0] + '-' + createdAtParts[1] + '-' + createdAtParts[2];
+    let registeredAtParts = registeredAt && registeredAt.split(' ')[0].split('-');
+    let formattedRegisteredDate = registeredAtParts[0] + '-' + registeredAtParts[1] + '-' + registeredAtParts[2];
 
-    let deletedAtParts = deleted_at ? deleted_at.split(' ')[0].split('-') : null;
+    let deletedAtParts = deletedAt ? deletedAt.split(' ')[0].split('-') : null;
     let formattedDeletedDate = deletedAtParts ? deletedAtParts[0] + '-' + deletedAtParts[1] + '-' + deletedAtParts[2] : '';
 
-    let regis_num_parts = academy_regis_num.split('-');
+    let regis_num_parts = businessRegisNum.split('-');
     let regis_num_part1 = regis_num_parts[0];
     let regis_num_part2 = regis_num_parts[1];
     let regis_num_part3 = regis_num_parts[2];
@@ -228,18 +242,30 @@ function displayCard(data) {
                             <!-- 학원 상세정보 -->
                             <div class="tab-pane fade show active profile-overview" id="profile-overview">
                                 <h5 class="card-title">학원 상세정보</h5>
+                                
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label ">ID</div>
-                                    <div class="col-lg-9 col-md-8">${academy_id}</div>
+                                    <div class="col-lg-9 col-md-8">${academyId}</div>
                                 </div>
+                                
                                 <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">이름</div>
-                                    <div class="col-lg-9 col-md-8">${academy_name}</div>
+                                    <div class="col-lg-3 col-md-4 label">학원 이름</div>
+                                    <div class="col-lg-9 col-md-8">${academyName}</div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">대표자 명</div>
+                                    <div class="col-lg-9 col-md-8">${academyOwner}</div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label">대표 연락처</div>
+                                    <div class="col-lg-9 col-md-8">${academyContect}</div>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-lg-3 col-md-4 label">가입일</div>
-                                    <div class="col-lg-9 col-md-8">${formattedCreatedDate}</div>
+                                    <div class="col-lg-3 col-md-4 label">서비스 가입일</div>
+                                    <div class="col-lg-9 col-md-8">${formattedRegisteredDate}</div>
                                 </div>
 
                                 <div class="row">
@@ -249,22 +275,22 @@ function displayCard(data) {
                                 
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label">우편번호</div>
-                                    <div class="col-lg-9 col-md-8">${postal_code}</div>
+                                    <div class="col-lg-9 col-md-8">${academyPostalcode}</div>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label">주소</div>
-                                    <div class="col-lg-9 col-md-8">${academy_address}</div>
+                                    <div class="col-lg-9 col-md-8">${academyAddress}</div>
                                 </div>
                                 
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label">상세주소</div>
-                                    <div class="col-lg-9 col-md-8">${detail_address}</div>
+                                    <div class="col-lg-9 col-md-8">${academyDetailAddr}</div>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label">사업자 번호</div>
-                                    <div class="col-lg-9 col-md-8">${academy_regis_num}</div>
+                                    <div class="col-lg-9 col-md-8">${businessRegisNum}</div>
                                 </div>
                             </div>
 
@@ -275,28 +301,28 @@ function displayCard(data) {
                                     <div class="row mb-3">
                                         <label for="about" class="col-md-4 col-lg-3 col-form-label">ID</label>
                                         <div class="col-md-8 col-lg-9">
-                                            <input name="modify_academy_id" type="text" class="form-control" id="modify_academy_id" value="${academy_id}" disabled>
+                                            <input name="modify_academy_id" type="text" class="form-control" id="modify_academy_id" th:value="${academyId}" disabled>
                                         </div>
                                     </div>
 
                                     <div class="row mb-3">
                                         <label for="company" class="col-md-4 col-lg-3 col-form-label">이름</label>
                                         <div class="col-md-8 col-lg-9">
-                                            <input name="modify_academy_name" type="text" class="form-control" id="modify_academy_name" value="${academy_name}" maxlength="50">
+                                            <input name="modify_academy_name" type="text" class="form-control" id="modify_academy_name" th:value="${academyName}" maxlength="50">
                                         </div>
                                     </div>
 
                                     <div class="row mb-3">
                                         <label for="Job" class="col-md-4 col-lg-3 col-form-label">가입일</label>
                                         <div class="col-md-8 col-lg-9">
-                                            <input type="date" class="form-control" id="modify_created_at" name="modify_created_at" value="${formattedCreatedDate}" disabled>
+                                            <input type="date" class="form-control" id="modify_created_at" name="modify_created_at" th:value="${formattedRegisteredDate}" disabled>
                                         </div>
                                     </div>
 
                                     <div class="row mb-3">
                                         <label for="Country" class="col-md-4 col-lg-3 col-form-label">탈퇴일</label>
                                         <div class="col-md-8 col-lg-9">
-                                            <input type="date" class="form-control" id="modify_deleted_at" name="modify_deleted_at" value="${formattedDeletedDate}">
+                                            <input type="date" class="form-control" id="modify_deleted_at" name="modify_deleted_at" th:value="${formattedDeletedDate}">
                                         </div>
                                     </div>
 
@@ -304,10 +330,10 @@ function displayCard(data) {
                                         <label for="Address" class="col-md-4 col-lg-3 col-form-label">주소</label>
                                         <div class="col-md-8 col-lg-9 d-flex flex-column flex-sm-row justify-content-between">
                                             <div class="me-1 col-md-2 mb-2 mb-sm-0">
-                                                <input name="modify_academy_postal_code" type="text" class="form-control" id="academy_postal_code" placeholder="우편번호" value="${postal_code}" readonly>
+                                                <input name="modify_academy_postal_code" type="text" class="form-control" id="academy_postal_code" placeholder="우편번호" th:value="${academyPostalcode}" readonly>
                                             </div>
                                             <div class="me-1 col-md-8 mb-2 mb-sm-0">
-                                                <input name="modify_academy_address" type="text" class="form-control" id="academy_address" placeholder="주소를 입력해주세요." value="${academy_address}" readonly >
+                                                <input name="modify_academy_address" type="text" class="form-control" id="academy_address" placeholder="주소를 입력해주세요." th:value="${academyAddress}" readonly >
                                             </div>
                                             <button class="btn btn-success d-flex align-items-center justify-content-center" id="callApiBtn" type="button">
                                                 <span class="d-none d-sm-inline">주소검색</span>
@@ -319,16 +345,16 @@ function displayCard(data) {
                                     <div class="row mb-3">
                                         <label for="Address" class="col-md-4 col-lg-3 col-form-label">상세주소</label>
                                         <div class="col-md-8 col-lg-9">
-                                            <input name="modify_academy_detail_address" type="text" class="form-control" id="modify_academy_detail_address" placeholder="상세주소를 입력해주세요." value="${detail_address}">
+                                            <input name="modify_academy_detail_address" type="text" class="form-control" id="modify_academy_detail_address" placeholder="상세주소를 입력해주세요." th:value="${academyDetailAddr}">
                                         </div>
                                     </div>
 
                                     <div class="row mb-3">
                                         <label for="Phone" class="col-md-4 col-lg-3 col-form-label">사업자번호</label>
                                         <div class="col-md-8 col-lg-9 d-flex">
-                                                <input name="modify_academy_regis_num1" type="text" class="form-control me-1" id="modify_academy_regis_num1" value="${regis_num_part1}" oninput="this.value = this.value.replace(/[^0-9]/g, '');" disabled>
-                                                <input name="modify_academy_regis_num2" type="text" class="form-control mx-1" id="modify_academy_regis_num2" value="${regis_num_part2}" oninput="this.value = this.value.replace(/[^0-9]/g, '');" disabled>
-                                                <input name="modify_academy_regis_num3" type="text" class="form-control ms-1" id="modify_academy_regis_num3" value="${regis_num_part3}" oninput="this.value = this.value.replace(/[^0-9]/g, '');" disabled>
+                                                <input name="modify_academy_regis_num1" type="text" class="form-control me-1" id="modify_academy_regis_num1" th:value="${regis_num_part1}" oninput="this.value = this.value.replace(/[^0-9]/g, '');" disabled>
+                                                <input name="modify_academy_regis_num2" type="text" class="form-control mx-1" id="modify_academy_regis_num2" th:value="${regis_num_part2}" oninput="this.value = this.value.replace(/[^0-9]/g, '');" disabled>
+                                                <input name="modify_academy_regis_num3" type="text" class="form-control ms-1" id="modify_academy_regis_num3" th:value="${regis_num_part3}" oninput="this.value = this.value.replace(/[^0-9]/g, '');" disabled>
                                         </div>
                                     </div>
                                     <div style="text-align: right">
@@ -357,16 +383,30 @@ function displayAddAcademyForm() {
                                 <!-- 학원 정보수정 -->
                                 <form id="newProfile">
                                     <div class="row mb-3">
-                                        <label for="company" class="col-md-4 col-lg-3 col-form-label">이름</label>
+                                        <label for="new_academy_name" class="col-md-4 col-lg-3 col-form-label">학원 이름</label>
                                         <div class="col-md-8 col-lg-9">
-                                            <input name="new_academy_name" type="text" class="form-control" id="new_academy_name" placeholder="학원 이름을 입력해주세요." maxlength="50">
+                                            <input name="academyName" type="text" class="form-control" id="new_academy_name" placeholder="학원 이름을 입력해주세요." maxlength="50">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <label for="new_academy_owner" class="col-md-4 col-lg-3 col-form-label">대표자 명</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="academyOwner" type="text" class="form-control" id="new_academy_owner" placeholder="학원 대표자 이름을 입력해주세요." maxlength="50">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <label for="company" class="col-md-4 col-lg-3 col-form-label">대표 연락처</label>
+                                        <div class="col-md-8 col-lg-9">
+                                            <input name="academyContect" type="text" class="form-control" id="new_academy_contect" placeholder="학원 대표 연락처를 입력해주세요." maxlength="50">
                                         </div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <label for="Job" class="col-md-4 col-lg-3 col-form-label">가입일</label>
+                                        <label for="Job" class="col-md-4 col-lg-3 col-form-label">서비스 가입일</label>
                                         <div class="col-md-8 col-lg-9">
-                                            <input type="date" class="form-control" id="new_created_at" name="new_created_at">
+                                            <input type="date" class="form-control" id="new_registered_at" name="registeredAt">
                                         </div>
                                     </div>
 
@@ -374,10 +414,10 @@ function displayAddAcademyForm() {
                                         <label for="Address" class="col-md-4 col-lg-3 col-form-label">주소</label>
                                         <div class="col-md-8 col-lg-9 d-flex flex-column flex-sm-row justify-content-between">
                                             <div class="me-1 col-md-2 mb-2 mb-sm-0">
-                                                <input name="new_academy_postal_code" type="text" class="form-control" id="academy_postal_code" placeholder="우편번호" readonly>
+                                                <input name="academyPostalcode" type="text" class="form-control" id="academy_postal_code" placeholder="우편번호" readonly>
                                             </div>
                                             <div class="me-1 col-md-8 mb-2 mb-sm-0">
-                                                <input name="new_academy_address" type="text" class="form-control" id="academy_address" placeholder="주소" readonly>
+                                                <input name="academyPostalcode" type="text" class="form-control" id="academy_address" placeholder="주소" readonly>
                                             </div>
                                             <button class="btn btn-success d-flex align-items-center justify-content-center" id="callApiBtn" type="button">
                                                 <span class="d-none d-sm-inline">주소검색</span>
@@ -389,7 +429,7 @@ function displayAddAcademyForm() {
                                     <div class="row mb-3">
                                         <label for="Address" class="col-md-4 col-lg-3 col-form-label">상세주소</label>
                                         <div class="col-md-8 col-lg-9">
-                                            <input name="new_academy_detail_address" type="text" class="form-control" id="new_academy_detail_address" placeholder="상세주소를 입력해주세요.">
+                                            <input name="academyDetailAddr" type="text" class="form-control" id="new_academy_detail_address" placeholder="상세주소를 입력해주세요.">
                                         </div>
                                     </div>
 
@@ -428,21 +468,32 @@ $(document).ready(function () {
 
     $(document).on('click', '#academyAddSubmitBtn', function () {
         let newAcademyName = $('#new_academy_name').val();
-        let newCreatedAT = $('#new_created_at').val();
-        let new_academy_postal_code = $('#academy_postal_code').val();
+        let newAcademyOwner = $('#new_academy_owner').val();
+        let newAcademyContect = $('#new_academy_contect').val();
+        let newRegisteredAt = $('#new_registered_at').val();
+        let newAcademyPostalcode = $('#academy_postal_code').val();
         let newAcademyAddress = $('#academy_address').val();
         let newDetailAcademyAddress = $('#new_academy_detail_address').val();
         let newAcademyRegisNum1 = $('#new_academy_regis_num1').val();
         let newAcademyRegisNum2 = $('#new_academy_regis_num2').val();
         let newAcademyRegisNum3 = $('#new_academy_regis_num3').val();
 
-        if (!validCheck(newAcademyName, '이름')) {
+        if (!validCheck(newAcademyName, '학원 이름')) {
             return;
         }
-        if (!validCheck(newCreatedAT, '가입일')) {
+        if (!validCheck(newAcademyOwner, '대표자 명')) {
             return;
         }
-        if (!validCheck(new_academy_postal_code, '주소')) {
+        if (!validCheck(newAcademyContect, '대표 연락처')) {
+            return;
+        }
+        if (!validCheck(newRegisteredAt, '서비스 가입일')) {
+            return;
+        }
+        if (!validCheck(newAcademyPostalcode, '우편번호')) {
+            return;
+        }
+        if (!validCheck(newAcademyAddress, '주소')) {
             return;
         }
         if (!validCheck(newAcademyRegisNum1, '사업자번호 앞자리')) {
@@ -455,11 +506,11 @@ $(document).ready(function () {
             return;
         }
 
-        let newAcademyRegisNum = newAcademyRegisNum1 + '-' + newAcademyRegisNum2 + '-' + newAcademyRegisNum3;
-        validCheckAcademyRegisNum(newAcademyRegisNum)
+        let newBusinessRegisNum = newAcademyRegisNum1 + '-' + newAcademyRegisNum2 + '-' + newAcademyRegisNum3;
+        validCheckAcademyRegisNum(newBusinessRegisNum)
             .then(isValid => {
                 if (isValid) {
-                    insertNewAcademy(newAcademyName, newCreatedAT, new_academy_postal_code, newAcademyAddress, newDetailAcademyAddress, newAcademyRegisNum);
+                    addNewAcademy(newAcademyName, newAcademyOwner, newAcademyContect, newRegisteredAt, newAcademyPostalcode, newAcademyAddress, newDetailAcademyAddress, newBusinessRegisNum);
                 } else {
                     showToast('이미 등록되어 있는 사업자 번호입니다.');
                 }
