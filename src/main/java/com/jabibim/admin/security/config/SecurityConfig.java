@@ -25,6 +25,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        System.out.println("=================> SecurityConfig");
         http
                 .authorizeHttpRequests(auth -> auth
                         // 정적 자원 permitAll ( 성능 고려, security 적용 안함 )
