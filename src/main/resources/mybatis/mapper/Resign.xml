@@ -73,5 +73,9 @@
     </if>
   </sql>
 
+  <select>
+
+  </select>
+
 
 </mapper>

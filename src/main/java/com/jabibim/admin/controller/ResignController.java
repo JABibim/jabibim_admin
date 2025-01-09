@@ -79,6 +79,7 @@ public class ResignController {
     mv.addObject("listcount", listcount);
     mv.addObject("page", page);
     mv.addObject("limit", limit);
+    mv.addObject("studentlist", list);
     mv.addObject("maxpage", result.getMaxpage());
     mv.addObject("startpage", result.getStartpage());
     mv.addObject("endpage", result.getEndpage());

@@ -1,5 +1,6 @@
 package com.jabibim.admin.service;
 
+import com.jabibim.admin.domain.Student;
 import com.jabibim.admin.dto.ResignListVO;
 import com.jabibim.admin.mybatis.mapper.ResignMapper;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,16 @@ public class ResignedStudentServiceImpl implements ResignedStudentService {
     map.put("academyId", "f236923c-4746-4b5a-8377-e7c5b53799c2");
 
     return dao.getResignedStudentCount(map);
+
+  }
+
+  @Override
+  public List<Student> getResignedStudentData(String format) {
+    return dao.getResignedStudentDataList(format);
+  }
+
+  @Override
+  public void deleteResignedStudentData(Student student) {
 
   }
 
