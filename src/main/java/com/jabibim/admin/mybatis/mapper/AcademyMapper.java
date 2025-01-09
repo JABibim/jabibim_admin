@@ -8,4 +8,7 @@ import java.util.List;
 @Mapper
 public interface AcademyMapper {
     public List<Academy> getAcademyList();
+    int getAcademyCountByBusinessRegisNum(String businessRegisNum);
+    void addAcademy(Academy academy);
+    Academy getAcademyById(String academyId);
 }

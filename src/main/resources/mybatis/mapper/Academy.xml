@@ -4,8 +4,59 @@
 <mapper namespace="com.jabibim.admin.mybatis.mapper.AcademyMapper">
 
     <select id="getAcademyList" resultType="academy">
-        SELECT *
-        FROM academy
+        select academy_id
+             , academy_name
+             , academy_address
+             , academy_detail_addr
+             , academy_postalcode
+             , academy_owner
+             , academy_contect
+             , business_regis_num
+             , registered_at
+        from academy
     </select>
 
+    <select id="getAcademyCountByBusinessRegisNum">
+        select count(*)
+        from academy
+        where business_regis_num = #{businessRegisNum}
+    </select>
+
+    <select id="getAcademyById" resultType="academy">
+        select academy_id
+             , academy_name
+             , academy_address
+             , academy_detail_addr
+             , academy_postalcode
+             , academy_owner
+             , academy_contect
+             , business_regis_num
+             , registered_at
+        from academy
+        where academy_id = #{academyId}
+    </select>
+
+    <insert id="addAcademy">
+        insert into academy
+        ( academy_id
+        , created_at
+        , academy_name
+        , academy_address
+        , academy_detail_addr
+        , academy_postalcode
+        , academy_owner
+        , academy_contect
+        , business_regis_num
+        , registered_at)
+        values ( #{academyId}
+               , current_timestamp
+               , #{academyName}
+               , #{academyAddress}
+               , #{academyDetailAddr}
+               , #{academyPostalcode}
+               , #{academyOwner}
+               , #{academyContect}
+               , #{businessRegisNum}
+               , #{registeredAt})
+    </insert>
 </mapper>

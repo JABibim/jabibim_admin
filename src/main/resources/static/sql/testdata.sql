@@ -592,96 +592,52 @@ UNLOCK TABLES;
 
 
 DELIMITER ;;
-CREATE DEFINER=`jab`@`localhost` PROCEDURE `dummy`()
+CREATE DEFINER=`jab`@`localhost` PROCEDURE `jab`.`dummy`()
 BEGIN
-
     DECLARE i INT DEFAULT 1;
 
-
-
     WHILE i <= 10000 DO
-
         IF i <= 1000 THEN
-
             INSERT INTO student
-
             VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, CONCAT('학생', i), CONCAT('google', i, '@test.com'), NULL, '$2a$10$k1NYCnPEH7ijGofDRPZFjOnuacXU6YHP02wvE5spuiH7WOxIqFMXS', NULL, 1, NULL, NULL, 0, 'student', 'd8b6602c-fcbb-437f-8874-3f4648f8d22d', 'f236923c-4746-4b5a-8377-e7c5b53799c2');
 
     		INSERT INTO review
-
-    		VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, i+2, 0, CONCAT('수강평 테스트',i) ,'1234',concat('수강평 테스트 내용',i),10,i,1,'f236923c-4746-4b5a-8377-e7c5b53799c2','f236923c-4746-4b5a-8377-e7c5b53799c2','be37dd3d-b1c6-4aad-a378-abf2ed133423','9c0df0de-5d41-414e-a021-94c84aaeeeae');
-
-
+    		VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, i+2, 0, CONCAT('수강평 테스트',i) ,'1234',concat('수강평 테스트 내용',i),10,i,1,'f236923c-4746-4b5a-8377-e7c5b53799c2','bbb2ceeb-8203-4616-a899-9eacac9e5e0a','be37dd3d-b1c6-4aad-a378-abf2ed133423','9c0df0de-5d41-414e-a021-94c84aaeeeae');
 
         ELSEIF i <= 3000 THEN
-
             INSERT INTO student
-
             VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, CONCAT('샘플', i), CONCAT('test', i, '@sample.com'), NULL, '$2a$10$k1NYCnPEH7ijGofDRPZFjOnuacXU6YHP02wvE5spuiH7WOxIqFMXS', NULL, 0, NULL, NULL, 1, 'student', '46c5e40f-655a-47f8-9570-61618d4e7ac2', 'f236923c-4746-4b5a-8377-e7c5b53799c2');
 
-
-
         	INSERT INTO review
-
-    		VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, i+2, 0, CONCAT('수강평 테스트',i) ,'1234',concat('수강평 테스트 내용',i),15,i,1,'f236923c-4746-4b5a-8377-e7c5b53799c2','f236923c-4746-4b5a-8377-e7c5b53799c2','be37dd3d-b1c6-4aad-a378-abf2ed133423','9c0df0de-5d41-414e-a021-94c84aaeeeae');
-
+    		VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, i+2, 0, CONCAT('수강평 테스트',i) ,'1234',concat('수강평 테스트 내용',i),15,i,1,'f236923c-4746-4b5a-8377-e7c5b53799c2','bbb2ceeb-8203-4616-a899-9eacac9e5e0a','be37dd3d-b1c6-4aad-a378-abf2ed133423','9c0df0de-5d41-414e-a021-94c84aaeeeae');
         ELSEIF i <= 5000 THEN
-
             INSERT INTO student
-
             VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, CONCAT('이학생', i), CONCAT('sample', i, '@test.com'), NULL, '$2a$10$k1NYCnPEH7ijGofDRPZFjOnuacXU6YHP02wvE5spuiH7WOxIqFMXS', NULL, 1, NULL, NULL, 1, 'student', 'd8b6602c-fcbb-437f-8874-3f4648f8d22d', 'f236923c-4746-4b5a-8377-e7c5b53799c2');
 
-
-
         	INSERT INTO review
-
-    		VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, i+2, 0, CONCAT('수강평 테스트',i) ,'1234',concat('수강평 테스트 내용',i),20,i,1,'f236923c-4746-4b5a-8377-e7c5b53799c2','f236923c-4746-4b5a-8377-e7c5b53799c2','be37dd3d-b1c6-4aad-a378-abf2ed133423','9c0df0de-5d41-414e-a021-94c84aaeeeae');
-
+    		VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, i+2, 0, CONCAT('수강평 테스트',i) ,'1234',concat('수강평 테스트 내용',i),20,i,1,'f236923c-4746-4b5a-8377-e7c5b53799c2','bbb2ceeb-8203-4616-a899-9eacac9e5e0a','be37dd3d-b1c6-4aad-a378-abf2ed133423','9c0df0de-5d41-414e-a021-94c84aaeeeae');
         ELSEIF i <= 6000 THEN
-
             INSERT INTO student
-
             VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, CONCAT('김학생', i), CONCAT('let', i, '@google.com'), NULL, '$2a$10$k1NYCnPEH7ijGofDRPZFjOnuacXU6YHP02wvE5spuiH7WOxIqFMXS', NULL, 1, NULL, NULL, 0, 'student', '417b1cfe-4815-4131-bc0d-766ffcce0f7d', 'f236923c-4746-4b5a-8377-e7c5b53799c2');
 
-
-
         	INSERT INTO review
-
-    		VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, i+2, 0, CONCAT('수강평 테스트',i) ,'1234',concat('수강평 테스트 내용',i),30,i,1,'f236923c-4746-4b5a-8377-e7c5b53799c2','f236923c-4746-4b5a-8377-e7c5b53799c2','be37dd3d-b1c6-4aad-a378-abf2ed133423','9c0df0de-5d41-414e-a021-94c84aaeeeae');
-
+    		VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, i+2, 0, CONCAT('수강평 테스트',i) ,'1234',concat('수강평 테스트 내용',i),30,i,1,'f236923c-4746-4b5a-8377-e7c5b53799c2','bbb2ceeb-8203-4616-a899-9eacac9e5e0a','be37dd3d-b1c6-4aad-a378-abf2ed133423','9c0df0de-5d41-414e-a021-94c84aaeeeae');
         ELSEIF i <= 8000 THEN
-
             INSERT INTO student
-
             VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, CONCAT('박학생', i), CONCAT('sample', i, '@test.com'), NULL, '$2a$10$k1NYCnPEH7ijGofDRPZFjOnuacXU6YHP02wvE5spuiH7WOxIqFMXS', NULL, 1, NULL, NULL, 0, 'student', '417b1cfe-4815-4131-bc0d-766ffcce0f7d', 'f236923c-4746-4b5a-8377-e7c5b53799c2');
 
-
-
         	INSERT INTO review
-
-    		VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, i+2, 0, CONCAT('수강평 테스트',i) ,'1234',concat('수강평 테스트 내용',i),35,i,1,'f236923c-4746-4b5a-8377-e7c5b53799c2','f236923c-4746-4b5a-8377-e7c5b53799c2','be37dd3d-b1c6-4aad-a378-abf2ed133423','9c0df0de-5d41-414e-a021-94c84aaeeeae');
-
+    		VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, i+2, 0, CONCAT('수강평 테스트',i) ,'1234',concat('수강평 테스트 내용',i),35,i,1,'f236923c-4746-4b5a-8377-e7c5b53799c2','bbb2ceeb-8203-4616-a899-9eacac9e5e0a','be37dd3d-b1c6-4aad-a378-abf2ed133423','9c0df0de-5d41-414e-a021-94c84aaeeeae');
         ELSE
-
             INSERT INTO student
-
             VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, CONCAT('시연', i), CONCAT('testy', i, '@daum.net'), NULL, '$2a$10$k1NYCnPEH7ijGofDRPZFjOnuacXU6YHP02wvE5spuiH7WOxIqFMXS', NULL, 0, NULL, NULL, 1, 'student', '417b1cfe-4815-4131-bc0d-766ffcce0f7d', 'f236923c-4746-4b5a-8377-e7c5b53799c2');
 
-
-
         	INSERT INTO review
-
-    		VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, i+2, 0, CONCAT('수강평 테스트',i) ,'1234',concat('수강평 테스트 내용',i),45,i,1,'f236923c-4746-4b5a-8377-e7c5b53799c2','f236923c-4746-4b5a-8377-e7c5b53799c2','be37dd3d-b1c6-4aad-a378-abf2ed133423','9c0df0de-5d41-414e-a021-94c84aaeeeae');
-
+    		VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, i+2, 0, CONCAT('수강평 테스트',i) ,'1234',concat('수강평 테스트 내용',i),45,i,1,'f236923c-4746-4b5a-8377-e7c5b53799c2','bbb2ceeb-8203-4616-a899-9eacac9e5e0a','be37dd3d-b1c6-4aad-a378-abf2ed133423','9c0df0de-5d41-414e-a021-94c84aaeeeae');
         END IF;
 
-
-
         SET i = i + 1;
-
     END WHILE;
-
-
 
 END ;;
 DELIMITER ;

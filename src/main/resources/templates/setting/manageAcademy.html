@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <title>관리</title>
     <th:block th:replace="~{fragments/headerImport :: HeaderImportFragment}"></th:block>
-    <script th:src="@{/js/dashboard.js}"></script>
-    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
     <script th:src="@{/js/academyManage.js}"></script>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
@@ -38,7 +36,6 @@
     </section>
 </main><!-- End #main -->
 
-<%-- Toast --%>
 <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"
      style="z-index: 11">
     <div class="toast" id="validationToast" role="alert" aria-live="assertive" aria-atomic="true"

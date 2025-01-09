@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <th:block th:fragment="Header">
     <script th:inline="javascript">
@@ -10,7 +10,7 @@
             $('#confirmPasswordBtn').click(function () {
                 let enteredPassword = $('#adminPassword').val();
                 $.ajax({
-                    url: "setting/checkAdminPass",
+                    url: "/setting/checkAdminPass",
                     method: "POST",
                     data: {password: enteredPassword},
                     beforeSend: function (xhr) {
@@ -64,7 +64,7 @@
             <ul class="d-flex align-items-center">
 
                 <!-- START 어드민 메뉴 -->
-                <th:block th:if="${session.isAdmin == true}">
+                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
                     <li class="nav-item dropdown">
                         <a class="nav-link nav-icon" href="#" id="adminMenuBtn" data-bs-toggle="modal"
                            data-bs-target="#passwordConfirmModal">
@@ -97,11 +97,11 @@
 
                 <li class="nav-item dropdown pe-3">
                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                        <th:block th:if="${#strings.isEmpty(teacher_profile_image)}">
+                        <th:block th:if="${#strings.isEmpty(teacherImgName)}">
                             <img th:src="@{/img/default_profile.jpg}" alt="Profile" class="rounded-circle">
                         </th:block>
-                        <th:block th:if="${not #strings.isEmpty(teacher_profile_image)}">
-                            <img th:src="@{/img/default_profile.jpg}" alt="Profile" class="rounded-circle">
+                        <th:block th:if="${not #strings.isEmpty(teacherImgName)}">
+                            <img th:src="@{|/resources/static/uploadFiles/profileImageUpload/${teacherImgName}|}"  alt="Profile" class="rounded-circle">
                         </th:block>
                         <span class="d-none d-md-block dropdown-toggle ps-2"></span>
                     </a><!-- End Profile Image Icon -->
@@ -151,7 +151,7 @@
 
                         <li>
                             <a class="dropdown-item d-flex align-items-center"
-                               href="${pageContext.request.contextPath}/members/logout">
+                               th:href="@{/logout}">
                                 <i class="bi bi-box-arrow-right"></i>
                                 <span>로그아웃</span>
                             </a>
