@@ -91,7 +91,7 @@
 <!--        </where>-->
 <!--    </select>-->
 
-<!--    <select id="getStudentList" parameterType="map" resultType="Student">-->
+<!--    <select id="getStudentList" parameterType="map" resultType="student">-->
 <!--        SELECT *-->
 <!--        FROM (-->
 <!--        SELECT ROW_NUMBER() OVER (ORDER BY S.STUDENT_NAME) AS rnum,-->

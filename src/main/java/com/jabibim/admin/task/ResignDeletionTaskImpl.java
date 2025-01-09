@@ -25,6 +25,8 @@ public class ResignDeletionTaskImpl implements com.jabibim.admin.service.ResignD
     logger.info("test");
   }
 
+  // 매일 00 : 00 에 삭제 프로세스 시작.
+  @Scheduled(cron="* * 0 * * *")
   public void deleteResignStudentData() throws Exception {
     logger.info("정보 보관 기한 넘긴 데이터 삭제 프로세스 시작");
 
@@ -34,10 +36,21 @@ public class ResignDeletionTaskImpl implements com.jabibim.admin.service.ResignD
     List<Student> deletionList = resignedStudentService.getResignedStudentData(LocalDateTime.now()
                                                                                   .format(formatter));
 
+    if (deletionList.isEmpty()) {
+      logger.info("삭제할 학생 정보 없음");
+      return;
+    }
+
     // 가져온 학생들 하나씩 삭제 실행
     for (Student student : deletionList) {
-      resignedStudentService.deleteResignedStudentData(student);
+      int result = resignedStudentService.deleteResignedStudentData(student);
+
+      if (result > 0) {
+        logger.info("학생 정보 삭제" + student.getStudentId());
+      }
     }
+
+
   }
 
 

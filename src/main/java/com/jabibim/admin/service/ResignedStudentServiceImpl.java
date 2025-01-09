@@ -33,8 +33,8 @@ public class ResignedStudentServiceImpl implements ResignedStudentService {
   }
 
   @Override
-  public void deleteResignedStudentData(Student student) {
-
+  public int deleteResignedStudentData(Student student) {
+    return dao.deleteResignedStudentData(student);
   }
 
 

@@ -15,4 +15,6 @@ public interface ResignMapper {
   List<ResignListVO> getResignedStudentList(HashMap<String, Object> map);
 
   List<Student> getResignedStudentDataList(String format);
+
+  int deleteResignedStudentData(Student student);
 }

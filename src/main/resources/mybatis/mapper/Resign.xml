@@ -73,9 +73,19 @@
     </if>
   </sql>
 
-  <select>
-
+  <select id="getResignedStudentDataList" resultType="student">
+    SELECT student_id
+    FROM student
+    WHERE deleted_at IS NOT NULL
+    AND DATE_ADD(deleted_at, INTERVAL 5 YEAR) &lt;= #{date}
   </select>
+
+
+  <delete id="deleteResignedStudentData">
+    DELETE
+    FROM student
+    WHERE student_id = #{studentId}
+  </delete>
 
 
 </mapper>

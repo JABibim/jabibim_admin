@@ -11,7 +11,7 @@ public interface ResignedStudentService {
 
   int getResignedStudentCount(HashMap<String, String> hm);
 
-  List<Student> getResignedStudentData(String format);
+  List<Student> getResignedStudentData(String date);
 
-  void deleteResignedStudentData(Student student);
+  int deleteResignedStudentData(Student student);
 }
