@@ -19,7 +19,7 @@ public class HomeController {
 
     @GetMapping(value = "/")
     public String home() {
-        return "redirect:member/login";
+        return "redirect:/login";
     }
 
     @GetMapping(value = "/dashboard")
