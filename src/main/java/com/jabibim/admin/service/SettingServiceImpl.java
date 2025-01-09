@@ -66,7 +66,7 @@ public class SettingServiceImpl implements SettingService {
 
     @Override
     public List<Teacher> getTeacherList(String academyId) {
-        return teacherDao.getTeacherList(academyId);
+        return teacherDao.getTeacherListByAcademyId(academyId);
     }
 
     @Override

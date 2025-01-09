@@ -93,7 +93,7 @@
         where teacher_email = #{teacherEmail}
     </select>
 
-    <select id="getTeacherList" resultType="teacher">
+    <select id="getTeacherListByAcademyId" resultType="teacher">
         select teacher_id
              , teacher_name
              , teacher_phone

@@ -11,7 +11,7 @@ import java.util.HashMap;
 public interface TeacherMapper {
     Teacher getTeacherByEmail(String email);
 
-    List<Teacher> getTeacherList(String academyId);
+    List<Teacher> getTeacherListByAcademyId(String academyId);
 
     void addTeacher(Teacher teacher);
 
