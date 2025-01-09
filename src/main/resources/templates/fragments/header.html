@@ -95,13 +95,16 @@
                 </th:block>
                 <!-- END 어드민 메뉴 -->
 
+
                 <li class="nav-item dropdown pe-3">
-                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#"
+                       data-bs-toggle="dropdown">
                         <th:block th:if="${#strings.isEmpty(teacherImgName)}">
                             <img th:src="@{/img/default_profile.jpg}" alt="Profile" class="rounded-circle">
                         </th:block>
                         <th:block th:if="${not #strings.isEmpty(teacherImgName)}">
-                            <img th:src="@{|/resources/static/uploadFiles/profileImageUpload/${teacherImgName}|}"  alt="Profile" class="rounded-circle">
+                            <img th:src="@{|/resources/static/uploadFiles/profileImageUpload/${teacherImgName}|}"
+                                 alt="Profile" class="rounded-circle">
                         </th:block>
                         <span class="d-none d-md-block dropdown-toggle ps-2"></span>
                     </a><!-- End Profile Image Icon -->
@@ -114,14 +117,15 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center"
-                               th:href="@{'mypage/detail?id=' + ${session.id}}">
-                                <i class="bi bi-person"></i>
-                                <span>내 정보</span>
-                            </a>
-                        </li>
+                        <th:block sec:authorize="!hasRole('ROLE_ADMIN')">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center"
+                                   th:href="@{'mypage/detail?id=' + ${session.id}}">
+                                    <i class="bi bi-person"></i>
+                                    <span>내 정보</span>
+                                </a>
+                            </li>
+                        </th:block>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -159,6 +163,7 @@
 
                     </ul><!-- End Profile Dropdown Items -->
                 </li>
+
                 <!-- END 마이페이지 메뉴 -->
             </ul>
         </nav><!-- End Icons Navigation -->
