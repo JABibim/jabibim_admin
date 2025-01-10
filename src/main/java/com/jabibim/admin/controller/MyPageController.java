@@ -36,7 +36,7 @@ public class MyPageController {
         Teacher t = teacherService.teacherInfo(id);
 
         if (t != null) {
-            mv.setViewName("member/teacherProfile");
+            mv.setViewName("member/myProfile");
             mv.addObject("teacherInfo", t);
         } else {
             mv.addObject("url", request.getRequestURL());
