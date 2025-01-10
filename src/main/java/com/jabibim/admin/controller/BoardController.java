@@ -3,8 +3,6 @@ package com.jabibim.admin.controller;
 
 import com.jabibim.admin.domain.Board;
 import com.jabibim.admin.domain.PaginationResult;
-import com.jabibim.admin.domain.PolicyPage;
-import com.jabibim.admin.domain.Privacy;
 import com.jabibim.admin.dto.CourseListDTO;
 import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.service.BoardService;
@@ -125,9 +123,57 @@ public class BoardController {
     }
 
     @GetMapping(value="/notice/detail")
-    public String boardDetail() {
-        return "board/notice/notice_detail";
+    public ModelAndView noticeDetail(String id, ModelAndView mv,
+                                      HttpServletRequest request,
+                                      @RequestHeader(value="referer", required=false) String beforeURL, HttpSession session) {
+
+        String sessionReferer = (String) session.getAttribute("referer");
+        logger.info("Session referer: " + sessionReferer);
+        logger.info("Before URL: " + beforeURL);
+
+        session.setAttribute("referer", "notice"); // referer 설정
+
+        if (sessionReferer != null && sessionReferer.equals("notice")) {
+            if (beforeURL != null) {
+                // 쿼리 파라미터 제거
+                String cleanedURL = beforeURL.split("\\?")[0];
+                if (cleanedURL.endsWith("/board/notice")) {
+                    logger.info("Read count method 실행 for board ID: " + id);
+                    boardService.setReadCountUpdate(id);
+                } else {
+                    logger.warn("Cleaned URL does not end with '/board/notice'.");
+                }
+            } else {
+                logger.warn("Before URL is null.");
+            }
+            session.removeAttribute("referer"); // 실행 후 삭제
+        } else {
+            logger.warn("Session referer does not match 'notice' or is null.");
+        }
+
+        Board notice = boardService.getDetail(id);
+        int preRnum = notice.getRnum() +1;
+        int nextRnum = notice.getRnum() -1;
+
+        Board preData = boardService.getPreData(preRnum);
+        Board nextData = boardService.getNextData(nextRnum);
+
+        if (notice == null) {
+            logger.info("상세보기 실패");
+
+            mv.setViewName("error/error");
+            mv.addObject("url", request.getRequestURI());
+            mv.addObject("message", "상세보기 실패입니다.");
+        } else {
+            logger.info("상세보기 성공");
+            mv.setViewName("board/notice/notice_detail");
+            mv.addObject("noticeData", notice);
+            mv.addObject("preData", preData);
+            mv.addObject("nextData", nextData);
+        }
+        return mv;
     }
+
 
     @GetMapping(value="/notice/modify")
     public String boardModify() {

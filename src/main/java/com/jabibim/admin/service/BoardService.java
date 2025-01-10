@@ -91,4 +91,12 @@ public interface BoardService {
 
     public void insertNotice(Board notice);
 
+    public Board getDetail(String id);
+
+    public Board getPreData(int rnum);
+
+    public Board getNextData(int rnum);
+
+
+    public void setReadCountUpdate(String id);
 }
