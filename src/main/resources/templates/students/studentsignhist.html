@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layouts/default}">
+<head>
+  <title>수강생 관리> 접속이력 관리</title>
+
+  <script>
+    function limitChanged(limit) {
+      $('#limit').val(limit);
+      $('form').submit();
+    }
+  </script>
+</head>
+<body>
+<div layout:fragment="content">
+  <main id="main" class="main">
+    <div class="pagetitle">
+      <h1>접속이력 관리</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">수강생 관리</li>
+          <li class="breadcrumb-item active">접속이력 관리</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <div class="container">
+      <div class="form_container container">
+        <div class="card">
+          <div class="card-body">
+            <div style="margin-top: 30px;">
+              <form type='get' th:action='@{list}'>
+                <div class="form-row h-33 text-center d-flex border">
+                  <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">날짜 검색
+                  </div>
+                  <div class="input-group align-self-center">
+                    <div class="col-3 col-md-4">
+                      <label for='sighDate1' hidden></label><input type="date" id='sighDate1' name="signDate1"
+                                                                   class="form-control start_date" th:value="${signDate1 != '' ? #dates.format(signDate1, 'yyyy-MM-dd') : ''}">
+                    </div>
+                    <b class="col-auto my-1 mx-1 px-2 text-middle">-</b>
+                    <div class="col-3 col-md-4">
+                      <label for='signDate2' hidden></label><input type="date" id='signDate2' name="signDate2"
+                                                                   class="form-control end_date" th:value="${signDate2 != '' ? #dates.format(signDate2, 'yyyy-MM-dd') : ''}">
+                    </div>
+                  </div>
+                </div>
+                <!--
+                <div class="form-row h-33 border d-flex text-center">
+                    <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">접속단</div>
+                    <div class="input-group align-self-center">
+                        <div class="form-group d-flex">
+                            <div class="form-check my-auto mx-1">
+                                <label for="signall"><input class="form-check-input mt-1 ml-1 align-middle" type="checkbox"
+                                                             name="order" id="signall" value="option1" checked> 전체 </label>
+                            </div>
+                            <div class="form-check my-auto mx-1">
+                                <label for="signstudent"><input class="form-check-input mt-1 ml-1 align-middle" type="checkbox"
+                                                              name="order" id="signstudent" value="option2"> 사용자단 </label>
+                            </div>
+                            <div class="form-check my-auto mx-1">
+                                <label for="signteacher"><input class="form-check-input mt-1 ml-1 align-middle" type="checkbox"
+                                                            name="order" id="signteacher" value="option3"> 관리자단 </label>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                -->
+                <div class="form-row h-33 border d-flex text-center">
+                  <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">로그인 성공
+                    여부
+                  </div>
+                  <div class="input-group align-self-center">
+                    <div class="form-group d-flex">
+                      <div class="form-check my-auto mx-1">
+                        <label for="hist_all">
+                          <input class="form-check-input mt-1 ml-1 align-middle"
+                                 type="radio"
+                                 name="logStatus"
+                                 id="hist_all"
+                                 value="sf"
+                                 th:checked="${logStatus == 'sf' ? true : false}"> 전체
+                        </label>
+                      </div>
+                      <div class="form-check my-auto mx-1">
+                        <label for="hist_success">
+                          <input class="form-check-input mt-1 ml-1 align-middle"
+                                 type="radio"
+                                 name="logStatus"
+                                 id="hist_success"
+                                 value="s"
+                                 th:checked="${logStatus == 's' ? true : false}"> 성공
+                        </label>
+                      </div>
+                      <div class="form-check my-auto mx-1">
+                        <label for="hist_fail">
+                          <input class="form-check-input mt-1 ml-1 align-middle"
+                                 type="radio"
+                                 name="logStatus"
+                                 id="hist_fail"
+                                 value="f"
+                                 th:checked="${logStatus == 'f' ? true : false}"> 실패
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row h-33 d-flex text-center border">
+                  <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">검색</div>
+                  <div class="input-group align-self-center">
+                    <div class="form-group col-3 col-md-auto mx-2">
+                      <select name="searchField" class="form-select" id="histField" aria-label="Default select">
+                        <option value="enboit" th:selected="${searchField == 'enboit' ? true : false}">전체</option>
+                        <option value="e" th:selected="${searchField == 'e' ? true : false}">회원 메일</option>
+                        <option value="n" th:selected="${searchField == 'n' ? true : false}">회원 이름</option>
+                        <option value="b" th:selected="${searchField == 'b' ? true : false}">브라우저</option>
+                        <option value="o" th:selected="${searchField == 'o' ? true : false}">OS</option>
+                        <option value="i" th:selected="${searchField == 'i' ? true : false}">IP</option>
+                        <option value="t" th:selected="${searchField == 't' ? true : false}">타임스탬프</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-4 flex-fill form-floating">
+                      <input type="text" id='search_word' name='searchWord' class="form-control" th:value="${searchWord}">
+                      <label for="search_word">검색어</label>
+                    </div>
+                    <div class="form-group col-auto col-md-auto">
+                      <button type="submit" class="btn btn-success">검색하기</button>
+                      <input type="hidden" th:value="${limit}" name="limit" id="limit">
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+
+            <div style="margin-top: 30px;"> <!-- 공간을 두기 위해 margin-top 추가 -->
+              <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <span>Total: [[${listcount}]] 건 </span>
+                <select id="itemsPerPage" th:onchange="limitChanged(this.options[selectedIndex].text)"
+                        style="margin-left: 10px;" name="limit">
+                  <option value="5" th:selected="${limit == 5 ? true : false}">5</option>
+                  <option value="10" th:selected="${limit == 10 ? true : false}">10</option>
+                  <option value="15" th:selected="${limit == 15 ? true : false}">15</option>
+                </select>
+                <span style="margin-left: 5px;">건 씩 보기</span>
+              </div>
+
+              <table class="table table-striped text-center"  th:if="${listcount > 0}">
+                <thead>
+                <tr>
+                  <th>No.</th>
+                  <th>회원 메일</th>
+                  <th>회원 이름</th>
+                  <th>로그인 성공 여부</th>
+                  <th>브라우저</th>
+                  <th>os</th>
+                  <th>IP</th>
+                  <th>타임스탬프</th>
+                </tr>
+                </thead>
+                <tbody id='signHistTbody'>
+                <th:block th:with="num=${listcount - (page - 1) * limit}">
+                  <tr th:each="student, iterStat : ${studentlist}">
+                    <td th:text="${num - iterStat.index}">NO.</td> <!-- 페이지 수에 따라 인덱스 계산 -->
+                    <td><a th:href="@{|student/detail?id=${student.studentId}|}" th:text="${student.studentEmail}">회원 이메일</a></td>
+                    <td th:text="${student.studentName}">회원 이름</td>
+                    <td th:text="${student.loginSuccess == 1 ? '성공' : '실패'}">성공 여부</td>
+                    <td th:text="${student.browserInfo}">브라우저</td>
+                    <td th:text="${student.osInfo}">os</td>
+                    <td th:text="${student.ipInfo}">ip</td>
+                    <td th:text="${#temporals.format(student.createdAt, 'yyyy-MM-dd HH:mm:ss')}">타임스탬프</td>
+                  </tr>
+                </th:block>
+                </tbody>
+              </table>
+            </div>
+            <th:block th:if="${listcount > 0}">
+              <th:block
+                  th:replace="~{fragments/paging :: paging('list', |&limit=${limit}&signDate1=${signDate1 != '' ? #dates.format(signDate1,'yyyy-MM-dd') : ''}&signDate2=${signDate2 != '' ? #dates.format(signDate2,'yyyy-MM-dd') : ''}&logStatus=${logStatus}&searchField=${searchField}&searchWord=${searchWord}|)}"/>
+            </th:block>
+            <div th:if="${listcount == 0}">
+              <h1>조회 결과가 존재하지 않습니다.</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main><!-- End #main -->
+</div>
+</body>
+</html>

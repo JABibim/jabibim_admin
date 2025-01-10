@@ -115,14 +115,9 @@ public class StudentController {
         return "students/studentad";
     }
 
-    @GetMapping("/grade")   //오류수정필요
-    public String studentgrade() {
-        return "students/studentgrade";
-    }
-
-    @GetMapping("/resignhist")  //오류수정필요
-    public String resignhist() {
-        return "students/studentresignhist";
+    @GetMapping("/grade")
+    public String studentGrade() {
+        return "students/studentGrade";
     }
 
 }

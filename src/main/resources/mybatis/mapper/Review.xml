@@ -66,13 +66,11 @@
     <sql id="search_">
         <if test="reviewDate1 != null">
             AND DATE(created_at) &gt;= #{reviewDate1}
-            <if test="reviewDate2 != null">
-            AND DATE(created_at) &lt;= #{reviewDate2}
-            </if>
         </if>
-        <if test="reviewDate1 == null and reviewDate2 != null">
+        <if test="reviewDate2 != null">
             AND DATE(created_at) &lt;= #{reviewDate2}
         </if>
+
         <if test="reply_status != null">
             <if test="reply_status == 'done'">
                 AND reply_status &gt; 0
@@ -114,7 +112,7 @@
                     <when test='data == "s"'> review_subject</when>
                     <when test='data == "n"'> student_name</when>
                     <when test='data == "e"'> student_email</when>
-                    <when test='data == "c"'> DATE_FORMAT(created_at, '%y-%m-%d')</when>
+                    <when test='data == "c"'> DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s')</when>
                     <when test='data == "t"'> teacher_name</when>
                 </choose>
                 LIKE #{search_word}

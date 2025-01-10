@@ -45,14 +45,18 @@ public class ReviewController {
 
   // 그냥 검색 조건 없이 리뷰 목록 출력
   @GetMapping("/list")
-  public ModelAndView reviewList(ModelAndView mv, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int limit,
-                                 @RequestParam(defaultValue = "") String reviewDate1,
-                                 @RequestParam(defaultValue = "") String reviewDate2,
-                                 @RequestParam(defaultValue = "all") String reply_status,
-                                 @RequestParam(defaultValue = "all") String rating,
-                                 @RequestParam(defaultValue = "all") String review_visible,
-                                 @RequestParam(defaultValue = "snect") String review_searchField,
-                                 @RequestParam(defaultValue = "") String search_word) {
+  public ModelAndView reviewList(
+        ModelAndView mv
+      , @RequestParam(defaultValue = "1") int page
+      , @RequestParam(defaultValue = "10") int limit
+      , @RequestParam(defaultValue = "") String reviewDate1
+      , @RequestParam(defaultValue = "") String reviewDate2
+      , @RequestParam(defaultValue = "all") String reply_status
+      , @RequestParam(defaultValue = "all") String rating
+      , @RequestParam(defaultValue = "all") String review_visible
+      , @RequestParam(defaultValue = "snect") String review_searchField
+      , @RequestParam(defaultValue = "") String search_word
+  ) {
 
     // 검색조건 hashmap 에 저장하여 서비스에 전달
     HashMap<String, String> hm = new HashMap<>();
@@ -65,7 +69,7 @@ public class ReviewController {
     hm.put("search_word", search_word);
 
     int listcount = reviewService.getSearchListCount(hm);
-    logger.info("listcount: " + listcount);
+//    logger.info("listcount: " + listcount);
 
     List<ReviewListVO> list = reviewService.getSearchList(hm, page, limit);
 

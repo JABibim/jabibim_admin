@@ -167,11 +167,4 @@ public class Student {  //학생 리스트와 갯수 구할때 쓰는거
         this.gradeId = gradeId;
     }
 
-    public String getAcademyId() {
-        return academyId;
-    }
-
-    public void setAcademyId(String academyId) {
-        this.academyId = academyId;
-    }
 }

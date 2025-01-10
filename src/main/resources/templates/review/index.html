@@ -247,7 +247,7 @@
         </div>
       </div>
       <th:block th:if="${listcount > 0}">
-        <th:block th:replace="~{fragments/paging :: paging('list',|&limit=${limit}&reviewDate1=${reviewDate1}&reviewDate2=${reviewDate2}&reply_status=${reply_status}&rating=${rating}&review_visible=${review_visible}&review_searchField=${review_searchField}&search_word=${search_word}|)}"/>
+        <th:block th:replace="~{fragments/paging :: paging('list',|&limit=${limit}&reviewDate1=${reviewDate1 != '' ? #dates.format(reviewDate1, 'yyyy-MM-dd') : ''}&reviewDate2=${reviewDate2 != '' ? #dates.format(reviewDate2, 'yyyy-MM-dd') : ''}&reply_status=${reply_status}&rating=${rating}&review_visible=${review_visible}&review_searchField=${review_searchField}&search_word=${search_word}|)}"/>
       </th:block>
     </div>
   </main><!-- End #main -->]
