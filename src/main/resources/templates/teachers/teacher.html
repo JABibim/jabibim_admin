@@ -106,7 +106,7 @@
                         </thead>
                         <tbody>
                         <tr th:each="teacher, iterStat : ${teacherlist}">
-                            <td th:text="${iterStat.index + 1}"></td>
+                            <td th:text="${iterStat.index + startnumber}"></td>
                             <td th:text="${teacher.teacherName}"></td>  <!-- 수정된 부분 -->
                             <td th:text="${teacher.teacherPhone}"></td>
                             <td th:text="${teacher.teacherEmail}"></td>
