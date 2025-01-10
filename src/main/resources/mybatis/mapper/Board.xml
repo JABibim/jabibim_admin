@@ -3,6 +3,34 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jabibim.admin.mybatis.mapper.BoardMapper">
 
+    <select id="getListCount" resultType="int">
+        select count(*)
+        from board
+        WHERE BOARD_TYPE_ID = (
+            SELECT board_type_id
+            FROM board_type
+            WHERE board_type_name = '공지사항'
+            LIMIT 1
+            )
+        and ACADEMY_ID = #{academyId}
+    </select>
+
+    <select id="getNoticeList" resultType="board">
+        SELECT *
+        FROM (SELECT b.BOARD_ID,b.CREATED_AT,b.BOARD_NOTICE,b.BOARD_SUBJECT,b.TEACHER_ID,
+                      t.TEACHER_NAME,b.BOARD_READCOUNT,b.BOARD_EXPOSURE_STAT
+              FROM BOARD b
+              JOIN TEACHER t ON b.TEACHER_ID = t.TEACHER_ID
+              JOIN BOARD_TYPE y
+                   ON b.BOARD_TYPE_ID = y.BOARD_TYPE_ID
+              WHERE y.BOARD_TYPE_NAME = '공지사항'
+              AND b.ACADEMY_ID = #{academyId}
+              AND b.DELETED_AT IS NULL
+             ) AS temp
+        ORDER BY created_at desc
+        LIMIT #{end} OFFSET #{start}
+    </select>
+
     <select id="getCourseList" resultType="CourseListDTO">
         select course_id, course_name
         from course
@@ -12,17 +40,20 @@
         INSERT INTO board
         (board_id, created_at, board_subject, board_content, board_notice,
          board_exposure_stat, board_type_id, board_re_ref, board_re_lev, board_re_seq,
-         course_id, board_password, board_file_name, board_file_origin)
+         course_id, board_password, board_file_name, board_file_origin, teacher_id,
+         academy_id)
         VALUES
         (#{boardId}, NOW(), #{boardSubject}, #{boardContent}, #{boardNotice},
-         #{boardExposureStat}, #{boardTypeId},
+         #{boardExposureStat},(SELECT board_type_id
+                               FROM board_type
+                               WHERE board_type_name = #{boardTypeId} LIMIT 1),
          ( SELECT MAX(rnum) + 1
             FROM (SELECT COUNT(*) AS rnum
                   FROM board
                   WHERE board_type_id = #{boardTypeId}
                   AND deleted_at IS NULL) AS subquery),
          #{boardReLev},#{boardReSeq},
-         #{courseId},#{boardPassword},#{boardFileName},#{boardFileOrigin})
+         #{courseId},#{boardPassword},#{boardFileName},#{boardFileOrigin}, #{teacherId}, #{academyId})
     </insert>
 
 </mapper>

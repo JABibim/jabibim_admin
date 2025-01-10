@@ -64,10 +64,8 @@
                     <div class="input-group align-self-center">
                         <div class="col-3 col-md-10">
                             <label class="w-100" for="privacyTermName">
-                                <input name="privacyTermName" id="privacyTermName" readOnly
-                                       type="text" class="form-control" th:value="admin">
-<!--                                <input name="privacyTermName" id="privacyTermName" readOnly-->
-<!--                                       type="text" class="form-control" th:value="${session.id}">-->
+                               <input name="privacyTermName" id="privacyTermName" readOnly
+                                     type="text" class="form-control" th:value="${session.id}">
                             </label>
                         </div>
                     </div>
@@ -93,7 +91,7 @@
 
                 <div style="display: flex; gap: 10px; margin-top: 20px; float: right;">
                     <button type="button" id="save-button" class="btn btn-primary btn-sm">등록</button>
-                    <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/admin/policy/privacy'|">목록</button>
+                    <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/policy/privacy'|">목록</button>
                 </div>
             </form>
         </div>
@@ -110,7 +108,7 @@
             document.querySelector('#pre-button').addEventListener('click', function () {
                 $.ajax({
                     type: "POST",
-                    url: "/admin/policy/privacy/previous",
+                    url: "/policy/privacy/previous",
                     beforeSend : function(xhr)
                     {   //데이터를 전송하기 전에 헤더에 csrf값을 설정합니다.
                         xhr.setRequestHeader(header, token);

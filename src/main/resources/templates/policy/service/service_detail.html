@@ -51,7 +51,7 @@
                 <th:block th:if="${serviceData.rnum < maxRnum}">
                     <a th:href="@{'/policy/service/detail?rnum=' + ${serviceData.rnum + 1}}" th:text="'이전 개인정보 처리방침 보기'"></a>
                 </th:block>
-                <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/admin/policy/service'|" style="float: right">목록</button>
+                <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/policy/service'|" style="float: right">목록</button>
             </div>
         </div>
     </div>
