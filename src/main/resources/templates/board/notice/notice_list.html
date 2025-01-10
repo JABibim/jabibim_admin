@@ -8,10 +8,21 @@
     <meta charset="UTF-8">
     <title>중앙비빔 Admin</title>
     <style>
-        #notice-list-table th {
-            text-align: center;
-            vertical-align: middle;
+        select.form-control{
+            width:auto;
+            margin-bottom: 2em;
+            display:inline-block
         }
+
+        .rows{
+            text-align: right;
+        }
+
+        .gray{
+            color: gray;
+        }
+
+
     </style>
 </head>
 <body>
@@ -29,35 +40,76 @@
         </nav>
     </div><!-- End Page Title -->
 
-    <div class="container" id="notice-list-container">
-        <div class="row">
-                <div class="card">
-                    <div class="card-body">
-                        <div style="margin-top: 30px;">
-                            <table th:if="${listcount > 0}" class="table table-striped text-center" id="notice-list-table">
-                                <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th style="text-align: center">제목</th>
-                                    <th>강사명</th>
-                                    <th data-type="date" data-format="YYYY/MM/DD">등록일</th>
-                                    <th>조회수</th>
-                                    <th>노출여부</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-
-                                </tbody>
-                            </table>
-                            <h6 th:if="${listcount == null}" style="text-align: center; margin-top: 2rem;">등록된 글이 없습니다.</h6>
-                        <button type="button" class="btn btn-outline-primary btn-sm writeBtn" style="float: right">게시글
-                            등록
-                        </button>
-                    </div>
+    <div class="card">
+        <div class="card-body">
+            <th:block th:if="${listcount >0 }">
+                <br>
+                <div class="rows">
+                    <span>줄보기</span>
+                    <select class="form-control" id="viewcount">
+                        <option value="1">1</option>
+                        <option value="3">3</option>
+                        <option value="5">5</option>
+                        <option value="7">7</option>
+                        <option value="10" selected>10</option>
+                    </select>
                 </div>
+                <table class="table" id="privacy-list-table">
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>강사명</th>
+                        <th data-type="date" data-format="YYYY/MM/DD">등록일</th>
+                        <th>조회수</th>
+                        <th>노출여부</th>
+                        <th>고정여부</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:with="num=${listcount-(page-1)*limit}">
+                        <th:block th:each="b, iterStat : ${noticeList}">
+                            <tr>
+                                <td><span th:text="${num - (iterStat.index)}"></span></td>
+                                <td>
+                                    <div>
+                                        <a th:href="@{'/board/notice/detail?rnum=' + ${b.rnum}}">
+                                            <span th:text="${b.boardSubject}"></span>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td><div th:text="${b.teacherName}"></div></td>
+                                <td><div th:text="${#strings.substring(b.createdAt, 0, 10)}"></div></td>
+                                <td><div th:text="${b.boardReadCount}"></div></td>
+                                <td>
+                                    <div>
+                                        <span class="badge bg-primary" th:if="${b.boardExposureStat == 1}">노출</span>
+                                        <span class="badge bg-secondary" th:if="${b.boardExposureStat == 0}">숨김</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="badge bg-primary" th:if="${b.boardNotice == 1}">고정</span>
+                                        <span class="badge bg-secondary" th:if="${b.boardNotice == 0}">비고정</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </th:block>
+                    </th:block>
+                    </tbody>
+                </table>
+                <div class="listcount">
+                    <span>글 개수 : [[${listcount}]]</span>
                 </div>
+                <th:block th:replace="~{fragments/policyPaging :: paging('notice', '')}"/>
+            </th:block>
+            <h6 th:if="${listcount == 0}" style="text-align: center; margin-top: 2rem;">등록된 공지사항이 없습니다.</h6>
+            <button type="button" class="btn btn-outline-primary btn-sm" style="float: right"
+                    th:onclick="|location.href='notice/write'|">게시글 등록
+            </button>
         </div>
     </div>
+
 </main><!-- End #main -->
 </div>
 

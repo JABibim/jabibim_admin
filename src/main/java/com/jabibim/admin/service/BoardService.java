@@ -11,6 +11,10 @@ import java.util.Random;
 
 public interface BoardService {
 
+    int getListCount(String academyId);
+
+    List<Board> getNoticeList(int page, int limit, String academyId);
+
     public List<CourseListDTO> getCourseList();
 
     default public String saveUploadedFile(MultipartFile uploadFile, String saveFolder) throws Exception {
@@ -86,4 +90,5 @@ public interface BoardService {
     }
 
     public void insertNotice(Board notice);
+
 }

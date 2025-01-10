@@ -52,7 +52,7 @@
                 <th:block th:if="${privacyData.rnum < maxRnum}">
                     <a th:href="@{'/policy/privacy/detail?rnum=' + ${privacyData.rnum + 1}}" th:text="'이전 개인정보 처리방침 보기'"></a>
                 </th:block>
-            <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/admin/policy/privacy'|" style="float: right">목록</button>
+            <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/policy/privacy'|" style="float: right">목록</button>
             </div>
         </div>
     </div>
