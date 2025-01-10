@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.LoginHistoryMapper">
+
+  <select id="getSignInHistCount" resultType="int">
+    SELECT COUNT(*)
+    FROM (SELECT *
+          FROM (SELECT *
+                FROM (SELECT *
+                      FROM login_history
+                      WHERE academy_id = #{academyId}) l
+                NATURAL JOIN (SELECT student_id, student_email, student_name
+                                FROM student
+                                WHERE academy_id = #{academyId}) s
+                ) j
+    <where>
+      <include refid="search_"/>
+    </where>
+    ) c
+  </select>
+
+
+  <select id="getSignInHistList" resultType="signInHistListVO">
+    SELECT *
+    FROM (SELECT *
+          FROM (SELECT *
+                FROM (SELECT *
+                      FROM login_history
+                      WHERE academy_id = #{academyId}) l
+                NATURAL JOIN (SELECT student_id, student_email, student_name
+                                FROM student
+                                WHERE academy_id = #{academyId}) s
+          ) j
+    <where>
+      <include refid="search_"/>
+    </where>
+    ORDER BY created_at DESC) c
+    LIMIT #{limit} OFFSET #{offset}
+  </select>
+
+  <sql id="search_">
+    <if test="signDate1 != null">
+      AND DATE(created_at) &gt;= #{signDate1}
+    </if>
+
+    <if test="signDate2 != null">
+      AND DATE(created_at) &lt;= #{signDate2}
+    </if>
+
+    <if test="logStatus != null">
+          <if test='logStatus == "s"'> AND login_success = 1</if>
+          <if test='logStatus == "f"'> AND login_success = 0</if>
+    </if>
+
+    <if test="searchWord != null and searchField != null">
+      AND (
+      <foreach collection="searchField" item="data" separator="or">
+        <choose>
+          <when test='data == "e"'> student_email</when>
+          <when test='data == "n"'> student_name</when>
+          <when test='data == "b"'> browser_info</when>
+          <when test='data == "o"'> os_info</when>
+          <when test='data == "i"'> ip_info</when>
+          <when test='data == "t"'> DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s')</when>
+        </choose>
+        LIKE #{searchWord}
+      </foreach>
+      )
+    </if>
+  </sql>
+
+</mapper>
