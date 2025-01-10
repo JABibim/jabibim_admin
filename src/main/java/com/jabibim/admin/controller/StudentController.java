@@ -79,9 +79,9 @@ public class StudentController {
         return "students/studentad";
     }
 
-    @GetMapping("/grade")   //오류수정필요
-    public String studentgrade() {
-        return "students/studentgrade";
+    @GetMapping("/grade")
+    public String studentGrade() {
+        return "students/studentGrade";
     }
 
 }
