@@ -1,12 +1,12 @@
 package com.jabibim.admin.domain;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
-public class Student {
+public class Student {  //학생 리스트와 갯수 구할때 쓰는거
     private String studentId;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
+    private Date createdAt;
+    private Date updatedAt;
+    private Date deletedAt;
     private String studentName;
     private String studentEmail;
     private String studentPhone;
@@ -19,6 +19,57 @@ public class Student {
     private String authRole;
     private String gradeId;
     private String academyId;
+    private String academyName;
+    private int enrollmentCount;
+    private int paymentAmountSum;
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Date getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(Date deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public String getAcademyName() {
+        return academyName;
+    }
+
+    public void setAcademyName(String academyName) {
+        this.academyName = academyName;
+    }
+
+    public int getEnrollmentCount() {
+        return enrollmentCount;
+    }
+
+    public void setEnrollmentCount(int enrollmentCount) {
+        this.enrollmentCount = enrollmentCount;
+    }
+
+    public int getPaymentAmountSum() {
+        return paymentAmountSum;
+    }
+
+    public void setPaymentAmountSum(int paymentAmountSum) {
+        this.paymentAmountSum = paymentAmountSum;
+    }
 
     public String getStudentId() {
         return studentId;
@@ -26,30 +77,6 @@ public class Student {
 
     public void setStudentId(String studentId) {
         this.studentId = studentId;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public LocalDateTime getDeletedAt() {
-        return deletedAt;
-    }
-
-    public void setDeletedAt(LocalDateTime deletedAt) {
-        this.deletedAt = deletedAt;
     }
 
     public String getStudentName() {

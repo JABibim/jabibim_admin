@@ -34,7 +34,7 @@
                                     <label for="stateall">
                                         <input class="form-check-input" type="checkbox" name="state"
                                                id="stateall" value="option1"
-                                               th:checked="${state == 'option1'}"> 전체
+                                               th:checked="${state == 'option1' or state == null}"> 전체
                                     </label>
                                 </div>
                                 <!-- 정상 체크박스 -->
@@ -62,14 +62,14 @@
                         <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">가입일</div>
                         <div class="input-group align-self-center">
                             <div class="col-3 col-md-4">
-                                <input type="date" name="start_date" id="inputDate1"
+                                <input type="date" name="startDate" id="inputDate1"
                                        class="form-control start_date"
-                                       th:value="${start_date}">
+                                       th:value="${startDate}">
                             </div>
                             <b class="col-auto my-1 mx-1 px-2 text-middle">-</b>
                             <div class="col-3 col-md-4">
-                                <input type="date" name="end_date" id="inputDate2" class="form-control end_date"
-                                       th:value="${end_date}">
+                                <input type="date" name="endDate" id="inputDate2" class="form-control end_date"
+                                       th:value="${endDate}">
                             </div>
                         </div>
                     </div>
@@ -115,11 +115,11 @@
 
             <div style="margin-top: 30px;">
                 <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                    <span>Total: <span th:text="${totalItems}"></span>건</span>
-                    <select id="itemsPerPage" style="margin-left: 10px;" th:onchange="|location.href='?itemsPerPage=' + this.value|">
-                    <option value="5" th:selected="${itemsPerPage == 5}">5</option>
-                        <option value="10" th:selected="${itemsPerPage == 10}">10</option>
-                        <option value="15" th:selected="${itemsPerPage == 15}">15</option>
+                    <span>Total: <span th:text="${listcount}">0</span>건 </span>
+                    <select id="itemsPerPage" style="margin-left: 10px;">
+                        <option value="5" th:selected="${limit == 5}">5</option>
+                        <option value="10" th:selected="${limit == 10}">10</option>
+                        <option value="15" th:selected="${limit == 15}">15</option>
                     </select>
                     <span style="margin-left: 5px;">건씩 보기</span>
                 </div>
@@ -138,35 +138,37 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="student, iterStat : ${studentList}" th:if="${not #lists.isEmpty(studentList)}">
-                        <td th:text="${iterStat.index + 1}"></td>
+                    <tr th:each="student, iterStat : ${studentlist}">
+                        <td th:text="${iterStat.index + startnumber}"></td>
                         <td>
-                            <a th:href="@{/templates/students/detail(id=${student.student_id})}" th:text="${student.student_name}"></a>
+                            <a th:href="@{/students/detail(id=${student.studentId})}" th:text="${student.studentName}"></a>
                         </td>
-                        <td th:text="${student.student_email}"></td>
-                        <td th:text="${student.enrollment_count} + '건'"></td>
-                        <td th:text="${student.payment_amount_sum} + '원'"></td>
-                        <td th:text="${student.created_at}"></td>
-                        <td th:text="${student.created_at}"></td>
-                        <td th:text="${student.deleted_at == null ? '정상' : '탈퇴'}"></td>
+                        <td th:text="${student.studentEmail}"></td>
+<!--                        <td th:text="${student.enrollmentCount} + '건'"></td>-->
+                        <td>3건</td>
+<!--                        <td th:text="${student.paymentAmountSum} + '원'"></td>-->
+                        <td>10원</td>
+                        <td th:text="${#dates.format(student.createdAt, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${#dates.format(student.createdAt, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${student.deletedAt == null ? '정상' : '탈퇴'}"></td>
                     </tr>
-                    <tr th:if="${#lists.isEmpty(studentList)}" class="text-center">
+                    <tr th:if="${studentlist != null and #lists.isEmpty(studentlist)}">
                         <td colspan="10">데이터가 존재하지 않습니다.</td>
                     </tr>
                     </tbody>
                 </table>
 
-                <!-- 페이지네이션 -->
-                <div th:if="${not #lists.isEmpty(studentList)}">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item" th:if="${currentPage > 1}">
-                            <a class="page-link" th:href="@{/templates/students(page=${currentPage - 1}, itemsPerPage=${itemsPerPage}, state=${state}, start_date=${start_date}, end_date=${end_date}, studentGrade=${studentGrade}, search_field=${search_field}, search_word=${search_word})}">이전</a>
+                <div>
+                    <!-- 페이지네이션 -->
+                    <ul class="pagination justify-content-center" th:if="${studentlist != null and !#lists.isEmpty(studentlist)}">
+                        <li class="page-item" th:if="${page > 1}">
+                            <a class="page-link" th:href="@{/student(page=${page - 1}, limit=${limit}, state=${state}, startDate=${startDate}, endDate=${endDate}, studentGrade=${studentGrade}, search_field=${search_field}, search_word=${search_word})}">이전</a>
                         </li>
-                        <li th:each="i : ${#numbers.sequence(startPage, endPage)}" class="page-item" th:classappend="${i == currentPage ? 'active' : ''}">
-                            <a class="page-link" th:href="@{/templates/students(page=${i}, itemsPerPage=${itemsPerPage}, state=${state}, start_date=${start_date}, end_date=${end_date}, studentGrade=${studentGrade}, search_field=${search_field}, search_word=${search_word})}" th:text="${i}"></a>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(startpage, endpage)}" th:classappend="${i == page} ? 'active'">
+                            <a class="page-link" th:href="@{/student(page=${i}, limit=${limit}, state=${state}, startDate=${startDate}, endDate=${endDate}, studentGrade=${studentGrade}, search_field=${search_field}, search_word=${search_word})}" th:text="${i}"></a>
                         </li>
-                        <li class="page-item" th:if="${currentPage < maxPage}">
-                            <a class="page-link" th:href="@{/templates/students(page=${currentPage + 1}, itemsPerPage=${itemsPerPage}, state=${state}, start_date=${start_date}, end_date=${end_date}, studentGrade=${studentGrade}, search_field=${search_field}, search_word=${search_word})}">다음</a>
+                        <li class="page-item" th:if="${page < maxpage}">
+                            <a class="page-link" th:href="@{/student(page=${page + 1}, limit=${limit}, state=${state}, startDate=${startDate}, endDate=${endDate}, studentGrade=${studentGrade}, search_field=${search_field}, search_word=${search_word})}">다음</a>
                         </li>
                     </ul>
                 </div>
@@ -174,58 +176,43 @@
         </div>
     </div>
 </main><!-- End #main -->
-</div>
 
 <script th:inline="javascript">
-    // 체크박스 상태 변경 함수
-    function handleCheckboxChange(clickedCheckbox, checkboxes) {
-        checkboxes.forEach(checkbox => {
-            if (checkbox !== clickedCheckbox) {
-                checkbox.checked = false;
-            }
-        });
-    }
+    document.getElementById("itemsPerPage").addEventListener("change", function () {
+        const select = this.value;
+        const page = 1; // 페이지를 항상 첫 페이지로 설정
+        const limit = /*[[${limit}]]*/ "";
+        const state = /*[[${state}]]*/ ""; // Thymeleaf에서 변수 렌더링
+        const academy = /*[[${academy}]]*/ "";
+        const startDate = /*[[${startDate}]]*/ "";
+        const endDate = /*[[${endDate}]]*/ "";
+        const studentGrade = /*[[${studentGrade}]]*/ "";
+        const search_field = /*[[${search_field}]]*/ "";
+        const search_word = /*[[${search_word}]]*/ "";
 
-    $("#itemsPerPage").change(function () {
-        const select = $(this).val()
-        const page = 1;
-        const state = $("#state").val() || "";
-        const start_date = $("#start_date").val() || "";
-        const end_date = $("#end_date").val() || "";
-        const studentGrade = $("#studentGrade").val() || "";
-        const search_field = $("#search_field").val() || "";
-        const search_word = $("#search_word").val() || "";
-
-        location.href = "student?page=" + page + "&itemsPerPage=" + select + "&state=" + state + "&start_date=" + start_date
-            + "&end_date=" + end_date + "&studentGrade=" + studentGrade + "&search_field=" + search_field
-            + "&search_word=" + search_word;
+        window.location.href =  `student?page=${page}&limit=${select}`
+            + `&state=${state}&academy=${academy}&startDate=${startDate}&endDate=${endDate}&studentGrade=${studentGrade}`
+            + `&search_field=${search_field}&search_word=${search_word}`;
     });//change end
 
+    // 상태 체크박스 변경 시 단일 선택 유지 및 기본 설정
     document.addEventListener('DOMContentLoaded', function () {
         const checkboxAll = document.getElementById('stateall');
         const checkboxOk = document.getElementById('stateok');
         const checkboxXx = document.getElementById('statexx');
-        // 페이지 로드 시 기본 상태 설정 (전체 체크)
 
-
-
-        // 쿼리스트링 값을 가져옴
-        const urlParams = new URLSearchParams(window.location.search);
-        const state = urlParams.get('state'); // state 값
-
-        if ( !state ) {
+        // 기본적으로 '전체' 체크박스를 선택된 상태로 설정
+        if (!checkboxOk.checked && !checkboxXx.checked) {
             checkboxAll.checked = true;
-            checkboxOk.checked = false;
-            checkboxXx.checked = false;
         }
 
-        // 상태에 따라 체크박스 초기화
-        if (state === 'option1') {
-            checkboxAll.checked = true;
-        } else if (state === 'option2') {
-            checkboxOk.checked = true;
-        } else if (state === 'option3') {
-            checkboxXx.checked = true;
+        // 체크박스 상태 변경 함수
+        function handleCheckboxChange(clickedCheckbox, checkboxes) {
+            checkboxes.forEach(checkbox => {
+                if (checkbox !== clickedCheckbox) {
+                    checkbox.checked = false;
+                }
+            });
         }
 
         // '전체' 체크박스 클릭 시 나머지 체크박스 해제
@@ -235,22 +222,22 @@
             }
         });
 
-        // '정상' 체크박스 클릭 시 '전체'와 '탈퇴' 체크박스 해제
+        // '정상' 체크박스 클릭 시 '전체'와 '중지' 체크박스 해제
         checkboxOk.addEventListener('change', function () {
             if (checkboxOk.checked) {
                 handleCheckboxChange(checkboxOk, [checkboxAll, checkboxXx]);
             }
         });
 
-        // '탈퇴' 체크박스 클릭 시 '전체'와 '정상' 체크박스 해제
+        // '중지' 체크박스 클릭 시 '전체'와 '정상' 체크박스 해제
         checkboxXx.addEventListener('change', function () {
             if (checkboxXx.checked) {
                 handleCheckboxChange(checkboxXx, [checkboxAll, checkboxOk]);
             }
         });
-
-
     });
 </script>
+</div>
+
 </body>
 </html>
