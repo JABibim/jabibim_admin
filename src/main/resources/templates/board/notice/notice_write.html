@@ -44,7 +44,7 @@
                             </select>
                         </div>
                     </div>
-                    <input type="hidden" class="form-control" id="boardTypeId" name="boardTypeId" value="notice">
+                    <input type="hidden" class="form-control" id="boardTypeId" name="boardTypeId" value="공지사항">
                     <div class="row mb-3">
                         <label for="boardSubject" class="col-sm-2 col-form-label fw-bold">제목</label>
                         <div class="col-sm-10">
@@ -71,7 +71,7 @@
                         <div class="col-sm-10 d-flex">
                             <div class="form-check" style="padding-right: 16px;">
                                 <input class="form-check-input" name="boardNotice" type="radio" id="fixed"
-                                       value="1"
+                                       th:value="1"
                                        checked>
                                 <label class="form-check-label" for="fixed">
                                     고정
@@ -79,27 +79,27 @@
                             </div>
                             <div class="form-check" style="padding-right: 16px;">
                                 <input class="form-check-input" name="boardNotice" type="radio" id="unfixed"
-                                       value="0">
+                                       th:value="0">
                                 <label class="form-check-label" for="unfixed">
                                     비고정
                                 </label>
                             </div>
                         </div>
+
                     </fieldset>
                     <fieldset class="row mb-3">
                         <legend class="col-form-label col-sm-2 pt-0 fw-bold">노출</legend>
                         <div class="col-sm-10 d-flex">
                             <div class="form-check" style="padding-right: 16px;">
-                                <input class="form-check-input" name="boardExposureStatus" type="radio" id="exposure"
-                                       value="1"
-                                       checked>
+                                <input class="form-check-input" name="boardExposureStat" type="radio" id="exposure"
+                                       th:value="1" checked>
                                 <label class="form-check-label" for="exposure">
                                     노출
                                 </label>
                             </div>
                             <div class="form-check" style="padding-right: 16px;">
-                                <input class="form-check-input" name="boardExposureStatus" type="radio" id="hide"
-                                       value="0">
+                                <input class="form-check-input" name="boardExposureStat" type="radio"
+                                       id="hide" th:value="0">
                                 <label class="form-check-label" for="hide">
                                     숨김
                                 </label>
@@ -114,7 +114,7 @@
                         </div>
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: 20px; float: right;">
-                        <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/admin/board/notice'|">목록</button>
+                        <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/board/notice'|">목록</button>
                         <button type="button" id="save-button" class="btn btn-primary btn-sm">등록</button>
                     </div>
 

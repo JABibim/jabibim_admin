@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class Board {
     private int rnum;
     private String boardId;
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
     private int boardReRef;
@@ -28,8 +28,16 @@ public class Board {
     private String teacherId;
     private String teacherName;
     private String courseId;
-
     private MultipartFile uploadfile;
+    private String academyId;
+
+    public String getAcademyId() {
+        return academyId;
+    }
+
+    public void setAcademyId(String academyId) {
+        this.academyId = academyId;
+    }
 
     public int getRnum() {
         return rnum;
@@ -47,11 +55,11 @@ public class Board {
         this.boardId = boardId;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
