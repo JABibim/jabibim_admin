@@ -28,17 +28,6 @@ public class ResignedStudentServiceImpl implements ResignedStudentService {
   }
 
   @Override
-  public List<Student> getResignedStudentData(String format) {
-    return dao.getResignedStudentDataList(format);
-  }
-
-  @Override
-  public int deleteResignedStudentData(Student student) {
-    return dao.deleteResignedStudentData(student);
-  }
-
-
-  @Override
   public List<ResignListVO> getResignedStudentList(HashMap<String, String> hm, int page, int limit) {
     HashMap<String, Object> map = searchMap(hm);
 
@@ -55,6 +44,17 @@ public class ResignedStudentServiceImpl implements ResignedStudentService {
   }
 
 
+  @Override
+  public List<Student> getResignedStudentData(String format) {
+    return dao.getResignedStudentDataList(format);
+  }
+
+  @Override
+  public int deleteResignedStudentData(Student student) {
+    return dao.deleteResignedStudentData(student);
+  }
+
+
   private static HashMap<String, Object> searchMap(HashMap<String, String> hm) {
     HashMap<String, Object> map = new HashMap<>();
 
@@ -62,6 +62,7 @@ public class ResignedStudentServiceImpl implements ResignedStudentService {
       map.put("resignDate1", hm.get("resignDate1"));
       map.put("dateField", hm.get("dateField"));
     }
+
 
     if (!hm.get("resignDate2").isEmpty()) {
       map.put("resignDate2", hm.get("resignDate2"));
@@ -73,8 +74,10 @@ public class ResignedStudentServiceImpl implements ResignedStudentService {
     if (!hm.get("searchWord").isEmpty()) {
       map.put("searchField", hm.get("searchField").split(""));
       map.put("searchWord", "%" + hm.get("searchWord") + "%");
+      if (!map.containsKey("dateField")) {
+        map.put("dateField", hm.get("dateField"));
+      }
     }
     return map;
   }
-
 }

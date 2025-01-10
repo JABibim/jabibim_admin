@@ -97,8 +97,7 @@
                 <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">검색</div>
                 <div class="input-group align-self-center">
                   <div class="form-group col-3 col-md-auto mx-2">
-                    <label for="searchField" hidden></label>
-                    <select class="form-select" name="searchField" id="searchField">
+                    <select class="form-select" name="searchField" id="searchField" aria-label="Default select">
                       <option value="nerd" th:selected="${searchField == 'nerd'}">전체</option>
                       <option value="n" th:selected="${searchField == 'n'}">회원 이름</option>
                       <option value="e" th:selected="${searchField == 'e'}">회원 이메일</option>
@@ -107,8 +106,8 @@
                     </select>
                   </div>
                   <div class="form-group col-4 flex-fill form-floating">
-                    <input type="text" id="search_word" name="searchWord" class="form-control" th:value="${searchWord}"><label
-                      for="search_word">검색어</label>
+                    <input type="text" id="search_word" name="searchWord" class="form-control" th:value="${searchWord}">
+                    <label for="search_word">검색어</label>
                   </div>
                 </div>
                 <div class="form-group col-auto col-md-auto">
@@ -122,9 +121,8 @@
           <div style="margin-top: 30px;">
             <div style="display: flex; align-items: center; margin-bottom: 10px;">
               <span>Total: <span th:text="${listcount}"></span> 건 </span>
-              <label for="itemsPerPage" hidden></label>
               <select id="itemsPerPage" style="margin-left: 10px;"
-                      th:onchange="limitChanged(this.options[selectedIndex].text)" name="limit">
+                      th:onchange="limitChanged(this.options[selectedIndex].text)" name="limit" aria-label="Default select">
                 <option value="5" th:selected="${limit == 5 ? true : false}">5</option>
                 <option value="10" th:selected="${limit == 10 ? true : false}">10</option>
                 <option value="15" th:selected="${limit == 15 ? true : false}">15</option>
@@ -149,9 +147,9 @@
                   <td th:text="${num - iterStat.index}">No.</td>
                   <td th:text="${student.studentName}">회원 이름</td>
                   <td th:text="${student.studentEmail}">회원 이메일</td>
-                  <td th:text="${#temporals.format(student.createdAt, 'yyyy.MM.dd HH:mm:ss')}">회원 가입일</td>
-                  <td th:text="${#temporals.format(student.deletedAt, 'yyyy.MM.dd HH:mm:ss')}">탈퇴 신청일</td>
-                  <td th:text="${#temporals.format(student.deletionDate, 'yyyy.MM.dd HH:mm:ss')}">삭제 예정일</td>
+                  <td th:text="${#temporals.format(student.createdAt, 'yyyy-MM-dd HH:mm:ss')}">회원 가입일</td>
+                  <td th:text="${#temporals.format(student.deletedAt, 'yyyy-MM-dd HH:mm:ss')}">탈퇴 신청일</td>
+                  <td th:text="${#temporals.format(student.deletionDate, 'yyyy-MM-dd HH:mm:ss')}">삭제 예정일</td>
                 </tr>
               </th:block>
               </tbody>
@@ -161,7 +159,9 @@
             </div>
           </div>
         </div>
-      <th:block th:replace="~{fragments/paging :: paging('list', |&limit=${limit}&resignDate1=${resignDate1}&resignDate2=${resignDate2}&dateField=${dateField}&searchField=${searchField}&searchWord=${searchWord}|)}"/>
+        <th:block th:if="${listcount > 0}">
+          <th:block th:replace="~{fragments/paging :: paging('list', |&limit=${limit}&resignDate1=${resignDate1 != '' ? #dates.format(resignDate1, 'yyyy-MM-dd') : ''}&resignDate2=${resignDate2 != '' ? #dates.format(resignDate2, 'yyyy-MM-dd') : ''}&dateField=${dateField}&searchField=${searchField}&searchWord=${searchWord}|)}"/>
+        </th:block>
       </div>
     </div>
   </main><!-- End #main -->
