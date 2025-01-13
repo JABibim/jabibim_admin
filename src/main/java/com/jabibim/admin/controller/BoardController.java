@@ -19,7 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 
 @Controller
-@RequestMapping(value="/board")
+@RequestMapping(value = "/board")
 public class BoardController {
 
     @Value("${upload.path}")
@@ -33,13 +33,13 @@ public class BoardController {
         this.boardService = boardService;
     }
 
-    @GetMapping(value="/notice")
+    @GetMapping(value = "/notice")
     public String boardList(
-           ) {
+    ) {
         return "board/notice/notice_list";
     }
 
-    @GetMapping(value="/notice/write")
+    @GetMapping(value = "/notice/write")
     public ModelAndView boardWrite(ModelAndView mv) {
         List<CourseListDTO> course = boardService.getCourseList();
 
@@ -48,11 +48,11 @@ public class BoardController {
         return mv;
     }
 
-    @PostMapping(value="/notice/add")
+    @PostMapping(value = "/notice/add")
     public String addNotice(Board notice, HttpServletRequest request) throws Exception {
 
         MultipartFile uploadfile = notice.getUploadfile();
-        if(!uploadfile.isEmpty()){
+        if (!uploadfile.isEmpty()) {
             String fileDBName = boardService.saveUploadedFile(uploadfile, saveFolder);
             notice.setBoardFileName(fileDBName); //바뀐 파일명으로 저장
             notice.setBoardFileOrigin(uploadfile.getOriginalFilename());//원래 파일명 저장
@@ -65,24 +65,23 @@ public class BoardController {
         return "redirect:/board/notice";
     }
 
-    @GetMapping(value="/notice/detail")
+    @GetMapping(value = "/notice/detail")
     public String boardDetail() {
         return "board/notice/notice_detail";
     }
 
-    @GetMapping(value="/notice/modify")
+    @GetMapping(value = "/notice/modify")
     public String boardModify() {
         return "board/notice/notice_modify";
     }
 
-    @GetMapping(value="/qna/detail")
+    @GetMapping(value = "/qna/detail")
     public String qnaDetail() {
         return "board/qna/qnaDetail";
     }
 
-    @GetMapping(value="/qna")
+    @GetMapping(value = "/qna")
     public String qnaList() {
         return "board/qna/qnaList";
     }
-
 }

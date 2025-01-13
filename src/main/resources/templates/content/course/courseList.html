@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>과정 목록</title>
+    <th:block th:replace="~{fragments/headerImport :: HeaderImportFragment}"></th:block>
+    <script th:src="@{/js/courseList.js}"></script>
+</head>
+<body>
+<th:block th:replace="~{fragments/header :: Header}"></th:block>
+<th:block th:replace="~{fragments/sidebar :: SideBar}"></th:block>
+
+<main id="main" class="main">
+    <!-- 페이지 제목 START -->
+    <div class="pagetitle">
+        <h1>과정 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">콘텐츠 관리</li>
+                <li class="breadcrumb-item active">과정 관리</li>
+            </ol>
+        </nav>
+    </div>
+    <!-- 페이지 제목 END -->
+
+    <!-- 검색 CARD START-->
+    <div class="card">
+        <div class="card-body">
+            <form id="searchForm">
+                <div class="row mb-3 d-flex">
+                    <legend class="col-form-label col-sm-2 pt-4 fw-bold">과정 공개 여부</legend>
+                    <div class="col-sm-10 d-flex align-items-center pt-4">
+                        <div class="form-check me-4">
+                            <input class="form-check-input" type="radio" name="useStatus" id="all" value="all" checked>
+                            <label class="form-check-label" for="all">전체</label>
+                        </div>
+                        <div class="form-check me-4">
+                            <input class="form-check-input" type="radio" name="useStatus" id="used" value="used">
+                            <label class="form-check-label" for="used">공개</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="useStatus" id="unused" value="unused">
+                            <label class="form-check-label" for="unused">비공개</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label fw-bold">검색</label>
+                    <div class="col-sm-10">
+                        <select class="form-select" aria-label="Default select example">
+                            <option value="0" selected>전체</option>
+                            <option value="1">과정명</option>
+                            <option value="2">담당자</option>
+                            <option value="3">등록일</option>
+                        </select>
+                        <div id="searchInput" class="pt-2">
+                            <input id="disabledSearchInput" type="text" class="form-control" value="️검색 유형을 선택해주세요."
+                                   disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="float: right;">
+                    <a class="btn btn-primary" id="searchBtn">
+                        과정 검색&nbsp;&nbsp;<i class="bi bi-search"></i>
+                    </a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <!-- 검색 CARD END -->
+
+    <!-- 리스트 출력 부분 START -->
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center pt-2">
+                <h5 class="card-title mb-0">Total : <span id="courseListCount"
+                                                          th:text="${courseListCount}"
+                                                          style="font-size: 18px; font-weight: 500; color: #012970; font-family: 'Poppins', sans-serif">0</span>건
+                </h5>
+            </div>
+
+            <th:block th:if="${ courseListCount == 0 }">
+                <div style="text-align: center;">
+                    <h5 class="card-title mb-0">데이터가 존재하지 않습니다.</h5>
+                </div>
+            </th:block>
+
+            <th:block th:if="${ courseListCount > 0 }">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col" style="width: 10%;">번호</th>
+                        <th scope="col" style="width: 35%;">과정명</th>
+                        <th scope="col" style="width: 10%;">강의수</th>
+                        <th scope="col" style="width: 15%;">담당자</th>
+                        <th scope="col" style="width: 20%;">등록일</th>
+                        <th scope="col" style="width: 10%;">상태
+                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="과정의 공개여부를 설정합니다.">
+                                <i class="bi bi-info-circle"></i>
+                            </span>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:with="num=${courseListCount - (page - 1) * limit}">
+                        <th:block th:each="c, iterStat : ${courseList}">
+                            <tr>
+                                <td>
+                                    <span th:text="${num - (iterStat.index)}"></span>
+                                </td>
+                            </tr>
+                        </th:block>
+                    </th:block>
+                    </tbody>
+                </table>
+            </th:block>
+
+            <div class="d-flex align-items-center justify-content-center">
+                <div style="margin-left: auto;">
+                    <button type="submit" class="btn btn-primary" id="addCourseBtn">
+                        신규 과정 등록&nbsp;&nbsp;<i class="bi bi-pencil"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 리스트 출력 부분 END -->
+
+    <!-- 토스트 컨테이너 추가 -->
+    <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"
+         style="z-index: 11">
+        <!-- 토스트 예시 -->
+        <div class="toast" id="validationToast" role="alert" aria-live="assertive" aria-atomic="true"
+             data-bs-delay="3000">
+            <div class="toast-header">
+                <strong class="me-auto" style="color: red;">알림</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                입력된 값이 유효하지 않습니다.
+            </div>
+        </div>
+    </div>
+</main><!-- End #main -->
+
+<div id="progressContainer"
+     style="position: fixed; bottom: 20px; right: 20px; width: 320px; display: none; z-index: 1000;">
+    <div style="background-color: #dbeafe; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); overflow: hidden;">
+        <div id="progressBar"
+             style="width: 0%; height: 25px; background: linear-gradient(90deg, #a5d8f3 0%, #89c2d9 100%); display: flex; align-items: center; transition: width 0.4s ease;">
+            <span id="progressText"
+                  style="color: #004b5e; font-size: 14px; font-weight: bold; margin-left: 10px;">0%</span>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/footerImport :: FooterImportFragment}"></th:block>
+</body>
+</html>

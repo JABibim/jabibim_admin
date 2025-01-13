@@ -5,15 +5,39 @@ let searchKeyword = '';
 let startDate = '';
 let endDate = '';
 
+
+
 function go(page) {
     getCourseList({useStatus, searchCondition, searchKeyword, startDate, endDate, page});
 }
 
 function getCourseList({useStatus, searchCondition, searchKeyword, startDate, endDate, page}) {
+    console.log('==> useStatus : ', useStatus);
+    console.log('==> searchCondition : ', searchCondition);
+    console.log('==> searchKeyword : ', searchKeyword);
+    console.log('==> startDate : ', startDate);
+    console.log('==> endDate : ', endDate);
+    console.log('==> page : ', page);
+
+    const search = {
+        useStatus,
+        searchCondition,
+        searchKeyword,
+        startDate,
+        endDate,
+        page
+    }
+
     $.ajax({
         data: {
-            useStatus, searchCondition, searchKeyword, startDate, endDate, page, state: 'ajax'
-        }, url: 'content', dataType: 'json', cache: false, success: function (data) {
+            search: JSON.stringify(search)
+        },
+        url: 'content/getCourseList',
+        dataType: 'json',
+        cache: false,
+        success: function (data) {
+            console.log('==> data : ', data);
+
             const {courseList, courseListCount} = data;
             $('#courseListCount').text(courseListCount);
 
@@ -168,6 +192,8 @@ function validateDates(startDate, endDate) {
 }
 
 $(function () {
+    console.log('================ contentList.js 실행 ===============');
+
     // 검색 항목을 바꿀때마다 전역변수에 검색 조건을 셋팅하는 로직
     $('.form-select').change(function () {
         searchKeyword = '';
@@ -208,18 +234,26 @@ $(function () {
 
     $('#searchBtn').click(function () {
         useStatus = $('input:radio:checked').val();
+        console.log('==> useStatus : ', useStatus);
+        console.log('==> searchCondition : ', searchCondition);
 
-        if (searchCondition === '0') {
+
+        if (+searchCondition === 0) {
+            console.log('==> 0')
             searchKeyword = '';
-        } else if (searchCondition === '1' || searchCondition === '2') {
+        } else if (+searchCondition === 1 || +searchCondition === 2) {
+            console.log('==> 1, 2')
             searchKeyword = $('#searchKeyword').val();
 
             if (!validCheck(searchKeyword)) {
                 return;
             }
-        } else if (searchCondition === '3') {
+        } else if (+searchCondition === 3) {
+            console.log('==> 3')
             startDate = $('#startDate').val();
             endDate = $('#endDate').val();
+            console.log('==> startDate : ', startDate);
+            console.log('==> endDate : ', endDate);
 
             if (!validCheck(startDate, endDate)) {
                 return;

@@ -14,6 +14,10 @@ public class JabibimAdminApplication implements CommandLineRunner {
     @Autowired
     private Environment env;
 
+    static {
+        System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(JabibimAdminApplication.class, args);
     }
