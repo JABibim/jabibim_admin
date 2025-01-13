@@ -6,6 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>중앙비빔 Admin</title>
+
 </head>
 
 <body>
@@ -72,6 +73,16 @@
                                   th:if="${noticeData.boardExposureStat == 0}">숨김</span>
                         </div>
                     </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label" style="vertical-align: middle;">고정</label>
+                        <div class="col-sm-10 d-flex align-items-center">
+                            <span class="badge bg-primary" style="font-size: 0.75rem;"
+                                  th:if="${noticeData.boardNotice == 1}">고정</span>
+                            <span class="badge bg-secondary" style="font-size: 0.75rem;"
+                                  th:if="${noticeData.boardNotice == 0}">비고정</span>
+                        </div>
+                    </div>
                 </form>
 
             </div>
@@ -80,15 +91,46 @@
                 th:onclick="|location.href='/board/notice'|"
                 style="float: right; margin: 5px;">목록</button>
 
-        <button type="button" class="btn btn-danger btn-sm"
-                style="float: right; margin: 5px;"
-                id="delete">삭제</button>
+        <a href="#">
+            <button class="btn btn-danger btn-sm"
+                    style="float: right; margin: 5px;"
+                    data-bs-toggle="modal"
+                    data-bs-target="#myModal">삭제</button>
+        </a>
 
-        <a th:href="@{modify?board_id=${noticeData.boardId}}"
+        <a th:href="@{'modify?id='+ ${noticeData.boardId}}"
            class="btn btn-success btn-sm"
            style="float: right; margin: 5px;">수정</a>
 
+        <div class="modal" id="myModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <form name="deleteForm" th:action="@{/board/notice/delete}" method="post">
+                            <input type="hidden" name="boardId" th:value="${noticeData.boardId}" id="boardId">
+                            <div class="form-group">
+                                <label for="boardPassword">비밀번호</label>
+                                <input type="password"
+                                       class="form-control" placeholder="Enter password"
+                                       name="boardPassword" id="boardPassword">
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">전송</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">취소</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <table class="table table-bordered">
+
+            <tr th:if="${nextData != null}">
+                <td class="col-sm-2 col-form-label">다음 글</td>
+                <td>
+                    <a th:href="@{'detail?id=' + ${nextData.boardId}}" th:text="${nextData.boardSubject}"></a>
+                </td>
+            </tr>
 
             <tr th:if="${preData != null}">
                 <td class="col-sm-2 col-form-label">이전 글</td>
@@ -97,44 +139,35 @@
                 </td>
             </tr>
 
-                <tr th:if="${nextData != null}">
-                    <td class="col-sm-2 col-form-label">다음 글</td>
-                    <td>
-                        <a th:href="@{'detail?id=' + ${nextData.boardId}}" th:text="${nextData.boardSubject}"></a>
-                    </td>
-                </tr>
-
         </table>
+        <p th:text="${result}">Result not available</p>
     </div>
 </main>
-</div>
-<script>
-    $(document).ready(function () {
-        $("#delete").click(function () {
-            const answer = confirm("정말 삭제하시겠습니까?");
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            // Thymeleaf 변수를 JavaScript로 전달할 때 [[${result}]]를 사용
+            const result = /*[[${result}]]*/ 'default'; // 기본값 'default'로 설정
 
-            if (answer) {
-                // Thymeleaf 표현식을 사용하여 서버 측 데이터를 JavaScript로 삽입
-                const id = /*[[${noticeData.boardId}]]*/ '';
+            console.log("Result value:", result); // 디버깅용
 
-                const form = $("<form></form>");
-                form.attr("action", "/board/notice/delete");
-                form.attr("method", "post");
-                form.append("<input type='hidden' name='id' value='" + id + "'>");
-                $("body").append(form);
-                form.submit();
-            } else {
-                alert('취소를 선택하셨습니다.');
+            // result 값이 passFail인 경우 alert 표시
+            if (result === 'passFail') {
+                alert("비밀번호가 일치하지 않습니다.");
             }
-        });
 
-        // result 값 처리
-        const result = /*[[${message}]]*/ ''; // message 값을 Thymeleaf에서 받아오기
-        if (result !== '') {
-            alert(result);
-        }
-    });
-</script>
+            $("form[th\\:action='@{/board/notice/delete}']").submit(function () {
+                const passwordInput = $("#boardPassword");
+                if (passwordInput.val().trim() === '') {
+                    alert("비밀번호를 입력하세요.");
+                    passwordInput.focus();
+                    return false;
+                }
+            });
+        });
+    </script>
+
+</div>
+
 
 <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
     <i class="bi bi-arrow-up-short"></i>

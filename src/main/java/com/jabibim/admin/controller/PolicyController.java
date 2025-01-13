@@ -104,9 +104,13 @@ public class PolicyController {
     }
 
     @GetMapping(value="/privacy/write")
-    public String privacyWrite() {
+    public ModelAndView privacyWrite(HttpSession session,ModelAndView mv) {
+        String teacherName = (String) session.getAttribute("name");
 
-        return "policy/privacy/privacy_write";
+        mv.setViewName("policy/privacy/privacy_write");
+        mv.addObject("id", teacherName);
+
+        return mv;
     }
 
     @PostMapping(value="/privacy/add")
@@ -225,8 +229,13 @@ public class PolicyController {
     }
 
     @GetMapping(value="/service/write")
-    public String serviceWrite() {
-        return "policy/service/service_write";
+    public ModelAndView serviceWrite(HttpSession session,ModelAndView mv) {
+        String teacherName = (String) session.getAttribute("name");
+
+        mv.setViewName("policy/service/service_write");
+        mv.addObject("id", teacherName);
+
+        return mv;
     }
 
     @GetMapping(value="/service/detail")
