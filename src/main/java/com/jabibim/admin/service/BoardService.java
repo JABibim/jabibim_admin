@@ -97,6 +97,11 @@ public interface BoardService {
 
     public Board getNextData(int rnum);
 
-
     public void setReadCountUpdate(String id);
+
+    public boolean isBoardWriter(String boardId, String boardPassword);
+
+    public int boardModify(Board noticeData);
+
+    int boardDelete(String boardId);
 }

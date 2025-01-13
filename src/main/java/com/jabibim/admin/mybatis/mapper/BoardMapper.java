@@ -27,4 +27,10 @@ public interface BoardMapper {
     public Board getNextData(int rnum);
 
     public void setReadCountUpdate(String id);
+
+    public Board isBoardWriter(HashMap<String, Object> map);
+
+    public int boardModify(Board noticeData);
+
+    int boardDelete(Board notice);
 }
