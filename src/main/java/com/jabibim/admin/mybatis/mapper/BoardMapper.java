@@ -19,5 +19,18 @@ public interface BoardMapper {
 
     public void insertNotice(Board notice);
 
+    public Board getDetail(String id);
 
+
+    public Board getPreData(int rnum);
+
+    public Board getNextData(int rnum);
+
+    public void setReadCountUpdate(String id);
+
+    public Board isBoardWriter(HashMap<String, Object> map);
+
+    public int boardModify(Board noticeData);
+
+    int boardDelete(Board notice);
 }

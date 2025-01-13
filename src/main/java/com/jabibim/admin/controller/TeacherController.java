@@ -66,6 +66,7 @@ public class TeacherController {
         model.addAttribute("state", state);
         model.addAttribute("search_field", search_field);
         model.addAttribute("search_word", search_word);
+        model.addAttribute("startnumber",(page - 1) * limit + 1 );
 
         return "teachers/teacher";
     }

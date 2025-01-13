@@ -42,18 +42,18 @@
                     <th:block th:if="${!#lists.isEmpty(gradeList)}">
                         <tr th:each="grade, status : ${gradeList}">
                             <td style="width: 10%" th:text="${grade.rnum}"></td>
-                            <td style="width: 20%" th:text="${grade.grade_name}"></td>
-                            <td style="width: 20%" th:text="${grade.grade_discount_rate}"></td>
-                            <td style="width: 20%" th:text="${grade.student_count}"></td>
+                            <td style="width: 20%" th:text="${grade.gradeName}"></td>
+                            <td style="width: 20%" th:text="${grade.discountRate}"></td>
+                            <td style="width: 20%" th:text="${grade.studentCount}"></td>
                             <td style="width: 30%; text-align: end">
                                 <button class="btn btn-outline-success modifyBtn"
-                                        th:attr="data-grade-id=${grade.grade_id}, data-academy-id=${grade.academy_id}">
+                                        th:attr="data-grade-id=${grade.gradeId}, data-academy-id=${grade.academyId}">
                                     <i class="bi bi-pencil"></i> 수정
                                 </button>
                                 <button class="btn btn-outline-danger deleteBtn"
-                                        th:attr="data-grade-id=${grade.grade_id}, data-academy-id=${grade.academy_id}"
+                                        th:attr="data-grade-id=${grade.gradeId}, data-academy-id=${grade.academyId}"
                                         data-bs-toggle="modal" data-bs-target="#verticalycentered"
-                                        th:disabled="${gradeList.size() == 1}">
+                                        th:disabled="${#lists.size(gradeList) == 1}">
                                     <i class="bi bi-trash"></i> 삭제
                                 </button>
                             </td>

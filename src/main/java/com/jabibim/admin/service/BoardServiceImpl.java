@@ -59,5 +59,54 @@ public class BoardServiceImpl implements BoardService {
         return BoardService.super.saveUploadedFile(uploadFile, saveFolder);
     }
 
+    @Override
+    public Board getDetail(String id){
+        return dao.getDetail(id);
+    }
+
+    @Override
+    public Board getPreData(int rnum) {
+        return dao.getPreData(rnum);
+    }
+
+    @Override
+    public Board getNextData(int rnum) {
+        return dao.getNextData(rnum);
+    }
+
+    @Override
+    public void setReadCountUpdate(String id) {
+        dao.setReadCountUpdate(id);
+    }
+
+    @Override
+    public boolean isBoardWriter(String boardId, String boardPassword) {
+        HashMap<String, Object> map = new HashMap<>();
+
+
+        map.put("id", boardId);
+        map.put("pass", boardPassword);
+
+        Board result = dao.isBoardWriter(map);
+
+        return result != null;
+    }
+
+    @Override
+    public int boardModify(Board noticeData) {
+        return dao.boardModify(noticeData);
+    }
+
+    @Override
+    public int boardDelete(String boardId) {
+        int result = 0;
+        Board notice = dao.getDetail(boardId);
+        if (notice != null) {
+            result = dao.boardDelete(notice);
+        }
+
+        return result;
+    }
+
 
 }
