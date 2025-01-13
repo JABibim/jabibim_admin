@@ -174,5 +174,20 @@
     </select>
 
 
-
+    <select id="getStudentGrades" resultType="GetStudentGradesDTO">
+        SELECT row_number() over (order by discount_rate desc) rnum, g.*
+        FROM (SELECT a.academy_id
+                , g.grade_id
+                , a.academy_name
+                , g.created_at
+                , g.grade_name
+                , g.discount_rate
+                , (SELECT COUNT(student_id) FROM student s WHERE s.grade_id = g.GRADE_ID) student_count
+            FROM grade g
+            INNER JOIN academy a
+            ON a.academy_id = g.academy_id
+            WHERE g.academy_id = #{academyId}
+            ORDER BY discount_rate DESC
+            ) g;
+    </select>
 </mapper>
