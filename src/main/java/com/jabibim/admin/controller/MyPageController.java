@@ -1,18 +1,19 @@
 package com.jabibim.admin.controller;
 
 import com.jabibim.admin.domain.Teacher;
+import com.jabibim.admin.dto.TeacherProfileDTO;
 import com.jabibim.admin.service.TeacherService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,9 +24,12 @@ public class MyPageController {
     private static final Logger logger = LoggerFactory.getLogger(MyPageController.class);
 
     private final TeacherService teacherService;
+    private PasswordEncoder passwordEncoder;
 
-    public MyPageController(TeacherService teacherService) {
+
+    public MyPageController(TeacherService teacherService, PasswordEncoder passwordEncoder) {
         this.teacherService = teacherService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping(value = "/detail")
@@ -33,7 +37,7 @@ public class MyPageController {
                                     ModelAndView mv,
                                     HttpServletRequest request) {
 
-        Teacher t = teacherService.teacherInfo(id);
+        TeacherProfileDTO t = teacherService.teacherInfo(id);
 
         if (t != null) {
             mv.setViewName("member/myProfile");
@@ -102,7 +106,7 @@ public class MyPageController {
         }
 
         //현재 비밀번호와 데이터베이스 비밀번호 비교
-        if (!teacher.getTeacherPassword().equals(currentPassword)) {
+        if (!passwordEncoder.matches(currentPassword, teacher.getTeacherPassword())) {
             rattr.addAttribute("errorMessage", "현재 비밀번호가 일치하지 않습니다.");
             return "redirect:/mypage/detail?id=" + teacherId;
         }
@@ -130,13 +134,17 @@ public class MyPageController {
     @ResponseBody
     public Map<String, Object> checkPassword(@RequestBody Map<String, String> requestData, HttpServletRequest request) {
         // 클라이언트에서 전달된 비밀번호를 받아옴
-        String password = requestData.get("password");
+
+        String password = requestData.get("password");  //입력받은 패스워드 값
+        System.out.println("입력한 패스워드는요!!!!!!!!!!!!!!!!!!!!!!!!" + password);
+
         HttpSession session = request.getSession();
         String teacherId = (String) session.getAttribute("id");
 
         Teacher teacher = teacherService.getTeacherById(teacherId);
+
         Map<String, Object> response = new HashMap<>();
-        if (teacher != null && teacher.getTeacherPassword().equals(password)) {
+        if (teacher != null && passwordEncoder.matches(password, teacher.getTeacherPassword())) {
             response.put("valid", true);
         } else {
             response.put("valid", false);

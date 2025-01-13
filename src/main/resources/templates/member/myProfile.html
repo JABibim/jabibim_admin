@@ -8,6 +8,15 @@
     <meta charset="UTF-8">
     <title>내 정보</title>
     <script th:src="@{/js/passValidate.js}"></script>
+    <style>
+        .red {
+            color: red;
+        }
+
+        .green {
+            color: green;
+        }
+    </style>
 </head>
 <body>
     <div layout:fragment="content">
@@ -73,7 +82,7 @@
 
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label">학원</div>
-                                        <div class="col-lg-9 col-md-8" th:text="${teacherInfo.academyId}"></div>
+                                        <div class="col-lg-9 col-md-8" th:text="${teacherInfo.academyName}"></div>
                                     </div>
 
                                     <div class="row">

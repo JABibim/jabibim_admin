@@ -1,6 +1,7 @@
 package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Teacher;
+import com.jabibim.admin.dto.TeacherProfileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ public interface TeacherService {
 
     List<Teacher> getTeacherList(int page, int limit, String academyId, boolean isAdmin, String state, String search_field, String search_word);
 
-    Teacher teacherInfo(String id);
+    TeacherProfileDTO teacherInfo(String id);
 
     int update(Teacher teacher);
 
