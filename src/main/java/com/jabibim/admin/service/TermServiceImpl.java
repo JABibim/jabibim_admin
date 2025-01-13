@@ -17,20 +17,22 @@ public class TermServiceImpl implements TermService {
     }
 
     @Override
-    public int getListCount() {
-        return dao.getListCount();
+    public int getListCount(String academyId) {
+
+        return dao.getListCount(academyId);
     }
 
     @Override
-    public List<Term> getTermList(int page, int limit) {
+    public List<Term> getTermList(int page, int limit, String academyId) {
         // double i =1/0;
-        HashMap<String, Integer> map = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
 
         int startRow = (page - 1) * limit + 1;
         int endRow = startRow + limit - 1;
 
         map.put("start", startRow);
         map.put("end", endRow);
+        map.put("academyId",academyId);
 
         return dao.getTermList(map);
     }
@@ -41,9 +43,9 @@ public class TermServiceImpl implements TermService {
     }
 
     @Override
-    public Term getLatestTermPolicy() {
+    public Term getLatestTermPolicy(String academyId) {
         // 최신 본문을 데이터베이스에서 가져옴
-        return dao.getLatestTermPolicy();
+        return dao.getLatestTermPolicy(academyId);
     }
 
     @Override
@@ -52,8 +54,8 @@ public class TermServiceImpl implements TermService {
     }
 
     @Override
-    public int getMaxRnum() {
-        return dao.getMaxRnum();
+    public int getMaxRnum(String academyId) {
+        return dao.getMaxRnum(academyId);
     }
 
 
