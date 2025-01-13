@@ -4,7 +4,6 @@ import com.jabibim.admin.domain.Student;
 import com.jabibim.admin.dto.GetStudentGradesDTO;
 import com.jabibim.admin.mybatis.mapper.StudentMapper;
 import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,7 +54,6 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-
     public List<GetStudentGradesDTO> getStudentGrades(String academyId) {
         return dao.getStudentGrades(academyId);
     }
