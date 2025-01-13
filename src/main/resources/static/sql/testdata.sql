@@ -609,7 +609,6 @@ BEGIN
 
     		INSERT INTO review
     		VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, i+2, 0, CONCAT('수강평 테스트',i) ,'1234',concat('수강평 테스트 내용',i),10,i,1,'f236923c-4746-4b5a-8377-e7c5b53799c2','bbb2ceeb-8203-4616-a899-9eacac9e5e0a','be37dd3d-b1c6-4aad-a378-abf2ed133423','9c0df0de-5d41-414e-a021-94c84aaeeeae');
-
         ELSEIF i <= 3000 THEN
             INSERT INTO student
             VALUES (UUID(), CURRENT_TIMESTAMP, NULL, NULL, CONCAT('샘플', i), CONCAT('test', i, '@sample.com'), NULL, '$2a$10$k1NYCnPEH7ijGofDRPZFjOnuacXU6YHP02wvE5spuiH7WOxIqFMXS', NULL, 0, NULL, NULL, 1, 'student', '46c5e40f-655a-47f8-9570-61618d4e7ac2', 'f236923c-4746-4b5a-8377-e7c5b53799c2');
@@ -648,6 +647,79 @@ BEGIN
 END ;;
 DELIMITER ;
 
+
+
+ 로그인 히스토리 더미 데이터 생성용 프로시저
+
+DELIMITER ;;
+
+CREATE DEFINER=`jab`@`localhost` PROCEDURE `jab`.`dummy_loginHist`()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+
+    WHILE i <= 10000 DO
+        IF i <= 10 THEN
+            INSERT INTO login_history
+            VALUES (UUID(), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL i MONTH), NULL, NULL, '127.0.0.1', 'Safari', 'iPhone', 1, 'f236923c-4746-4b5a-8377-e7c5b53799c2',
+            (SELECT student_id FROM student LIMIT 1 OFFSET i));
+
+            INSERT INTO login_history
+            VALUES (UUID(), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL i MONTH), NULL, NULL, '127.0.0.1', 'Chrome', 'Windows', 1, 'f236923c-4746-4b5a-8377-e7c5b53799c2',
+            (SELECT student_id FROM student LIMIT 1 OFFSET i));
+
+            INSERT INTO login_history
+            VALUES (UUID(), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL i DAY), NULL, NULL, '127.0.0.1', 'Opera', 'Linux', 1, 'f236923c-4746-4b5a-8377-e7c5b53799c2',
+            (SELECT student_id FROM student LIMIT 1 OFFSET i));
+
+            INSERT INTO login_history
+            VALUES (UUID(), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL i DAY), NULL, NULL, '127.0.0.1', 'Safari', 'Macintosh', 1, 'f236923c-4746-4b5a-8377-e7c5b53799c2',
+            (SELECT student_id FROM student LIMIT 1 OFFSET i));
+
+        ELSEIF i <= 2000 then
+            INSERT INTO login_history
+            VALUES (UUID(), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL i DAY), NULL, NULL, '127.0.0.1', 'Chrome', 'Windows', 1, 'f236923c-4746-4b5a-8377-e7c5b53799c2',
+	        (SELECT student_id FROM student LIMIT 1 OFFSET i));
+
+            INSERT INTO login_history
+            VALUES (UUID(), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL i DAY), NULL, NULL, '127.0.0.1', 'Opera', 'Linux', 1, 'f236923c-4746-4b5a-8377-e7c5b53799c2',
+            (SELECT student_id FROM student LIMIT 1 OFFSET i));
+
+            INSERT INTO login_history
+            VALUES (UUID(), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL i DAY), NULL, NULL, '127.0.0.1', 'Safari', 'Macintosh', 0, 'f236923c-4746-4b5a-8377-e7c5b53799c2',
+            (SELECT student_id FROM student LIMIT 1 OFFSET i));
+
+        ELSEIF i <= 5000 THEN
+            INSERT INTO login_history
+            VALUES (UUID(), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL i - 4000 DAY), NULL, NULL, '127.0.0.1', 'Opera', 'Windows', 1, 'f236923c-4746-4b5a-8377-e7c5b53799c2',
+            (SELECT student_id FROM student LIMIT 1 OFFSET i));
+
+            INSERT INTO login_history
+            VALUES (UUID(), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL i - 4000 DAY), NULL, NULL, '127.0.0.1', 'Opera', 'Macintosh', 1, 'f236923c-4746-4b5a-8377-e7c5b53799c2',
+            (SELECT student_id FROM student LIMIT 1 OFFSET i));
+
+            INSERT INTO login_history
+            VALUES (UUID(), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL i - 4000 DAY), NULL, NULL, '127.0.0.1', 'Safari', 'Macintosh', 0, 'f236923c-4746-4b5a-8377-e7c5b53799c2',
+            (SELECT student_id FROM student LIMIT 1 OFFSET i));
+
+        ELSE
+            INSERT INTO login_history
+            VALUES (UUID(), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL i / 1000 MONTH), NULL, NULL, '127.0.0.1', 'Opera', 'Windows', 1, 'f236923c-4746-4b5a-8377-e7c5b53799c2',
+            (SELECT student_id FROM student LIMIT 1 OFFSET i));
+
+            INSERT INTO login_history
+            VALUES (UUID(), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL i / 1000 MONTH), NULL, NULL, '127.0.0.1', 'Opera', 'Macintosh', 1, 'f236923c-4746-4b5a-8377-e7c5b53799c2',
+            (SELECT student_id FROM student LIMIT 1 OFFSET i));
+
+            INSERT INTO login_history
+            VALUES (UUID(), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL i / 1000 MONTH), NULL, NULL, '127.0.0.1', 'Safari', 'Macintosh', 0, 'f236923c-4746-4b5a-8377-e7c5b53799c2',
+            (SELECT student_id FROM student LIMIT 1 OFFSET i));
+        END IF;
+
+        SET i = i + 1;
+    END WHILE;
+
+END ;;
+DELIMITER ;
 
 
  */
