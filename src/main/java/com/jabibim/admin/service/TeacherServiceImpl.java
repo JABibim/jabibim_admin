@@ -1,6 +1,7 @@
 package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Teacher;
+import com.jabibim.admin.dto.TeacherProfileDTO;
 import com.jabibim.admin.mybatis.mapper.TeacherMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,11 +51,11 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public Teacher teacherInfo(String id) {
+    public TeacherProfileDTO teacherInfo(String id) {
         return dao.teacherInfo(id);
     }
 
-
+    @Override
     public int update(Teacher teacher) {
         return dao.update(teacher);
     }
