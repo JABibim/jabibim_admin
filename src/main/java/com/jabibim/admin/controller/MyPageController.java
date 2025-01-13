@@ -24,7 +24,7 @@ public class MyPageController {
     private static final Logger logger = LoggerFactory.getLogger(MyPageController.class);
 
     private final TeacherService teacherService;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
 
     public MyPageController(TeacherService teacherService, PasswordEncoder passwordEncoder) {
@@ -118,7 +118,7 @@ public class MyPageController {
         }
 
         //새 비밀번호 업데이트
-        teacher.setTeacherPassword(newPassword);
+        teacher.setTeacherPassword(passwordEncoder.encode(newPassword));
         int updateResult = teacherService.updatePassword(teacher);
 
         if (updateResult == 1) {
