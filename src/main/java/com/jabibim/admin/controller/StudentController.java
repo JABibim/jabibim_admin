@@ -50,7 +50,7 @@ public class StudentController {
         boolean isAdmin = academyId.equals("ADMIN");
 
         // 총 학생 수를 받아옴
-        int listcount = studentService.getStudentCount(state, startDate, endDate, studentGrade, search_field, search_word);
+        int listcount = studentService.getStudentCount(academyId, isAdmin, state, startDate, endDate, studentGrade, search_field, search_word);
 
         // 학생 리스트를 받아옴
         List<Student> list = studentService.getStudentList(page, limit, academyId, isAdmin, state, startDate, endDate, studentGrade, search_field, search_word);
@@ -73,12 +73,48 @@ public class StudentController {
         model.addAttribute("endDate", endDate);
         model.addAttribute("search_field", search_field);
         model.addAttribute("search_word", search_word);
+        model.addAttribute("startnumber",(page - 1) * limit + 1 );
 
         return "students/student";
     }
 
     @GetMapping("/ad")
-    public String studentad() {
+    public String studentad(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "0") String search_field,  //0:전체, 1:이름
+            @RequestParam(defaultValue = "") String search_word,
+            Model model,
+            HttpSession session) {
+
+        logger.info("---------->>>>> page: {}, limit: {}, search_field: {}, search_word: {}",
+                page, limit, search_field, search_word);
+
+        session.setAttribute("referer", "list");
+        String academyId = (String) session.getAttribute("aid");
+        boolean isAdmin = academyId.equals("ADMIN");
+
+        //총 학생마케팅동의여부 수 받아옴
+        int listcount = studentService.getStudentAdCount(academyId, isAdmin, search_field, search_word);
+
+        //총 리스트 받아옴
+        List<Student> list = studentService.getStudentAdList(page, limit, academyId, isAdmin, search_field, search_word);
+
+        // Pagination 객체 생성
+        PaginationResult result = new PaginationResult(page, limit, listcount);
+
+        // 모델에 데이터 추가
+        model.addAttribute("page", page);
+        model.addAttribute("maxpage", result.getMaxpage());
+        model.addAttribute("startpage", result.getStartpage());
+        model.addAttribute("endpage", result.getEndpage());
+        model.addAttribute("listcount", listcount);
+        model.addAttribute("studentAdlist", list);
+        model.addAttribute("limit", limit);
+        model.addAttribute("search_field", search_field);
+        model.addAttribute("search_word", search_word);
+        model.addAttribute("startnumber",(page - 1) * limit + 1 );
+
         return "students/studentad";
     }
 

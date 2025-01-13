@@ -30,6 +30,15 @@ public class Board {
     private String courseId;
     private MultipartFile uploadfile;
     private String academyId;
+    private String courseName;
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
 
     public String getAcademyId() {
         return academyId;
