@@ -173,7 +173,6 @@
         WHERE rnum BETWEEN #{start} AND #{end}
     </select>
 
-
     <select id="getStudentGrades" resultType="GetStudentGradesDTO">
         SELECT row_number() over (order by discount_rate desc) rnum, g.*
         FROM (SELECT a.academy_id

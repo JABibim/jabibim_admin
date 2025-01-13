@@ -1,6 +1,5 @@
 package com.jabibim.admin.controller;
 
-
 import com.jabibim.admin.domain.PaginationResult;
 import com.jabibim.admin.domain.Student;
 import com.jabibim.admin.dto.GetStudentGradesDTO;
@@ -15,7 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.util.List;
 
 @Controller
@@ -120,15 +118,11 @@ public class StudentController {
 
     @GetMapping("/grade")
     public String studentGrade(Model model, Authentication auth) {
-
         AccountDto account = (AccountDto) auth.getPrincipal();
         String academyId = account.getAcademyId();
-        System.out.println("academyId=============|||||||||||||====" + academyId);
-
 
         List<GetStudentGradesDTO> grades = studentService.getStudentGrades(academyId);
         model.addAttribute("gradeList", grades);
-        System.out.println("grades===============" + grades);
         return "students/studentGrade";
     }
 
