@@ -3,6 +3,34 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jabibim.admin.mybatis.mapper.BoardMapper">
 
+    <select id="getListCount" resultType="int">
+        select count(*)
+        from board
+        WHERE board_type_id = (
+            SELECT board_type_id
+            FROM board_type
+            WHERE board_type_name = '공지사항'
+            LIMIT 1
+            )
+        and ACADEMY_ID = #{academyId}
+    </select>
+
+    <select id="getNoticeList" resultType="board">
+        SELECT *
+        FROM (SELECT b.board_id,b.created_at,b.board_notice,b.board_subject,b.teacher_id,
+                      t.teacher_name,b.board_readcount,b.board_exposure_stat
+              FROM BOARD b
+              JOIN TEACHER t ON b.teacher_id = t.teacher_id
+              JOIN BOARD_TYPE y
+                   ON b.board_type_id = y.board_type_id
+              WHERE y.board_type_name = '공지사항'
+              AND b.academy_id = #{academyId}
+              AND b.deleted_at IS NULL
+             ) AS temp
+        ORDER BY created_at desc
+        LIMIT #{end} OFFSET #{start}
+    </select>
+
     <select id="getCourseList" resultType="CourseListDTO">
         select course_id, course_name
         from course
@@ -12,17 +40,75 @@
         INSERT INTO board
         (board_id, created_at, board_subject, board_content, board_notice,
          board_exposure_stat, board_type_id, board_re_ref, board_re_lev, board_re_seq,
-         course_id, board_password, board_file_name, board_file_origin)
+         course_id, board_password, board_file_name, board_file_origin, teacher_id,
+         academy_id, board_readcount)
         VALUES
         (#{boardId}, NOW(), #{boardSubject}, #{boardContent}, #{boardNotice},
-         #{boardExposureStat}, #{boardTypeId},
+         #{boardExposureStat},(SELECT board_type_id
+                               FROM board_type
+                               WHERE board_type_name = #{boardTypeId} LIMIT 1),
          ( SELECT MAX(rnum) + 1
             FROM (SELECT COUNT(*) AS rnum
                   FROM board
                   WHERE board_type_id = #{boardTypeId}
                   AND deleted_at IS NULL) AS subquery),
-         #{boardReLev},#{boardReSeq},
-         #{courseId},#{boardPassword},#{boardFileName},#{boardFileOrigin})
+         #{boardReLev},#{boardReSeq}, #{courseId}, #{boardPassword}, #{boardFileName},
+         #{boardFileOrigin}, #{teacherId}, #{academyId}, 0)
     </insert>
+
+    <select id="getDetail" parameterType="string" resultType="board">
+        SELECT *
+        FROM ( SELECT ROW_NUMBER() OVER (ORDER BY b.CREATED_AT DESC) AS rnum,
+                       b.course_id, b.board_id, b.board_subject,
+                      b.teacher_id, s.teacher_name, b.created_at, b.board_readcount,
+                      b.board_exposure_stat, b.board_content, c.course_name
+               FROM BOARD b
+                        JOIN TEACHER s ON b.teacher_id = s.teacher_id
+                        JOIN COURSE c ON b.course_id = c.course_id
+               WHERE board_type_id = (
+                   SELECT board_type_id
+                   FROM board_type
+                   WHERE board_type_name = '공지사항'
+                   LIMIT 1
+             )
+             )AS temp
+        WHERE board_id = #{boardId}
+    </select>
+
+    <select id="getPreData" parameterType="int" resultType="board">
+        SELECT *
+        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, board_subject, board_id
+               FROM BOARD
+               WHERE board_type_id = (
+                   SELECT board_type_id
+                   FROM board_type
+                   WHERE board_type_name = '공지사항'
+                   LIMIT 1
+            )
+               AND deleted_at IS NULL
+            )AS temp
+        WHERE rnum = #{rnum}
+    </select>
+
+    <select id="getNextData" parameterType="int" resultType="board">
+        SELECT *
+        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, board_subject, board_id
+               FROM BOARD
+               WHERE board_type_id = (
+                   SELECT board_type_id
+                   FROM board_type
+                   WHERE board_type_name = '공지사항'
+                   LIMIT 1
+            )
+            AND deleted_at IS NULL
+            )AS temp
+        WHERE rnum = #{rnum}
+    </select>
+
+    <update id="setReadCountUpdate">
+        UPDATE board
+        SET board_readcount = board_readcount + 1
+        WHERE board_id = #{boardId}
+    </update>
 
 </mapper>

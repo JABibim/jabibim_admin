@@ -13,4 +13,8 @@ public interface StudentMapper {
     int getStudentCount(HashMap<String, Object> params);
 
     List<Student> getStudentList(HashMap<String, Object> params);
+
+    int getStudentAdCount(HashMap<String, Object> params);
+
+    List<Student> getStudentAdList(HashMap<String, Object> params);
 }

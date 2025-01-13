@@ -41,33 +41,43 @@
           AND DATE(deleted_at) &lt;= #{resignDate2}
         </if>
       </if>
-      <if test="dateField == 'deletionDue'">
-        AND DATE(deletion_date) &gt;= #{resignDate1}
-        <if test="resignDate2 != null">
-          AND DATE(deletion_date) &lt;= #{resignDate2}
-        </if>
-      </if>
     </if>
 
-    <if test="resignDate1 == null and resignDate2 != null">
-      <if test="dateField == 'withdrawal'">
+    <if test="resignDate2 != null">
+      <if test='dateField == "withdrawal"'>
         AND DATE(deleted_at) &lt;= #{resignDate2}
       </if>
-      <if test="dateField == 'deletionDue'">
+      <if test='dateField == "deletionDue"'>
         AND DATE(deletion_date) &lt;= #{resignDate2}
       </if>
     </if>
 
-    <if test="searchWord != null and searchField != null">
+    <if test='searchWord != null and searchField != null and dateField == "withdrawal"'>
       AND (
       <foreach collection="searchField" item="data" separator="or">
+        <if test='data != "d"'>
         <choose>
           <when test='data == "n"'> student_name</when>
           <when test='data == "e"'> student_email</when>
-          <when test='data == "r"'> DATE_FORMAT(deleted_at, '%y-%m-%d')</when>
-          <when test='data == "d"'> DATE_FORMAT(deletion_date, '%y-%m-%d')</when>
+          <when test='data == "r"'> DATE_FORMAT(deleted_at, '%Y-%m-%d %H:%i:%s')</when>
         </choose>
-        LIKE #{searchWord}
+            LIKE #{searchWord}
+        </if>
+      </foreach>
+      )
+    </if>
+
+    <if test='searchWord != null and searchField != null and dateField == "deletionDue"'>
+      AND (
+      <foreach collection="searchField" item="data" separator="or">
+      <if test='data != "r"'>
+        <choose>
+          <when test='data == "n"'> student_name</when>
+          <when test='data == "e"'> student_email</when>
+          <when test='data == "d"'> DATE_FORMAT(deletion_date, '%Y-%m-%d %H:%i:%s')</when>
+        </choose>
+            LIKE #{searchWord}
+      </if>
       </foreach>
       )
     </if>

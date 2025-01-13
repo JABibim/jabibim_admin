@@ -63,7 +63,7 @@
                 </div>
                 <div style="margin-top: 10px;">
 
-                    <form method="get" th:action="@{/student/ad}">
+                    <form method="get" th:action="@{student/ad}">
                         <div class="form-row h-33 d-flex text-center border">
                             <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">검색</div>
                             <div class="input-group align-self-center">
@@ -88,11 +88,11 @@
 
                 <div style="margin-top: 30px;"> <!-- 공간을 두기 위해 margin-top 추가 -->
                     <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                        <span>Total: <span th:text="${totalItems}"></span>건 </span>
+                        <span>Total: <span th:text="${listcount}">0</span>건 </span>
                         <select id="itemsPerPage" style="margin-left: 10px;">
-                            <option th:value="5" th:selected="${itemsPerPage == 5}">5</option>
-                            <option th:value="10" th:selected="${itemsPerPage == 10}">10</option>
-                            <option th:value="15" th:selected="${itemsPerPage == 15}">15</option>
+                            <option value="5" th:selected="${limit == 5}">5</option>
+                            <option value="10" th:selected="${limit == 10}">10</option>
+                            <option value="15" th:selected="${limit == 15}">15</option>
                         </select>
                         <span style="margin-left: 5px;">건씩 보기</span>
                     </div>
@@ -102,43 +102,41 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>이메일</th>
+                        <th>No.</th>
                         <th>이름</th>
+                        <th>이메일</th>
                         <th>이메일수신동의여부</th>
                         <th>이메일수신동의처리일</th>
                         <th>수신동의안내일</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:if="${#lists.isEmpty(studentAdList)}" class="text-center">
-                        <td colspan="10">데이터가 존재하지 않습니다.</td>
-                    </tr>
-                    <tr th:each="student : ${studentAdList}">
+                    <tr th:each="student, iterStat : ${studentAdlist}">
+                        <td th:text="${iterStat.index + startnumber}"></td>
                         <td>
-                            <a th:href="@{/detail(id=${student.student_id})}" th:text="${student.student_email}"></a>
+                            <a th:href="@{/students/detail(id=${student.studentId})}" th:text="${student.studentName}"></a>
                         </td>
-                        <td th:text="${student.student_name}"></td>
-                        <td th:text="${student.is_ads_agree == 1 ? '동의' : '거부'}"></td>
-                        <td th:text="${student.created_at}"></td>
-                        <td th:text="${student.created_at}"></td>
+                        <td th:text="${student.studentEmail}"></td>
+                        <td th:text="${student.adsAgreed == 1 ? '동의' : '거부'}"></td>
+                        <td th:text="${#dates.format(student.createdAt, 'yyyy-MM-dd')}"></td>
+                        <td th:text="${#dates.format(student.createdAt, 'yyyy-MM-dd')}"></td>
+                    </tr>
+                    <tr th:if="${studentAdlist != null and #lists.isEmpty(studentAdlist)}">
+                        <td colspan="10">데이터가 존재하지 않습니다.</td>
                     </tr>
                     </tbody>
                 </table>
                 <div>
                     <!-- 페이지네이션 -->
-                    <ul class="pagination justify-content-center" th:if="${!#lists.isEmpty(studentAdList)}">
-                    <li class="page-item" th:if="${currentPage > 1}">
-                            <a class="page-link"
-                               th:href="@{/ad(page=${currentPage - 1}, itemsPerPage=${itemsPerPage}, search_field=${search_field}, search_word=${search_word})}">이전</a>
+                    <ul class="pagination justify-content-center" th:if="${studentAdlist != null and !#lists.isEmpty(studentAdlist)}">
+                        <li class="page-item" th:if="${page > 1}">
+                            <a class="page-link" th:href="@{/student/ad(page=${page - 1}, limit=${limit}, search_field=${search_field}, search_word=${search_word})}">이전</a>
                         </li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(startPage, endPage)}"
-                            th:classappend="${i == currentPage} ? 'active' : ''">
-                            <a class="page-link"
-                               th:href="@{/ad(page=${i}, itemsPerPage=${itemsPerPage}, search_field=${search_field}, search_word=${search_word})}" th:text="${i}"></a>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(startpage, endpage)}" th:classappend="${i == page} ? 'active'">
+                            <a class="page-link" th:href="@{/student/ad(page=${i}, limit=${limit}, search_field=${search_field}, search_word=${search_word})}" th:text="${i}"></a>
                         </li>
-                        <li class="page-item" th:if="${currentPage < maxPage}">
-                            <a class="page-link"
-                               th:href="@{/ad(page=${currentPage + 1}, itemsPerPage=${itemsPerPage}, search_field=${search_field}, search_word=${search_word})}">다음</a>
+                        <li class="page-item" th:if="${page < maxpage}">
+                            <a class="page-link" th:href="@{/student/ad(page=${page + 1}, limit=${limit}, search_field=${search_field}, search_word=${search_word})}">다음</a>
                         </li>
                     </ul>
                 </div>
@@ -146,20 +144,20 @@
         </div>
     </div>
 </main><!-- End #main -->
-</div>
-
 
 <script th:inline="javascript">
-    $("#itemsPerPage").change(function () {
-        const select = $(this).val();
-        const page = 1;
-        const search_field = $("select[name='search_field']").val();
-        const search_word = $("#search_word").val();
+    document.getElementById("itemsPerPage").addEventListener("change", function () {
+        const select = this.value;
+        const page = 1; // 페이지를 항상 첫 페이지로 설정
+        const limit = /*[[${limit}]]*/ "";
+        const search_field = /*[[${search_field}]]*/ "";
+        const search_word = /*[[${search_word}]]*/ "";
 
-        location.href = "ad?page=" + page + "&itemsPerPage=" + select
-            + "&search_field=" + encodeURIComponent(search_field)
-            + "&search_word=" + encodeURIComponent(search_word);
+        location.href = `/student/ad?page=${page}&limit=${select}`
+                      + `&search_field=${search_field}&search_word=${search_word}`;
     });
 </script>
+</div>
+
 </body>
 </html>
