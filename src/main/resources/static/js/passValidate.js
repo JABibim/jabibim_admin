@@ -33,7 +33,7 @@ $(document).ready(function () {
                     isCurrValid = false;
                 }
 
-                checkFormValidity();  // 버튼 활성화 확
+                checkFormValidity();  // 버튼 활성화 확인
             },
             error: function () {
                 currentPasswordMessage.text('비밀번호 확인 중 오류가 발생했습니다.').css('color', 'red');
