@@ -1,6 +1,7 @@
 package com.jabibim.admin.mybatis.mapper;
 
 import com.jabibim.admin.domain.Teacher;
+import com.jabibim.admin.domain.TeacherCareer;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,4 +30,9 @@ public interface TeacherMapper {
 
     int updateProfileImage(@Param("teacherId") String teacherId, @Param("teacherImgName") String teacherImgName);
 
+    List<TeacherCareer> getcareerList(HashMap<String, Object> params);
+
+    void resetAllCareers();
+
+    int updateCareerActive(String careerName, int displayStatus);
 }

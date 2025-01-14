@@ -126,4 +126,27 @@
                , #{teacherPassword}
                , #{authRole})
     </insert>
+
+    <select id="getcareerList" parameterType="map" resultType="TeacherCareer">
+        SELECT career_id, career_name, C.created_at, display_status
+        FROM career C
+        JOIN teacher T ON C.teacher_id = T.teacher_id
+        <where>
+            <if test="!isAdmin">
+                AND T.academy_id = #{academyId} <!-- 관리자가 아닐 경우 학원 ID로 필터 -->
+            </if>
+        </where>
+    </select>
+
+    <update id="resetAllCareers">
+        UPDATE career
+        SET display_status = 0
+    </update>
+
+    <update id="updateCareerActive">
+        UPDATE career
+        SET display_status = #{displayStatus}
+        WHERE career_name = #{careerName}
+    </update>
+
 </mapper>

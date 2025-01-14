@@ -6,7 +6,53 @@
 <head>
     <meta charset="utf-8">
     <title>강사 관리 > 약력 관리</title>
+<style>
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 34px;
+        height: 20px;
+    }
 
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 20px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked + .slider {
+        background-color: #5a5dd2;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(14px);
+    }
+
+</style>
     <script th:inline="javascript">
         let contextPath = /*[[${contextPath}]]*/ '';
     </script>
@@ -42,38 +88,32 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <div th:if="${not #lists.isEmpty(careerList)}">
-                        <span th:with="num=1"></span>
-                        <tr th:each="career, iterStat : ${careerList}">
-                            <td>
-                                <span th:text="${num}"></span>
-                                <span th:with="num=${num+1}"></span>
-                            </td>
-                            <td>
-                                <a th:href="@{/profile/detail(id=${career.career_id})}" th:text="${career.career_name}"></a>
-                            </td>
-                            <td th:text="${career.created_at}"></td>
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input toggle-course-status"
-                                           type="checkbox"
-                                           id="flexSwitchCheck[[${career.career_name}]]"
-                                           data-career-name="${career.career_name}"
-                                           th:checked="${career.career_is_display == 1}"/>
-                                </div>
-                            </td>
-                        </tr>
-                    </div>
-                    <div th:if="${#lists.isEmpty(careerList)}">
-                        <tr class="text-center">
+                    <tr th:each="career, iterStat : ${careerList}">
+                        <td th:text="${iterStat.index + 1}"></td>
+                        <td>
+                            <a th:href="@{/profile/detail(id=${career.careerId})}" th:text="${career.careerName}"></a>
+                        </td>
+                        <td th:text="${#dates.format(career.createdAt, 'yyyy-MM-dd')}"></td>
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox"
+                                       th:checked="${career.displayStatus == 1}"
+                                       th:attr="data-career-name=${career.careerName}"
+                                       class="toggle-display-status">
+                                <span class="slider round"></span>
+                            </label>
+                        </td>
+
+                    </tr>
+
+                    <tr th:if="${careerList != null and #lists.isEmpty(careerList)}">
                             <td colspan="10">데이터가 존재하지 않습니다.</td>
                         </tr>
-                    </div>
                     </tbody>
                 </table>
             </div>
             <div style="margin-top: 30px; text-align: right;">
-                <a th:href="@{/teacher/write}" class="btn btn-success">약력 등록하기</a>
+                <a th:href="@{write}" class="btn btn-success">약력 등록하기</a>
             </div>
         </div>
     </div>

@@ -1,9 +1,7 @@
 package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Teacher;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
+import com.jabibim.admin.domain.TeacherCareer;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -28,4 +26,9 @@ public interface TeacherService {
 
     int updateProfileImage(String teacherId, String teacherImgName);
 
+    List<TeacherCareer> getcareerList(boolean isAdmin, String academyId);
+
+    void resetAllCareers();
+
+    int updateCareerActive(String careerName, int displayStatus);
 }
