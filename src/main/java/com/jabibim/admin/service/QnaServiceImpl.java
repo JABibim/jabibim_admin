@@ -1,5 +1,6 @@
 package com.jabibim.admin.service;
 
+import com.jabibim.admin.domain.Board;
 import com.jabibim.admin.domain.Qna;
 import com.jabibim.admin.mybatis.mapper.QnaMapper;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,31 @@ public class QnaServiceImpl implements QnaService {
 
         // DAO 호출 및 결과 반환
         return dao.getQnaList(map);
+    }
+
+    @Override
+    public void setReadCountUpdate(String id) {
+        dao.setReadCountUpdate(id);
+    }
+
+    @Override
+    public Qna getDetail(String id) {
+        return dao.getDetail(id);
+    }
+
+    @Override
+    public Qna getPreData(int rnum, String academyId) {
+        return dao.getPreData(rnum, academyId);
+    }
+
+    @Override
+    public Qna getNextData(int rnum, String academyId) {
+        return dao.getNextData(rnum, academyId);
+    }
+
+    @Override
+    public String saveUploadedFile(MultipartFile uploadFile, String saveFolder) throws Exception {
+        return QnaService.super.saveUploadedFile(uploadFile, saveFolder);
     }
 
 }
