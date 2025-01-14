@@ -5,6 +5,7 @@ import com.jabibim.admin.domain.Review;
 import com.jabibim.admin.dto.ReviewDetailVO;
 import com.jabibim.admin.func.PaginationResult;
 import com.jabibim.admin.dto.ReviewListVO;
+import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.service.ReviewService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -56,6 +57,7 @@ public class ReviewController {
       , @RequestParam(defaultValue = "all") String review_visible
       , @RequestParam(defaultValue = "snect") String review_searchField
       , @RequestParam(defaultValue = "") String search_word
+      , Authentication auth
   ) {
 
     // 검색조건 hashmap 에 저장하여 서비스에 전달
@@ -68,10 +70,10 @@ public class ReviewController {
     hm.put("review_searchField", review_searchField);
     hm.put("search_word", search_word);
 
-    int listcount = reviewService.getSearchListCount(hm);
+    int listcount = reviewService.getSearchListCount(hm, auth);
 //    logger.info("listcount: " + listcount);
 
-    List<ReviewListVO> list = reviewService.getSearchList(hm, page, limit);
+    List<ReviewListVO> list = reviewService.getSearchList(hm, page, limit, auth);
 
 //    for (ReviewListVO reviewListVO : list) {
 //      logger.info(reviewListVO.toString());
@@ -140,20 +142,13 @@ public class ReviewController {
   public ModelAndView reviewDetail(@RequestParam(required = true) String reviewid, ModelAndView mv, Authentication auth) {
 
 
-    List<ReviewDetailVO> list = reviewService.getReviewDetails(reviewid);
+    List<ReviewDetailVO> list = reviewService.getReviewDetails(reviewid, auth);
 
-    // 어드민 계정이면 isAdmin 값 임시 부여
-    // 이후 ROLE 값 결정되면 타임리프에서 ROLE 값을 통해 양식 결정
-    for (GrantedAuthority authority : auth.getAuthorities()) {
-      if (authority.getAuthority().equals("ROLE_ADMIN")) {
-        mv.addObject("isAdmin", true);
-      }
-    }
-//    for(ReviewDetailVO vo : list) {
-//      logger.info(vo.toString());
-//    }
+    AccountDto account = (AccountDto) auth.getPrincipal();
+
     mv.setViewName("review/reviewDetail");
     mv.addObject("detaillist", list);
+    mv.addObject("account", account);
     return mv;
   }
 
@@ -235,6 +230,8 @@ public class ReviewController {
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("result", result);
     jsonObject.addProperty("isActive", isActive);
+
+    response.setContentType("text/html;charset=utf-8");
 
     PrintWriter out = response.getWriter();
     out.write(jsonObject.toString());

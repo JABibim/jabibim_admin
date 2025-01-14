@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.QnaMapper">
+
+    <select id="getListCount" resultType="int">
+        select count(*)
+        from qna
+        where academy_id = #{academyId}
+        AND deleted_at IS NULL
+    </select>
+
+    <select id="getQnaList" resultType="qna">
+        SELECT
+            q.qna_id, q.created_at, q.qna_re_ref, q.qna_re_lev, q.qna_re_seq,
+            q.qna_subject, q.qna_content, q.qna_readcount, q.qna_exposure_stat, q.qna_answer_status,
+            q.qna_file_name, q.qna_file_origin, q.teacher_id, t.teacher_name,
+            q.student_id, s.student_name, q.course_id, c.course_name,
+            q.class_id, l.class_name
+        FROM qna q
+                 JOIN student s ON q.student_id = s.student_id
+                 JOIN course c ON q.course_id = c.course_id
+                 JOIN class l ON q.class_id = l.class_id
+                 LEFT JOIN teacher t ON c.teacher_id = t.teacher_id
+        WHERE q.deleted_at IS NULL
+          AND q.academy_id = #{academyId}
+        ORDER BY q.created_at DESC
+            LIMIT #{end} OFFSET #{start};
+    </select>
+
+    <select id="getDetail" parameterType="string" resultType="qna">
+        SELECT *
+        FROM ( SELECT q.qna_id, q.created_at, q.qna_re_ref, q.qna_re_lev, q.qna_re_seq,
+                      q.qna_subject, q.qna_content, q.qna_readcount, q.qna_exposure_stat, q.qna_answer_status,
+                      q.qna_file_name, q.qna_file_origin, q.teacher_id, t.teacher_name,
+                      q.student_id, s.student_name, q.course_id, c.course_name,
+                      q.class_id, l.class_name
+               FROM qna q
+                        JOIN student s ON q.student_id = s.student_id
+                        JOIN course c ON q.course_id = c.course_id
+                        JOIN class l ON q.class_id = l.class_id
+                        JOIN teacher t ON q.teacher_id = t.teacher_id
+             ) as temp
+        WHERE qna_id = #{qnaId}
+    </select>
+
+    <select id="getPreData" resultType="qna">
+        SELECT *
+        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, qna_subject, qna_id, deleted_at
+               FROM qna
+               WHERE academy_id = #{academyId}
+            )AS temp
+        WHERE  deleted_at IS NULL
+          AND rnum &gt; #{rnum}
+        ORDER BY rnum ASC
+            LIMIT 1
+    </select>
+
+    <select id="getNextData" resultType="qna">
+        SELECT *
+        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, qna_subject, qna_id, deleted_at
+               FROM qna
+               WHERE academy_id = #{academyId}
+            )AS temp
+        WHERE deleted_at IS NULL
+          AND rnum &lt; #{rnum}
+        ORDER BY rnum DESC
+            LIMIT 1
+    </select>
+
+    <update id="setReadCountUpdate">
+        UPDATE qna
+        SET qnareadcount = qna_readcount + 1
+        WHERE qna_id = #{id}
+    </update>
+
+
+</mapper>
+
+
+

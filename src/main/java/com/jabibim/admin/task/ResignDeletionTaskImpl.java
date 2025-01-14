@@ -5,7 +5,6 @@ import com.jabibim.admin.service.ResignedStudentService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,7 +25,7 @@ public class ResignDeletionTaskImpl implements com.jabibim.admin.service.ResignD
   }
 
   // 매일 00 : 00 에 삭제 프로세스 시작.
-  @Scheduled(cron="* * 0 * * *")
+  //@Scheduled(cron="* * 0 * * *")
   public void deleteResignStudentData() throws Exception {
     logger.info("정보 보관 기한 넘긴 데이터 삭제 프로세스 시작");
 

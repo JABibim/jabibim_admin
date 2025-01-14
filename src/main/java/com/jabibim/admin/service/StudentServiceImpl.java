@@ -1,18 +1,19 @@
 package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Student;
+import com.jabibim.admin.dto.GetStudentGradesDTO;
 import com.jabibim.admin.mybatis.mapper.StudentMapper;
 import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
 
 
 @Service
 public class StudentServiceImpl implements StudentService {
-    private StudentMapper dao;
-    public StudentServiceImpl(StudentMapper dao) {
 
+    private StudentMapper dao;
+
+    public StudentServiceImpl(StudentMapper dao) {
         this.dao = dao;
     }
 
@@ -31,7 +32,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<Student> getStudentList(int page, int limit, String academyId, boolean isAdmin, String state, String startDate, String endDate, String studentGrade, String search_field, String search_word) {
+    public List<Student> getStudentList(int page, int limit, String academyId, boolean isAdmin, String state
+                                        ,String startDate, String endDate, String studentGrade, String search_field
+                                        ,String search_word) {
         int startrow = (page - 1) * limit + 1;
         int endrow = startrow + limit - 1;
 
@@ -51,6 +54,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public List<GetStudentGradesDTO> getStudentGrades(String academyId) {
+        return dao.getStudentGrades(academyId);
+    }
     public int getStudentAdCount(String academyId, boolean isAdmin, String search_field, String search_word) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("academyId", academyId);
@@ -75,5 +81,6 @@ public class StudentServiceImpl implements StudentService {
 
         return dao.getStudentAdList(params);
     }
+
 
 }

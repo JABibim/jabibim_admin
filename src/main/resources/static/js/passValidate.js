@@ -23,17 +23,17 @@ $(document).ready(function () {
 
                 console.log(response)
                 if (response.valid) {
-                    currentPasswordMessage.text('현재 비밀번호가 확인되었습니다.').css('color', 'green');
+                    currentPasswordMessage.text('현재 비밀번호가 확인되었습니다.').attr('class', 'green');
                     console.log('확인 잘 되었음!!')
                     isCurrValid = true;
 
                 } else {
-                    currentPasswordMessage.text('현재 비밀번호가 일치하지 않습니다.').css('color', 'red');
+                    currentPasswordMessage.text('현재 비밀번호가 일치하지 않습니다.').attr('class', 'red');
                     changePasswordButton.prop('disabled', true);  // 비밀번호 불일치 시 버튼 비활성화
                     isCurrValid = false;
                 }
 
-                checkFormValidity();  // 버튼 활성화 확
+                checkFormValidity();  // 버튼 활성화 확인
             },
             error: function () {
                 currentPasswordMessage.text('비밀번호 확인 중 오류가 발생했습니다.').css('color', 'red');
@@ -62,7 +62,6 @@ $(document).ready(function () {
 
 
     function checkFormValidity() {
-
 
         if (isCurrValid && isPassMatch) {
             changePasswordButton.prop('disabled', false);  // 버튼 활성화

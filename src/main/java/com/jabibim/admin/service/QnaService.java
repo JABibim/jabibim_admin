@@ -1,7 +1,7 @@
 package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Board;
-import com.jabibim.admin.dto.CourseListDTO;
+import com.jabibim.admin.domain.Qna;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -9,13 +9,19 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 
-public interface BoardService {
+public interface QnaService {
 
     int getListCount(String academyId);
 
-    List<Board> getNoticeList(int page, int limit, String academyId);
+    List<Qna> getQnaList(int page, int limit, String academyId);
 
-    public List<CourseListDTO> getCourseList();
+    void setReadCountUpdate(String id);
+
+    Qna getDetail(String id);
+
+    Qna getPreData(int rnum, String academyId);
+
+    Qna getNextData(int rnum, String academyId);
 
     default public String saveUploadedFile(MultipartFile uploadFile, String saveFolder) throws Exception {
         String originalFileName = uploadFile.getOriginalFilename();
@@ -88,20 +94,4 @@ public interface BoardService {
 
         return "bbs" + year + month + date + random + "." + fileExtension;
     }
-
-    public void insertNotice(Board notice);
-
-    public Board getDetail(String id);
-
-    public Board getPreData(int rnum);
-
-    public Board getNextData(int rnum);
-
-    public void setReadCountUpdate(String id);
-
-    public boolean isBoardWriter(String boardId, String boardPassword);
-
-    public int boardModify(Board noticeData);
-
-    int boardDelete(String boardId);
 }

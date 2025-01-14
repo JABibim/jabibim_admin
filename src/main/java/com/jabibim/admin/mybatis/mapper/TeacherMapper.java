@@ -2,6 +2,7 @@ package com.jabibim.admin.mybatis.mapper;
 
 import com.jabibim.admin.domain.Teacher;
 import com.jabibim.admin.domain.TeacherCareer;
+import com.jabibim.admin.dto.TeacherProfileDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,7 +21,7 @@ public interface TeacherMapper {
 
     List<Teacher> getTeacherList(HashMap<String, Object> map);
 
-    Teacher teacherInfo(String id);
+    TeacherProfileDTO teacherInfo(String id);
 
     int update(Teacher teacher);
 
