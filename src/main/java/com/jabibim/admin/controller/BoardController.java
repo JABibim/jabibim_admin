@@ -281,15 +281,4 @@ public class BoardController {
             return "redirect:/board/notice";
         }
     }
-
-    @GetMapping(value="/qna/detail")
-    public String qnaDetail() {
-        return "qna/qnaDetail";
-    }
-
-    @GetMapping(value="/qna")
-    public String qnaList() {
-        return "qna/qnaList";
-    }
-
 }
