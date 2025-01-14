@@ -11,9 +11,9 @@ import java.util.List;
 @Mapper
 public interface BoardMapper {
 
-    int getListCount(String academyId);
+    public int getListCount(String academyId);
 
-    List<Board> getNoticeList(HashMap<String, Object> map);
+    public List<Board> getNoticeList(HashMap<String, Object> map);
 
     public List<CourseListDTO> getCourseList(HashMap<String, Object> map);
 
@@ -32,5 +32,5 @@ public interface BoardMapper {
 
     public int boardModify(Board noticeData);
 
-    int boardDelete(Board notice);
+    public int boardDelete(Board notice);
 }

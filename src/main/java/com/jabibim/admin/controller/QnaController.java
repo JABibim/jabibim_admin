@@ -1,5 +1,6 @@
 package com.jabibim.admin.controller;
 
+import com.jabibim.admin.domain.Board;
 import com.jabibim.admin.domain.PaginationResult;
 import com.jabibim.admin.domain.Qna;
 import com.jabibim.admin.func.UUIDGenerator;
@@ -41,7 +42,7 @@ public class QnaController {
             ModelAndView mv,
             HttpSession session
     ){
-        session.setAttribute("referer", "notice");
+        session.setAttribute("referer", "qna");
         session.setAttribute("page", page);
         int limit =10;
 
@@ -91,8 +92,42 @@ public class QnaController {
     }
 
     @GetMapping(value="/qna/detail")
-    public String qnaDetail() {
-        return "qna/qnaDetail";
+    public ModelAndView qnaDetail(String id, ModelAndView mv,
+                                     HttpServletRequest request,
+                                     @RequestHeader(value="referer", required=false) String beforeURL, HttpSession session) {
+
+        String sessionReferer = (String) session.getAttribute("referer");
+        String academyId = (String) session.getAttribute("aid");
+
+        logger.info("referer: " + beforeURL);
+        if (sessionReferer != null && sessionReferer.equals("qna")) {
+            if (beforeURL != null && beforeURL.endsWith("qna")) {
+                System.out.println("---------readCount 실행-----------");
+                qnaService.setReadCountUpdate(id);
+            }
+            session.removeAttribute("referer");
+        }
+
+        Qna qna = qnaService.getDetail(id);
+        System.out.println("Rnum : " + qna.getRnum());
+        Qna preData = qnaService.getPreData(qna.getRnum(), academyId);
+        Qna nextData = qnaService.getNextData(qna.getRnum(), academyId);
+
+
+        if (qna == null) {
+            logger.info("상세보기 실패");
+
+            mv.setViewName("error/error");
+            mv.addObject("url", request.getRequestURI());
+            mv.addObject("message", "상세보기 실패입니다.");
+        } else {
+            logger.info("상세보기 성공");
+            mv.setViewName("qna/qnaDetail");
+            mv.addObject("qnaData", qna);
+            mv.addObject("preData", preData);
+            mv.addObject("nextData", nextData);
+        }
+        return mv;
     }
 
 }
