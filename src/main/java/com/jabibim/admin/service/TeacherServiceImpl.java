@@ -1,6 +1,7 @@
 package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Teacher;
+import com.jabibim.admin.domain.TeacherCareer;
 import com.jabibim.admin.dto.TeacherProfileDTO;
 import com.jabibim.admin.mybatis.mapper.TeacherMapper;
 import org.springframework.stereotype.Service;
@@ -93,6 +94,27 @@ public class TeacherServiceImpl implements TeacherService {
 
     public int updateProfileImage(String teacherId, String teacherImgName)  {
         return teacherMapper.updateProfileImage(teacherId, teacherImgName);
+    }
+
+    @Override
+    public List<TeacherCareer> getcareerList(boolean isAdmin, String academyId) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("isAdmin", isAdmin);
+        params.put("academyId", academyId);
+
+        return dao.getcareerList(params);
+    }
+
+    @Override
+    public void resetAllCareers() {
+        dao.resetAllCareers();
+    }
+
+    @Override
+    public int updateCareerActive(String careerName, int displayStatus) {
+        System.out.println("updateCareerActive 호출됨: careerName=" + careerName + ", displayStatus=" + displayStatus);
+
+        return dao.updateCareerActive(careerName, displayStatus);
     }
 
 
