@@ -55,13 +55,8 @@
     </select>
 
     <select id="teacherInfo" resultType="TeacherProfileDTO">
-        select t.teacher_name teacher_name,
-               a.academy_name academy_name,
-               t.teacher_job teacher_job,
-               t.teacher_password teacher_password,
-               t.teacher_email teacher_email,
-               t.teacher_phone teacher_phone,
-               t.teacher_img_name teacher_img_name
+        select t.teacher_name, a.academy_name, t.teacher_job, t.teacher_password,
+               t.teacher_email, t.teacher_phone, t.teacher_img_name
         from teacher t, academy a
         where t.academy_id = a.academy_id
         and teacher_id = #{id}
@@ -73,7 +68,6 @@
             teacher_phone = #{teacherPhone},
             teacher_email = #{teacherEmail}
         where teacher_id = #{teacherId}
-
     </update>
 
     <update id="updatePassword">

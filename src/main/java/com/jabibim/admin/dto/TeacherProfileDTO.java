@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-
 public class TeacherProfileDTO {
     private String teacherName;
     private String academyName;
