@@ -86,20 +86,24 @@ function modifyGradeInfo(gradeId, gradeName, discountRate) {
 
 function addGrade(gradeName, discountRate) {
     $.ajax({
-        url: 'addGrade',
+        url: '/grade/addGrade',
         type: 'POST',
         contentType: 'application/json',
+        beforeSend : function(xhr)
+        {   //데이터를 전송하기 전에 헤더에 csrf값을 설정합니다.
+            xhr.setRequestHeader(header, token);
+        },
         data: JSON.stringify({
             gradeName,
             discountRate,
         }),
         success: function (res) {
             if (res.status === 'success') {
-                localStorage.setItem('toastMessage', '등급 추가가 성공하였습니다.');
+                localStorage.setItem('toastMessage', res.message);
 
                 location.reload();
             } else if (res.status === 'fail') {
-                localStorage.setItem('toastMessage', '등급 추가가 실패하였습니다.');
+                localStorage.setItem('toastMessage', res.message);
 
                 location.reload();
             }
@@ -304,7 +308,7 @@ $(function () {
         deleteGrade(academyId, gradeId, newGradeId);
     });
 
-    // [chan] TOAST 메세지 출력용입니다. 화면에서 reload가 일어나기 때문에 추가한 로직입니다.
+    // [chan] TOAST 메세지 출력용입니다. 화면에서 reload 가 일어나기 때문에 추가한 로직입니다.
     const toastMessage = localStorage.getItem('toastMessage');
     if (toastMessage) {
         showToast(toastMessage);

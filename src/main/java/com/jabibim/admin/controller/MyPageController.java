@@ -136,11 +136,9 @@ public class MyPageController {
         // 클라이언트에서 전달된 비밀번호를 받아옴
 
         String password = requestData.get("password");  //입력받은 패스워드 값
-        System.out.println("입력한 패스워드는요!!!!!!!!!!!!!!!!!!!!!!!!" + password);
 
         HttpSession session = request.getSession();
         String teacherId = (String) session.getAttribute("id");
-
         Teacher teacher = teacherService.getTeacherById(teacherId);
 
         Map<String, Object> response = new HashMap<>();
