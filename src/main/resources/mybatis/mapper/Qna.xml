@@ -25,6 +25,7 @@
                  LEFT JOIN teacher t ON c.teacher_id = t.teacher_id
         WHERE q.deleted_at IS NULL
           AND q.academy_id = #{academyId}
+          AND q.qna_re_lev = 0
         ORDER BY q.created_at DESC
             LIMIT #{end} OFFSET #{start};
     </select>

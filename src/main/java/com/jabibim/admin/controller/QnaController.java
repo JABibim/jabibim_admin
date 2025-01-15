@@ -123,7 +123,7 @@ public class QnaController {
             mv.addObject("message", "상세보기 실패입니다.");
         } else {
             logger.info("상세보기 성공");
-            mv.setViewName("qna/qnaDetail");
+            mv.setViewName("qna/qnaPage");
             mv.addObject("qnaData", qna);
             mv.addObject("updateData", upData);
             mv.addObject("preData", preData);
@@ -275,7 +275,4 @@ public class QnaController {
             return "redirect:/board/qna";
         }
     }
-
-
-
 }
