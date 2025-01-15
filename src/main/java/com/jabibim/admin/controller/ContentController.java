@@ -151,16 +151,10 @@ public class ContentController {
             , @RequestPart("course_tag") String courseTag
             , @RequestPart("course_diff") String courseDiff
     ) {
-        System.out.println("======> isProfileChanged : " + isProfileChanged);
-
         AccountDto account = (AccountDto) authentication.getPrincipal();
         String teacherId = account.getId();
         String academyId = account.getAcademyId();
-
         contentService.updateCourse(teacherId, academyId, courseId, courseName, courseSubject, isProfileChanged, courseImage, courseInfo, coursePrice, courseTag, courseDiff);
-        // TODO 프로필 이미지 변경 여부 체크
-        // TODO 과정 정보 업데이트 하기
-
 
         return "redirect:/content";
     }

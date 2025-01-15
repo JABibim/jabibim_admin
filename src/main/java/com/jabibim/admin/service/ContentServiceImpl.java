@@ -89,6 +89,7 @@ public class ContentServiceImpl implements ContentService {
             map.put("courseProfilePath", newCourseProfilePath);
         }
 
+        map.put("isProfileChanged", isNewProfile);
         map.put("courseId", courseId);
         map.put("courseName", courseName);
         map.put("courseSubject", courseSubject);
@@ -104,21 +105,10 @@ public class ContentServiceImpl implements ContentService {
         if (courseImage.getOriginalFilename() == null) {
             throw new IllegalArgumentException("courseImage 또는 파일 이름이 null입니다.");
         }
-        String fileName = "profile." + getExtension(courseImage.getOriginalFilename());
-
-        System.out.println("🚀 ====> courseId : " + courseId);
-        System.out.println("🚀 ====> courseImage : " + courseImage);
-        System.out.println("🚀 ====> fileName : " + fileName);
-
-        // TODO 1. courseId로 courseProfilePath를 가져온다.
         String asisProfileImagePath = contentDao.getAsIsProfileImagePath(courseId);
-        System.out.println("🚀 ====> asisProfileImagePath : " + asisProfileImagePath);
-
-        // TODO 2. 가져온 courseProfilePath를 이용해 S3에서 해당 파일을 삭제한다.
         s3Uploader.deleteFileFromS3(asisProfileImagePath);
-
-        // TODO 3. 새로운 courseImage를 S3에 업로드한다.
         String newProfileImageName = "profile." + getExtension(courseImage.getOriginalFilename());
+
         return s3Uploader.uploadFileToS3(courseImage, "course/" + courseId + "/profile/" + newProfileImageName);
     }
 

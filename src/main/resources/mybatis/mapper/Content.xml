@@ -172,8 +172,10 @@
              , course_price = #{coursePrice}
              , course_tag = #{courseTag}
              , course_diff = #{courseDiff}
+           <if test="isProfileChanged == true">
              , course_profile_origin_name = #{courseProfileOriginName}
              , course_profile_path = #{courseProfilePath}
+           </if>
         WHERE course_id = #{courseId}
     </update>
 

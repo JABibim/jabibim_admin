@@ -171,7 +171,6 @@ $(function () {
         // 과정명
         const $courseName = $('#course_name');
         if ($courseName.val().trim() === '') {
-            console.log('==> 1. 과정명 에러!!!');
             showToast('과정명을 입력해주세요.');
             $courseName.focus();
 
@@ -181,7 +180,6 @@ $(function () {
         // 과목명
         const $courseSubject = $('#course_subject');
         if ($courseSubject.val().trim() === '') {
-            console.log('==> 2. 과목명 에러!!!');
             showToast('과정이 속한 과목(예) 수학, 과학, ...)을 입력해주세요.');
             $courseSubject.focus();
 
@@ -208,7 +206,6 @@ $(function () {
             return false;
         }
 
-        console.log('=========================================================> 모두 해결!')
         return true;
     })
 

@@ -35,7 +35,7 @@
         <div class="card-body p-4">
             <form th:action="@{/content/modifyCourse}" method="post" name="courseForm" enctype="multipart/form-data">
                 <input type="hidden" name="course_id" th:value="${course.courseId}">
-                <input type="hidden" name="is_profile_changed" id="is_profile_changed">
+                <input type="hidden" name="is_profile_changed" id="is_profile_changed" th:value="false">
 
                 <div class="row mb-3">
                     <label for="course_name" class="col-sm-2 col-form-label fw-bold">과정명</label>
