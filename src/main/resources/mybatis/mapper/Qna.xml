@@ -8,6 +8,7 @@
         from qna
         where academy_id = #{academyId}
         AND deleted_at IS NULL
+        AND qna_re_lev = 0
     </select>
 
     <select id="getQnaList" resultType="qna">
@@ -70,11 +71,74 @@
 
     <update id="setReadCountUpdate">
         UPDATE qna
-        SET qnareadcount = qna_readcount + 1
+        SET qna_readcount = qna_readcount + 1
         WHERE qna_id = #{id}
     </update>
 
+    <select id="getQnaById" resultType="qna">
+        SELECT *
+        FROM qna
+        WHERE qna_id= #{detailId}
+    </select>
 
+    <insert id="replyQna">
+        INSERT INTO qna
+        (qna_id, created_at, qna_re_ref, qna_re_lev, qna_re_seq,
+         qna_subject, qna_password ,qna_content, qna_readcount, qna_exposure_stat,
+         qna_answer_status, qna_file_name, qna_file_origin, teacher_id, course_id,
+         class_id, student_id, academy_id)
+        VALUES
+            (#{qnaId}, NOW(), #{qnaReRef}, #{qnaReLev}, 1,
+             #{qnaSubject}, #{qnaPassword} ,#{qnaContent}, 0, #{qnaExposureStat},
+             #{qnaAnswerStatus}, #{qnaFileName}, #{qnaFileOrigin}, #{teacherId}, #{courseId},
+             #{classId}, #{studentId}, #{academyId})
+    </insert>
+
+    <update id="answerQna">
+        UPDATE qna
+        SET qna_answer_status = 1
+        WHERE qna_id = #{id}
+    </update>
+
+    <select id="getUpData" resultType="qna">
+        SELECT *
+        FROM qna
+        WHERE qna_re_ref = (SELECT qna_re_ref
+                            FROM qna
+                            WHERE qna_id = #{id}
+                            AND qna_re_lev = 0)
+        AND qna_re_lev &gt; 0
+        AND deleted_at IS NULL
+    </select>
+
+    <select id="isBoardWriter" resultType="qna">
+        SELECT *
+        FROM qna
+        WHERE qna_id = #{id}
+          AND qna_password = #{pass}
+    </select>
+
+    <update id="qnaModify">
+        UPDATE qna
+        SET qna_subject  = #{qnaSubject},
+            qna_content  = #{qnaContent},
+            qna_file_name     = #{qnaFileName},
+            qna_file_origin = #{qnaFileOrigin},
+            qna_exposure_stat = #{qnaExposureStat}
+        WHERE qna_id = #{qnaId}
+    </update>
+
+    <update id="qnaDelete">
+        UPDATE qna
+        SET deleted_at = NOW()
+        WHERE qna_id = #{updateId}
+    </update>
+
+    <update id="qnaAnswerStat">
+        UPDATE qna
+        SET qna_answer_status = 0
+        WHERE qna_id = #{qnaId}
+    </update>
 </mapper>
 
 

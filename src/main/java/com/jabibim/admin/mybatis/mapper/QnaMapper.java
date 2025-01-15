@@ -1,11 +1,11 @@
 package com.jabibim.admin.mybatis.mapper;
 
-import com.jabibim.admin.domain.Board;
 import com.jabibim.admin.domain.Qna;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 
 @Mapper
@@ -22,4 +22,20 @@ public interface QnaMapper {
     public Qna getPreData(int rnum, String academyId);
 
     public Qna getNextData(int rnum, String academyId);
+
+    public int replyQna(Qna qna);
+
+    public Optional<Qna> getQnaById(String qnaId);
+
+    public void answerQna(String qnaId);
+
+    public Qna getUpData(String id);
+
+    public Qna isBoardWriter(HashMap<String, Object> map);
+
+    public int qnaModify(Qna qnaData);
+
+    public int qnaDelete(String updateId);
+
+    public void qnaAnswerStat(String qnaId);
 }

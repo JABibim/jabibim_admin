@@ -1,6 +1,5 @@
 package com.jabibim.admin.service;
 
-import com.jabibim.admin.domain.Board;
 import com.jabibim.admin.domain.Qna;
 import com.jabibim.admin.mybatis.mapper.QnaMapper;
 import org.springframework.stereotype.Service;
@@ -8,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class QnaServiceImpl implements QnaService {
@@ -64,6 +64,56 @@ public class QnaServiceImpl implements QnaService {
     @Override
     public String saveUploadedFile(MultipartFile uploadFile, String saveFolder) throws Exception {
         return QnaService.super.saveUploadedFile(uploadFile, saveFolder);
+    }
+
+    @Override
+    public int replyQna(Qna qna) {
+            return dao.replyQna(qna);
+    }
+
+    @Override
+    public void answerQna(String qnaId) {
+        dao.answerQna(qnaId);
+    }
+
+    @Override
+    public Optional<Qna> getQnaById(String detailId) {
+        return dao.getQnaById(detailId);
+    }
+
+    @Override
+    public Qna getUpData(String id) {
+        return dao.getUpData(id);
+    }
+
+    @Override
+    public boolean isBoardWriter(String qnaId, String qnaPassword) {
+        HashMap<String, Object> map = new HashMap<>();
+
+
+        map.put("id", qnaId);
+        map.put("pass", qnaPassword);
+
+        Qna result = dao.isBoardWriter(map);
+
+        return result != null;
+    }
+
+    @Override
+    public int qnaModify(Qna qnaData) {
+        return dao.qnaModify(qnaData);
+    }
+
+    @Override
+    public int qnaDelete(String updateId) {
+
+        return dao.qnaDelete(updateId);
+    }
+
+    @Override
+    public void qnaAnswerStat(String qnaId) {
+        dao.qnaAnswerStat(qnaId);
+
     }
 
 }

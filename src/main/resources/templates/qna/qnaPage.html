@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>중앙비빔 Admin</title>
+    <style>
+        #upfile{display:none}
+        img{width:20px;}
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <script th:src="@{/js/jquery-3.7.1.js}"></script>
+    <script th:src="@{/js/qnaModify.js}"></script>
+    <script th:src="@{/js/qnaWrite.js}"></script>
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>홈페이지 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{dashboard}">게시판</a></li>
+                <li class="breadcrumb-item active">QnA 상세정보</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <div class="container">
+        <!-- QnA 상세보기 -->
+        <div th:include="~{qnaDetail}" class="card"></div>
+
+        <!-- QnA 답글 -->
+<!--        <div th:include="~{qnaReply}" class="card"></div>-->
+    </div>
+</main><!-- End #main -->
+    <div class="modal" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <form name="deleteForm" th:action="@{/board/qna/delete}" method="post">
+
+                        <th:block th:if="${updateData != null}">
+                            <input type="hidden" name="qnaId" th:value="${qnaData.qnaId}" id="Id">
+                            <input type="hidden" name="updateId" th:value="${updateData.qnaId}">
+                        </th:block>
+                        <div class="form-group">
+                            <label for="password">비밀번호</label>
+                            <input type="password"
+                                   class="form-control" placeholder="Enter password"
+                                   name="qnaPassword2" id="password">
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-primary">전송</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">취소</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

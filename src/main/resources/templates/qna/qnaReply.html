@@ -1,0 +1,179 @@
+<th:block th:fragment="qnaReply">
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <!-- General Form Elements -->
+            <form th:action="@{/board/qna/reply}" enctype="multipart/form-data" method="post" name="qnaForm" id="save-form">
+
+                <th:block th:if="${updateData != null}">
+                    <input type="hidden" name="updateId" th:value="${updateData.qnaId}">
+                </th:block>
+                <input type="hidden" name="qnaId" th:value="${qnaData.qnaId}" id="qnaId">
+                <br>
+                <h3 class="card-title">QnA 답글</h3><br>
+                <div class="row mb-3">
+                    <label for="qnaSubject" class="col-sm-2 col-form-label">제목</label>
+                    <div class="col-sm-10">
+                        <th:block th:if="${updateData != null}">
+                                <textarea name="qnaSubject" id="qnaSubject" maxlength="100"
+                                          rows="1" class="form-control"
+                                          th:text="${updateData.qnaSubject}">
+                                </textarea>
+                        </th:block>
+                        <th:block th:if="${updateData == null and qnaData != null}">
+                                <textarea name="qnaSubject" id="newQnaSubject" maxlength="100"
+                                          rows="1" class="form-control"
+                                          th:text="'Re: ' + ${qnaData.qnaSubject}">
+                                </textarea>
+                        </th:block>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label fw-bold">내용</label>
+                    <th:block th:if="${updateData != null and not #strings.isEmpty(updateData.qnaContent)}">
+                        <div class="col-sm-10 pb-5">
+                            <div id="editor2" th:utext="${updateData.qnaContent}"></div>
+                            <input type="hidden" name="qnaContent" id="qnaContent">
+                        </div>
+                    </th:block>
+                    <th:block th:if="${updateData == null}">
+                        <div class="col-sm-10 pb-5">
+                            <div id="editor3"></div>
+
+                            <input type="hidden" name="qnaContent" id="qnaContent2">
+                        </div>
+                    </th:block>
+                </div>
+
+                <div class="row mb-3">
+                    <th:block th:if="${updateData != null and not #strings.isEmpty(updateData.qnaFileOrigin)}">
+                        <label class="col-sm-2 col-form-label">기존 파일</label>
+                        <label class="fw-bold">
+                            파일 첨부
+                            <img th:src="@{/img/attach.png}" alt="파일첨부">
+                            <input type="file" id="upfile" name="uploadfile">
+                        </label>
+                        <span id="fileValue" th:text="${updateData.qnaFileOrigin}"></span>
+                        <img th:src="@{/img/remove.png}" alt="파일삭제" width="10px" class="remove">
+                    </th:block>
+                    <th:block th:if="${updateData == null}">
+                        <label for="upfile" class="col-sm-2 col-form-label fw-bold">파일첨부
+                            <img th:src="@{/img/attach.png}" alt="파일첨부">
+                            <input type="file" id="upfile2" name="uploadfile">
+                        </label>
+                        <span id="filevalue2"></span>
+                    </th:block>
+                </div>
+
+                <fieldset class="row mb-3">
+                    <legend class="col-form-label col-sm-2 pt-0 fw-bold">노출</legend>
+                    <div class="col-sm-10 d-flex">
+                        <div class="form-check" style="padding-right: 16px;">
+                            <input
+                                    class="form-check-input"
+                                    name="qnaExposureStat"
+                                    type="radio"
+                                    id="exposure"
+                                    value="1"
+                                    th:checked="${updateData != null ? updateData.qnaExposureStat == 1 : true}">
+                            <label class="form-check-label" for="exposure">노출</label>
+                        </div>
+                        <div class="form-check" style="padding-right: 16px;">
+                            <input
+                                    class="form-check-input"
+                                    name="qnaExposureStat"
+                                    type="radio"
+                                    id="hide"
+                                    value="0"
+                                    th:checked="${updateData != null ? updateData.qnaExposureStat == 0 : false}">
+                            <label class="form-check-label" for="hide">숨김</label>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="row mb-3">
+                    <label for="qnaPassword" class="col-sm-2 col-form-label fw-bold">비밀번호</label>
+                    <div class="col-sm-10">
+                        <input name="qnaPassword" id="qnaPassword" type="password" maxlength="30"
+                               class="form-control" placeholder="Enter board_pass">
+                    </div>
+                </div>
+
+            </form>
+            <div style="display: flex; gap: 10px; margin-top: 20px; float: right;">
+
+                <th:block th:if="${updateData == null}">
+                    <button type="button" id="save-button" class="btn btn-success btn-sm"
+                            onClick="submitForm('reply')"
+                            style="float: right; margin: 3px;">답변</button>
+                </th:block>
+                <th:block th:if="${updateData != null}">
+                    <button type="button" id="save-button2" class="btn btn-success btn-sm"
+                            onClick="submitForm('update')"
+                            style="float: right; margin: 3px;">수정</button>
+
+                    <button class="btn btn-danger btn-sm"
+                            style="float: right; margin: 5px;"
+                            data-bs-toggle="modal"
+                            data-bs-target="#myModal">삭제</button>
+                </th:block>
+
+                <button type="reset" class="btn btn-secondary btn-sm"
+                        style="float: right; margin: 3px;">취소</button>
+            </div>
+        </div>
+    </div><!-- End General Form Elements -->
+    <table class="table table-bordered">
+
+        <tr th:if="${nextData != null}">
+            <td class="col-sm-2 col-form-label">다음 글</td>
+            <td>
+                <a th:href="@{'detail?id=' + ${nextData.qnaId}}" th:text="${nextData.qnaSubject}"></a>
+            </td>
+        </tr>
+
+        <tr th:if="${preData != null}">
+            <td class="col-sm-2 col-form-label">이전 글</td>
+            <td>
+                <a th:href="@{'detail?id=' + ${preData.qnaId}}" th:text="${preData.qnaSubject}"></a>
+            </td>
+        </tr>
+
+    </table>
+</div>
+    <script th:inline="javascript">
+
+        function submitForm(action) {
+            var form = document.getElementById('save-form');
+            if (action === 'replyProcess') {
+                form.action = 'replyProcess';
+            } else if (action === 'update') {
+                form.action = 'update';
+            }
+            form.submit();
+        }
+
+
+        $(document).ready(function () {
+            // Thymeleaf 변수를 JavaScript로 전달할 때 [[${result}]]를 사용
+            const result = /*[[${result}]]*/ 'default'; // 기본값 'default'로 설정
+
+            console.log("Result value:", result); // 디버깅용
+
+            // result 값이 passFail인 경우 alert 표시
+            if (result === 'passFail') {
+                alert("비밀번호가 일치하지 않습니다.");
+            }
+
+            $("form[th\\:action='@{/board/qna/delete}']").submit(function () {
+                const passwordInput = $("#boardPassword");
+                if (passwordInput.val().trim() === '') {
+                    alert("비밀번호를 입력하세요.");
+                    passwordInput.focus();
+                    return false;
+                }
+            });
+        });
+
+    </script>
+</th:block>
