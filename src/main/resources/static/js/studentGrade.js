@@ -22,7 +22,8 @@ function getUpdatableGradeList(academyId, gradeId) {
         data: {
             academyId, gradeId
         }
-        , url: 'getUpdatableGradeList'
+        , url: '/grade/getUpdatableGradeList'
+        , type : 'GET'
         , dataType: 'json'
         , cache: false
         , success: function (data) {
@@ -59,9 +60,13 @@ function modifyGradeInfo(gradeId, gradeName, discountRate) {
     }
 
     $.ajax({
-        url: `modifyGradeInfo`,
+        url: '/grade/modifyGradeInfo',
         type: 'POST',
         contentType: 'application/json',
+        beforeSend : function(xhr)
+        {   //데이터를 전송하기 전에 헤더에 csrf 값을 설정합니다.
+            xhr.setRequestHeader(header, token);
+        },
         data: JSON.stringify({
             gradeId,
             gradeName,
@@ -69,11 +74,12 @@ function modifyGradeInfo(gradeId, gradeName, discountRate) {
         }),
         success: function (res) {
             if (res.status === 'success') {
-                localStorage.setItem('toastMessage', '등급 수정이 성공하였습니다.');
+                localStorage.setItem('toastMessage', res.message);
+                console.log('toastMessage');
 
                 location.reload();
             } else if (res.status === 'fail') {
-                localStorage.setItem('toastMessage', '등급 수정이 실패하였습니다.');
+                localStorage.setItem('toastMessage', res.message);
 
                 location.reload();
             }
@@ -90,7 +96,7 @@ function addGrade(gradeName, discountRate) {
         type: 'POST',
         contentType: 'application/json',
         beforeSend : function(xhr)
-        {   //데이터를 전송하기 전에 헤더에 csrf값을 설정합니다.
+        {   //데이터를 전송하기 전에 헤더에 csrf 값을 설정합니다.
             xhr.setRequestHeader(header, token);
         },
         data: JSON.stringify({
@@ -116,7 +122,7 @@ function addGrade(gradeName, discountRate) {
 
 function deleteGrade(academyId, gradeId, newGradeId) {
     $.ajax({
-        url: 'deleteGrade',
+        url: '/grade/deleteGrade',
         type: 'post',
         dataType: 'json',
         cache: false,

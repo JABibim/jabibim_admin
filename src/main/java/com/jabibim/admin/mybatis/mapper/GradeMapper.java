@@ -8,4 +8,8 @@ public interface GradeMapper {
 
     void addGrade(Grade grade);
 
+    void modifyGrade(Grade grade);
+
+    void getUpdatableGradeList(Grade grade);
+
 }

@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jabibim.admin.mybatis.mapper.GradeMapper">
 
-    <insert id="addGrade"  >
+    <insert id="addGrade">
         INSERT into grade
         (grade_id,
          created_at,
@@ -20,4 +20,20 @@
                 #{discountRate},
                 #{academyId})
     </insert>
+
+    <update id="modifyGrade">
+        UPDATE grade
+        SET
+         grade_name = #{gradeName},
+         updated_at = current_timestamp,
+         discount_rate = #{discountRate}
+        WHERE grade_id = #{gradeId}
+    </update>
+
+    <select id="getUpdatableGradeList">
+        SELECT grade_name
+        FROM grade
+        WHERE academy_id = #{academyId}
+        AND deleted_at IS NOT null;
+    </select>
 </mapper>
