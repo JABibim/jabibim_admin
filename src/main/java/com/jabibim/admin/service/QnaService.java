@@ -1,12 +1,12 @@
 package com.jabibim.admin.service;
 
-import com.jabibim.admin.domain.Board;
 import com.jabibim.admin.domain.Qna;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 public interface QnaService {
@@ -94,4 +94,20 @@ public interface QnaService {
 
         return "bbs" + year + month + date + random + "." + fileExtension;
     }
+
+    public int replyQna(Qna qna);
+
+    public void answerQna(String qnaId);
+
+    public Optional<Qna> getQnaById(String detailId);
+
+    public Qna getUpData(String id);
+
+    public boolean isBoardWriter(String qnaId, String qnaPassword);
+
+    public int qnaModify(Qna qnaData);
+
+    public int qnaDelete(String updateId);
+
+    public void qnaAnswerStat(String qnaId);
 }

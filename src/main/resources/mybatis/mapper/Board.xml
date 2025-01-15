@@ -130,7 +130,6 @@
             board_content  = #{boardContent},
             board_file_name     = #{boardFileName},
             board_file_origin = #{boardFileOrigin},
-            board_notice =  #{boardNotice},
             board_exposure_stat = #{boardExposureStat},
             board_notice = #{boardNotice}
         WHERE board_id = #{boardId}

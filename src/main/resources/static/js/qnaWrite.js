@@ -1,85 +1,55 @@
 $(document).ready(function() {
-    const quill = new Quill('#editor2', {
-        theme: 'snow'
+    // Quill 에디터 초기화
+    const quill = new Quill('#editor3', { theme: 'snow' });
+    console.log(quill);  // quill 객체가 제대로 생성되었는지 확인
+
+    // 파일 첨부 변경 이벤트
+    $('#upfile2').change(function() {
+        console.log($(this).val());  // 파일 경로 출력
+        const inputfile = $(this).val().split('\\');  // \ 기준으로 분할
+        $('#filevalue2').text(inputfile[inputfile.length - 1]);  // <span>에 파일명 출력
     });
 
-    let check = 0;
-
-    $('#board_file_name').change(function (){
-        console.log($(this).val());
-
-        const inputFile = $(this).val().split('\\');
-        $('#fileValue').text(inputFile[inputFile.length - 1]);
-    })
-
-    // '등록' 버튼 클릭 시 Quill 에디터 내용을 숨겨진 input에 저장하고 폼 제출
+    // '등록' 버튼 클릭 시 폼 제출 처리
     $('#save-button').on('click', function(event) {
-        event.preventDefault(); // 기본 submit 동작을 막음
+        event.preventDefault();  // 기본 submit 동작을 막음
 
-        // Quill 에디터의 HTML 내용 가져오기
         let content = quill.root.innerHTML;
-        console.log("Quill 에디터 내용:", content);  // 확인용 로그
+        console.log("editor3 content: " + content);
 
         // 유효성 검사
-        let boardTitle = $('#board_title').val().trim();
+        let qnaSubject = $('#newQnaSubject').val().trim();
         let exposureChecked = $('#exposure').is(':checked');
         let hideChecked = $('#hide').is(':checked');
 
-        // 유효성 검사
 
-        if (!boardTitle) {
+        // 유효성 검사 - 제목
+        if (!qnaSubject) {
             alert("제목을 입력해주세요.");
-            $('#board_title').focus();
+            $('#newQnaSubject').focus();
             return false;
         }
 
+        // Quill editor에서 가져온 내용이 비어 있거나 기본값인 경우
         if (content === '' || content === '<p><br></p>') {
             alert('내용을 입력하세요');
-            $('#editor2').focus();  // Quill 에디터로 포커스 이동
+            $('#editor3').focus();  // Quill 에디터로 포커스 이동
             return false;
         }
 
+        // 유효성 검사 - 노출 또는 숨김 선택 여부
         if (!exposureChecked && !hideChecked) {
             alert("노출 또는 숨김을 선택해주세요.");
             $('#exposure').focus();
             return false;
         }
 
-        // Quill editor의 내용을 hidden input에 저장
-        $('#qna_content').val(content);
-        console.log("숨겨진 input 값:", $('#qna_content').val());  // 확인용 로그
+        console.log("content before setting: ", content);
+        console.log($('#qnaContent2'));
+        $('#qnaContent2').val(content);
+        console.log("content after setting: ", $('#qnaContent2').val());
 
         // 폼 제출
         $('#save-form').submit();
-    });
-
-    // 파일 선택 시 파일명 변경
-    $('#upfile').change(function () {
-        check++;
-        const maxSizeInBytes = 5 * 1024 * 1024;
-        const file = this.files[0]; // 선택된 파일
-
-        if (file.size > maxSizeInBytes) {
-            alert('5MB 이하 크기로 업로드 하세요.');
-            $(this).val('');
-        } else {
-            $('#fileValue').text(file.name);  // 여기에 파일 이름 설정
-            console.log("파일 선택 후 #fileValue 텍스트:", $('#fileValue').text());  // 확인용 로그
-        }
-
-        show();
-    });
-
-    function show() {
-        $('.remove')
-            .css('display', $('#fileValue').text() ? 'inline-block' : 'none')
-            .css({'position': 'relative', 'top': '-5px'});
-    }
-
-    show();
-
-    $('.remove').click(function () {
-        $('#fileValue').text('');
-        $(this).css('display', 'none');
     });
 });

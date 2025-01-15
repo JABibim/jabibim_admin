@@ -50,7 +50,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void insertNotice(Board notice) {
-        System.out.println("Service layer - boardExposureStat: " + notice.getBoardExposureStat());
         dao.insertNotice(notice);
     }
 
