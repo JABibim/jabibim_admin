@@ -19,9 +19,9 @@ public interface QnaService {
 
     Qna getDetail(String id);
 
-    Qna getPreData(int rnum, String academyId);
+    Qna getPreData(String qnaId, String academyId);
 
-    Qna getNextData(int rnum, String academyId);
+    Qna getNextData(String qnaId, String academyId);
 
     default public String saveUploadedFile(MultipartFile uploadFile, String saveFolder) throws Exception {
         String originalFileName = uploadFile.getOriginalFilename();

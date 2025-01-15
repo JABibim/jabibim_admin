@@ -52,13 +52,13 @@ public class QnaServiceImpl implements QnaService {
     }
 
     @Override
-    public Qna getPreData(int rnum, String academyId) {
-        return dao.getPreData(rnum, academyId);
+    public Qna getPreData(String qnaId, String academyId) {
+        return dao.getPreData(qnaId, academyId);
     }
 
     @Override
-    public Qna getNextData(int rnum, String academyId) {
-        return dao.getNextData(rnum, academyId);
+    public Qna getNextData(String qnaId, String academyId) {
+        return dao.getNextData(qnaId, academyId);
     }
 
     @Override
