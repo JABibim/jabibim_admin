@@ -65,7 +65,7 @@ $(function () {
 
             return false;
         }
-        $('#course_intro').val(introHtml);
+        $('#course_info').val(introHtml);
 
         // 과정 수강금액
         const $coursePrice = $('#course_price');
@@ -78,31 +78,22 @@ $(function () {
         // 과정 태그
         const courseTag = $('#course_tag').val();
 
-        console.log('============> 🚨🚨 등록 버튼 클릭!! 🚨🚨');
-
-        console.log('과정명:', courseName);
-        console.log('과목명:', courseSubject);
-        console.log('과정 대표 이미지:', $courseImage[0].files[0]);
-        console.log('상세 설명:', introHtml);
-        console.log('수강 금액:', +$coursePrice.val());
-        console.log('태그: ', courseTag);
-        console.log('난이도:',);
-
-        const courseIntro = introHtml;
+        const courseInfo = introHtml;
         const coursePrice = +$coursePrice.val();
         const courseDiff = $('input[name="course_diff"]:checked').val();
 
         const formData = new FormData();
-        const courseInfo = {
+        const newCourse = {
             courseName,
             courseSubject,
-            courseIntro,
+            courseInfo,
             coursePrice,
             courseDiff,
             courseTag
         };
+
         formData.append("courseData", new Blob(
-            [JSON.stringify(courseInfo)],
+            [JSON.stringify(newCourse)],
             {type: "application/json"}));
         formData.append("courseImage", $courseImage[0].files[0]);
 
@@ -113,9 +104,16 @@ $(function () {
             },
             body: formData,
         }).then((res) => {
-            console.log('==> res : ', res);
+            if (!res.ok) {
+                throw new Error('과정 추가 중 오류가 발생했습니다.');
+            }
+            return res.json();
+        }).then((data) => {
+            if (data.success === true) {
+                window.location.href = data.data.redirectUrl;
+            }
         }).catch((err) => {
-            console.log('==> err : ', err);
+            console.error(err);
         })
     })
 

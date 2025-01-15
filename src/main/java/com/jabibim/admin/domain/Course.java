@@ -17,8 +17,8 @@ public class Course {
     private String courseDiff;
     private int coursePrice;
     private boolean courseActivation;
-    private String courseImgName;
-    private String courseImgOrigin;
+    private String courseProfileOriginName;
+    private String courseProfilePath;
     private String academyId;
     private String teacherId;
 }

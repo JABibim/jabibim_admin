@@ -5,23 +5,14 @@ let searchKeyword = '';
 let startDate = '';
 let endDate = '';
 
-
-
 function go(page) {
     getCourseList({useStatus, searchCondition, searchKeyword, startDate, endDate, page});
 }
 
 function getCourseList({useStatus, searchCondition, searchKeyword, startDate, endDate, page}) {
-    console.log('==> useStatus : ', useStatus);
-    console.log('==> searchCondition : ', searchCondition);
-    console.log('==> searchKeyword : ', searchKeyword);
-    console.log('==> startDate : ', startDate);
-    console.log('==> endDate : ', endDate);
-    console.log('==> page : ', page);
-
     const search = {
         useStatus,
-        searchCondition,
+        searchCondition: +searchCondition,
         searchKeyword,
         startDate,
         endDate,
@@ -36,13 +27,12 @@ function getCourseList({useStatus, searchCondition, searchKeyword, startDate, en
         dataType: 'json',
         cache: false,
         success: function (data) {
-            console.log('==> data : ', data);
+            const {courseList, courseListCount} = data.data;
 
-            const {courseList, courseListCount} = data;
             $('#courseListCount').text(courseListCount);
 
             $('tbody').remove();
-            updateCourseList(data);
+            updateCourseList(courseList);
             generatePagination(data);
 
             let newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
@@ -53,15 +43,13 @@ function getCourseList({useStatus, searchCondition, searchKeyword, startDate, en
     })
 }
 
-function updateCourseList(data) {
-    const {courseList, courseListCount} = data;
-
+function updateCourseList(courseList) {
     let output = '<tbody>';
 
     $(courseList).each(function (index, item) {
-        const {rownum, course_id, course_name, class_count, teacher_name, created_at, is_active} = item;
+        const {rowNum, courseId, courseName, createdAt, classCount, teacherName, courseActivation} = item;
 
-        const date = new Date(created_at);
+        const date = new Date(createdAt);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
@@ -69,17 +57,17 @@ function updateCourseList(data) {
 
         output += `
             <tr>
-                <th scope="row" style="width: 10%">${rownum}</th>
+                <th scope="row" style="width: 10%">${rowNum}</th>
                 <td style="width: 35%">
-                   <a href="${contextPath}/content/detail?id=${course_id}">${course_name}</a>
+                   <a href="/content/detail/${courseId}">${courseName}</a>
                 </td>
-                <td style="width: 10%">${class_count}</td>
-                <td style="width: 15%">${teacher_name}</td>
+                <td style="width: 10%">${classCount}</td>
+                <td style="width: 15%">${teacherName}</td>
                 <td style="width: 20%">${formattedDate}</td>
                 <td style="width: 10%">
                     <div class="form-check form-switch">
-                        <input class="form-check-input toggle-course-status" type="checkbox" id="flexSwitchCheck${course_id}"
-                               data-course-id="${course_id}" ${is_active == 1 ? 'checked' : ''}>
+                        <input class="form-check-input toggle-course-status" type="checkbox" id="flexSwitchCheck${courseId}"
+                               data-course-id="${courseId}" ${courseActivation ? 'checked' : ''}>
                     </div>
                 </td>
             </tr>
@@ -92,7 +80,7 @@ function updateCourseList(data) {
 
 function generatePagination(data) {
     let output = '';
-    const {courseListCount, page, startPage, endPage, maxPage} = data;
+    const {courseListCount, page, startPage, endPage, maxPage} = data.data;
 
     if (courseListCount <= 0) {
         output = '<tr class="text-center"><td colspan="6">데이터가 존재하지 않습니다.</td></tr>';
@@ -127,12 +115,14 @@ function setPaging(href, digit, isActive = false) {
 
 function updateCourseActive(courseId, isActive) {
     $.ajax({
-        url: 'content/updateCourseActive',
-        type: 'post',
-        dataType: 'json',
+        url: 'content/updateCourseActivation',
+        method: "POST",
         data: {courseId, isActive},
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader(header, token);
+        },
         success: (res) => {
-            console.log('과정의 활성화 여부 업데이트가 정상적으로 처리되었습니다.');
+            console.log(res.message);
         },
         error: (err) => {
             console.error('과정의 활성화 여부를 업데이트 하는 도중 오류가 발생했습니다.', err);
@@ -192,7 +182,7 @@ function validateDates(startDate, endDate) {
 }
 
 $(function () {
-    console.log('================ contentList.js 실행 ===============');
+    getCourseList({useStatus, searchCondition, searchKeyword, startDate, endDate, page});
 
     // 검색 항목을 바꿀때마다 전역변수에 검색 조건을 셋팅하는 로직
     $('.form-select').change(function () {
@@ -234,26 +224,18 @@ $(function () {
 
     $('#searchBtn').click(function () {
         useStatus = $('input:radio:checked').val();
-        console.log('==> useStatus : ', useStatus);
-        console.log('==> searchCondition : ', searchCondition);
-
 
         if (+searchCondition === 0) {
-            console.log('==> 0')
             searchKeyword = '';
         } else if (+searchCondition === 1 || +searchCondition === 2) {
-            console.log('==> 1, 2')
             searchKeyword = $('#searchKeyword').val();
 
             if (!validCheck(searchKeyword)) {
                 return;
             }
         } else if (+searchCondition === 3) {
-            console.log('==> 3')
             startDate = $('#startDate').val();
             endDate = $('#endDate').val();
-            console.log('==> startDate : ', startDate);
-            console.log('==> endDate : ', endDate);
 
             if (!validCheck(startDate, endDate)) {
                 return;

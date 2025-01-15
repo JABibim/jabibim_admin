@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>과정 상세정보 & 수정</title>
+    <th:block th:replace="~{fragments/headerImport :: HeaderImportFragment}"></th:block>
+    <script th:inline="javascript">
+        const courseId = /*[[${course.courseId}]]*/ '""';
+        const courseIntroContent = /*[[${course.courseInfo}]]*/ '""';
+        const courseDiff = /*[[${course.courseDiff}]]*/ '""';
+    </script>
+    <script th:src="@{/js/courseDetail.js}" charset="UTF-8"></script>
+    <link rel="stylesheet" th:href="@{/css/courseDetail.css}">
+</head>
+<body>
+<th:block th:replace="~{fragments/header :: Header}"></th:block>
+<th:block th:replace="~{fragments/sidebar :: SideBar}"></th:block>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>콘텐츠 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/content}">과정 관리</a></li>
+                <li class="breadcrumb-item active">상세정보 & 수정</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div style="float: right; margin-bottom: 10px;">
+        <button id="toggleButton" class="btn btn-primary">강의 목록 보기</button>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-4">
+            <form th:action="@{/content/modifyCourse}" method="post" name="courseForm" enctype="multipart/form-data">
+                <input type="hidden" name="course_id" th:value="${course.courseId}">
+                <input type="hidden" name="is_profile_changed" id="is_profile_changed">
+
+                <div class="row mb-3">
+                    <label for="course_name" class="col-sm-2 col-form-label fw-bold">과정명</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="과정명을 입력해주세요." id="course_name"
+                               name="course_name" th:value="${course.courseName}">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="course_subject" class="col-sm-2 col-form-label fw-bold">과목명</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="상세 과목을 입력해주세요." id="course_subject"
+                               name="course_subject" th:value="${course.courseSubject}">
+                    </div>
+                </div>
+                <div class="row mb-3 align-items-center">
+                    <label for="course_image" class="col-sm-2 col-form-label fw-bold">과정 대표 이미지</label>
+                    <div class="col-sm-10 d-flex align-items-center">
+                        <div class="image-container">
+                            <img th:src="${course.courseProfilePath}" alt="profile_image" id="previewImage">
+                            <button type="button" class="change-image-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#verticalycentered">
+                                이미지 변경하기
+                            </button>
+                        </div>
+                        <input type="hidden" name="check" th:value="${course.courseProfileOriginName}">
+                        <input class="form-control" type="file" id="course_image" name="course_image"
+                               style="display: none;">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label fw-bold">상세 설명</label>
+                    <div class="col-sm-10 pb-5">
+                        <div id="editor"></div>
+                        <input type="hidden" name="course_intro" id="course_intro">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="course_subject" class="col-sm-2 col-form-label fw-bold">수강 금액</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="과정의 수강 금액을 입력해주세요." id="course_price"
+                               name="course_price" th:value="${course.coursePrice}">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="course_subject" class="col-sm-2 col-form-label fw-bold">태그</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="과정을 나타내는 태그를 입력해주세요." id="course_tag"
+                               name="course_tag" th:value="${course.courseTag}">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <legend class="col-form-label col-sm-2 pt-0 fw-bold">난이도</legend>
+                    <div class="col-sm-10 d-flex">
+                        <div class="form-check" style="padding-right: 16px;">
+                            <input class="form-check-input" name="course_diff" type="radio" id="beginner"
+                                   value="beginner">
+                            <label class="form-check-label" for="beginner">
+                                초급
+                            </label>
+                        </div>
+                        <div class="form-check" style="padding-right: 16px;">
+                            <input class="form-check-input" name="course_diff" type="radio" id="intermediate"
+                                   value="intermediate">
+                            <label class="form-check-label" for="intermediate">
+                                중급
+                            </label>
+                        </div>
+                        <div class="form-check" style="padding-right: 16px;">
+                            <input class="form-check-input" name="course_diff" type="radio" id="advanced"
+                                   value="advanced">
+                            <label class="form-check-label" for="advanced">
+                                고급
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="float: right;">
+                    <button type="reset" class="btn btn-secondary" id="cancelBtn"
+                            th:onclick="|location.href='@{/content}'|">
+                        목록&nbsp;&nbsp;<i class="bi bi-backspace"></i>
+                    </button>
+                    <button type="submit" class="btn btn-success" id="modifyBtn">
+                        수정&nbsp;&nbsp;<i class="bi bi-pencil"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card" id="newContent"
+         style="display: none; position: absolute; top: 4rem; right: 0; width: 50%; height: 100%; background-color: rgba(248, 249, 250, 0.95); box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); padding: 20px;">
+        <div class="d-flex justify-content-between align-items-center" style="height: 60px;">
+            <h4 style="margin: 0">강의 목록 및 강의자료 관리</h4>
+            <button id="closeButton" class="btn btn-danger">닫기</button>
+        </div>
+        <hr>
+        <div id="classInfoContainer">
+        </div>
+    </div>
+
+</main><!-- End #main --></main>
+
+<div class="modal fade" id="verticalycentered" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">새로운 프로필 이미지 등록하기</h5>
+            </div>
+            <div class="modal-body text-center">
+                <div class="row mb-3 align-items-center" style="margin: 1rem;">
+                    <!-- 드래그 앤 드롭 영역 -->
+                    <div id="dropZone" class="drop-zone">
+                        <p>이미지를 이곳에 드래그 앤 드롭하거나 클릭하여 업로드하세요.</p>
+                        <img id="updatePreviewImage" src="" alt="미리보기" style="display: none;">
+                    </div>
+                    <!-- 실제 파일 입력 (숨김 처리) -->
+                    <input class="form-control" type="file" id="update_course_image" name="update_course_image"
+                           style="display: none;">
+                    <button type="submit" class="btn btn-outline-warning mt-2 float-end" id="imgReSelectBtn"
+                            style="display: none;">
+                        다시 등록하기&nbsp;&nbsp;<i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary px-4 confirmUpdateBtn" id="confirmUpdateBtn">
+                    변경
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"
+         style="z-index: 11">
+        <!-- 토스트 예시 -->
+        <div class="toast" id="validationToast" role="alert" aria-live="assertive" aria-atomic="true"
+             data-bs-delay="3000">
+            <div class="toast-header">
+                <strong class="me-auto" style="color: red;">알림</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                입력된 값이 유효하지 않습니다.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteClassModal" tabindex="-1" aria-labelledby="deleteClassModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteClassModalLabel">강의 삭제 확인</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>정말로 이 강의를 삭제하시겠습니까?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-danger confirmDeleteBtn">삭제</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="~{fragments/footerImport :: FooterImportFragment}"></th:block>
+</body>
+</html>

@@ -8,56 +8,7 @@
         let isAdmin = [[${session.isAdmin}]];
     </script>
     <script th:src="@{/js/courseAdd.js}" charset="UTF-8"></script>
-    <style>
-        #course_image {
-            display: none;
-        }
-
-        img {
-            cursor: pointer;
-            width: 20px;
-        }
-
-        #previewImage {
-            cursor: auto;
-            width: 150px;
-            height: 150px;
-            margin-left: 20px;
-        }
-
-        .drop-zone {
-            border: 2px dashed #ccc;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: border-color 0.3s;
-            position: relative;
-        }
-
-        .drop-zone:hover {
-            border-color: #007bff;
-        }
-
-        .drop-zone.dragover {
-            border-color: #0056b3;
-            background-color: #f8f9fa;
-        }
-
-        .drop-zone img {
-            max-width: 100%;
-            max-height: 300px;
-            display: block;
-            margin: 0 auto;
-            object-fit: contain;
-        }
-
-        .drop-zone p {
-            margin: 0;
-            font-size: 14px;
-            color: #6c757d;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/courseAdd.css}">
 </head>
 <body>
 <th:block th:replace="~{fragments/header :: Header}"></th:block>
@@ -121,7 +72,7 @@
                     <label class="col-sm-2 col-form-label fw-bold">상세 설명</label>
                     <div class="col-sm-10 pb-5">
                         <div id="editor"></div>
-                        <input type="hidden" name="course_intro" id="course_intro">
+                        <input type="hidden" name="course_info" id="course_info">
                     </div>
                 </div>
                 <div class="row mb-3">
