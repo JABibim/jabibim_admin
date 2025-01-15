@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -44,6 +47,41 @@ public class GradeController {
                     "message", "등급 추가 실패 : " + e.getMessage()
             ));
         }
+    }
+
+    @PostMapping(value="/modifyGradeInfo")
+    @ResponseBody
+    public ResponseEntity<?> modifyGradeInfo(@RequestBody Grade grade, Authentication auth) {
+        try {
+            AccountDto account = (AccountDto) auth.getPrincipal();
+            String academyId = account.getAcademyId();
+
+            gradeService.modifyGrade(grade, academyId);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "등급이 성공적으로 수정되었습니다."
+            ));
+        } catch (Exception e) {
+            logger.error("등급 수정중 에러 발생 : ", e);
+            return ResponseEntity.status(500).body(Map.of(
+                    "status", "fail",
+                    "message", "등급 수정 실패 : " + e.getMessage()
+            ));
+        }
+    }
+
+    @GetMapping(value="/getUpdatableGradeList")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getUpdatableGradeList(@RequestBody Grade grade,
+                                                                     Authentication auth) {
+
+        Map<String, Object> gradeList = new HashMap<>();
+        AccountDto account = (AccountDto) auth.getPrincipal();
+        String academyId = account.getAcademyId();
+        gradeService.getUpdatableGradeList(grade, academyId);
+
+
+        return ResponseEntity.ok(gradeList);
     }
 
 }

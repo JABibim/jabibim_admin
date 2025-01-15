@@ -10,6 +10,14 @@
         const gradeListSize = /*[[${gradeList.size()}]]*/ 0;
     </script>
     <script th:src="@{/js/studentGrade.js}"></script>
+    <style>
+        .text-highlight {
+            font-family: 'Arial Black', sans-serif; /* 굵고 강조된 글씨체 */
+            font-size: 1em; /* 크기를 키워 강조 */
+            color: #d9534f; /* 경고 색상 (빨강 계열) */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* 약간의 그림자 효과 */
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -84,7 +92,7 @@
                         삭제된 등급에 해당하던 학생들에게 <br/>부여할 <span class="fw-bold">새로운 등급</span>을 아래에서 선택해주세요.
                     </p>
                     <div class="alert alert-warning mt-3" role="alert">
-                        이 작업은 되돌릴 수 없습니다. 신중히 결정하세요.
+                        <strong class="text-highlight">이 작업은 되돌릴 수 없습니다!! 신중히 결정하세요.</strong>
                     </div>
                     <div class="mt-4">
                         <label for="updatableGradeSelect" class="form-label fw-bold">업데이트 가능한 등급</label>
@@ -120,7 +128,6 @@
         </div>
     </div>
 </div>
-
 
 </body>
 </html>

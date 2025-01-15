@@ -20,4 +20,19 @@ public class GradeServiceImpl implements GradeService{
         grade.setAcademyId(academyId);
         dao.addGrade(grade);
     }
+
+    @Override
+    public void modifyGrade(Grade grade, String academyId) {
+
+        grade.setAcademyId(academyId);
+        dao.modifyGrade(grade);
+    }
+
+    @Override
+    public void getUpdatableGradeList(Grade grade, String academyId) {
+        grade.setAcademyId(academyId);
+        dao.getUpdatableGradeList(grade);
+    }
+
+
 }
