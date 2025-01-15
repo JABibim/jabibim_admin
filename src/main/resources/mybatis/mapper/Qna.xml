@@ -32,7 +32,7 @@
 
     <select id="getDetail" parameterType="string" resultType="qna">
         SELECT *
-        FROM ( SELECT q.qna_id, q.created_at, q.qna_re_ref, q.qna_re_lev, q.qna_re_seq,
+        FROM ( SELECT ROW_NUMBER() OVER (ORDER BY q.created_at DESC) AS rnum, q.qna_id, q.created_at, q.qna_re_ref, q.qna_re_lev, q.qna_re_seq,
                       q.qna_subject, q.qna_content, q.qna_readcount, q.qna_exposure_stat, q.qna_answer_status,
                       q.qna_file_name, q.qna_file_origin, q.teacher_id, t.teacher_name,
                       q.student_id, s.student_name, q.course_id, c.course_name,
@@ -42,32 +42,39 @@
                         JOIN course c ON q.course_id = c.course_id
                         JOIN class l ON q.class_id = l.class_id
                         JOIN teacher t ON q.teacher_id = t.teacher_id
+
              ) as temp
         WHERE qna_id = #{qnaId}
     </select>
 
     <select id="getPreData" resultType="qna">
         SELECT *
-        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, qna_subject, qna_id, deleted_at
-               FROM qna
-               WHERE academy_id = #{academyId}
-            )AS temp
-        WHERE  deleted_at IS NULL
-          AND rnum &gt; #{rnum}
-        ORDER BY rnum ASC
-            LIMIT 1
+        FROM qna
+        WHERE academy_id = #{academyId}
+        AND deleted_at IS NULL
+        AND qna_re_lev = 0
+        AND created_at &lt;(
+        SELECT created_at
+        FROM qna
+        WHERE qna_id = #{qnaId}
+        )
+        ORDER BY created_at DESC
+        LIMIT 1;
     </select>
 
     <select id="getNextData" resultType="qna">
         SELECT *
-        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, qna_subject, qna_id, deleted_at
-               FROM qna
-               WHERE academy_id = #{academyId}
-            )AS temp
-        WHERE deleted_at IS NULL
-          AND rnum &lt; #{rnum}
-        ORDER BY rnum DESC
-            LIMIT 1
+        FROM qna
+        WHERE academy_id = #{academyId}
+          AND deleted_at IS NULL
+          AND qna_re_lev = 0
+          AND created_at &gt;(
+            SELECT created_at
+            FROM qna
+            WHERE qna_id = #{qnaId}
+        )
+        ORDER BY created_at DESC
+            LIMIT 1;
     </select>
 
     <update id="setReadCountUpdate">

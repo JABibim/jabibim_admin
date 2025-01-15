@@ -19,9 +19,9 @@ public interface QnaMapper {
 
     public Qna getDetail(String id);
 
-    public Qna getPreData(int rnum, String academyId);
+    public Qna getPreData(String qnaId, String academyId);
 
-    public Qna getNextData(int rnum, String academyId);
+    public Qna getNextData(String qnaId, String academyId);
 
     public int replyQna(Qna qna);
 

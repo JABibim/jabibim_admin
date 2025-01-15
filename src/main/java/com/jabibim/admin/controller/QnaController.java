@@ -110,8 +110,8 @@ public class QnaController {
 
         Qna qna = qnaService.getDetail(id);
         System.out.println("Rnum : " + qna.getRnum());
-        Qna preData = qnaService.getPreData(qna.getRnum(), academyId);
-        Qna nextData = qnaService.getNextData(qna.getRnum(), academyId);
+        Qna preData = qnaService.getPreData(qna.getQnaId(), academyId);
+        Qna nextData = qnaService.getNextData(qna.getQnaId(), academyId);
 
         Qna upData = qnaService.getUpData(id);
 
