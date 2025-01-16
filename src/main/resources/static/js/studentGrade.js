@@ -22,7 +22,7 @@ function getUpdatableGradeList(academyId, gradeId) {
         data: {
             academyId, gradeId
         }
-        , url: '/grade/getUpdatableGradeList'
+        , url: '/student/grade/getUpdatableGradeList'
         , type : 'GET'
         , dataType: 'json'
         , cache: false
@@ -34,7 +34,8 @@ function getUpdatableGradeList(academyId, gradeId) {
 
             if (data.gradeList && data.gradeList.length > 0) {
                 data.gradeList.forEach(grade => {
-                    $select.append(`<option value="${grade.grade_id}">${grade.grade_name}</option>`);
+                    console.log(grade.gradeId);
+                    $select.append(`<option value="${grade.gradeId}">${grade.gradeName}</option>`);
                 });
             } else {
                 $select.append('<option value="">업데이트 가능한 등급이 없습니다.</option>');
@@ -60,7 +61,7 @@ function modifyGradeInfo(gradeId, gradeName, discountRate) {
     }
 
     $.ajax({
-        url: '/grade/modifyGradeInfo',
+        url: '/student/grade/modifyGradeInfo',
         type: 'POST',
         contentType: 'application/json',
         beforeSend : function(xhr)
@@ -92,7 +93,7 @@ function modifyGradeInfo(gradeId, gradeName, discountRate) {
 
 function addGrade(gradeName, discountRate) {
     $.ajax({
-        url: '/grade/addGrade',
+        url: '/student/grade/addGrade',
         type: 'POST',
         contentType: 'application/json',
         beforeSend : function(xhr)
@@ -122,7 +123,11 @@ function addGrade(gradeName, discountRate) {
 
 function deleteGrade(academyId, gradeId, newGradeId) {
     $.ajax({
-        url: '/grade/deleteGrade',
+        url: '/student/grade/deleteGrade',
+        beforeSend : function(xhr)
+        {   //데이터를 전송하기 전에 헤더에 csrf값을 설정합니다.
+            xhr.setRequestHeader(header, token);
+        },
         type: 'post',
         dataType: 'json',
         cache: false,
@@ -305,6 +310,10 @@ $(function () {
         const gradeId = $(this).data('grade-id');
         const academyId = $(this).data('academy-id');
         const newGradeId = $('#updatableGradeSelect').val();
+        console.log(gradeId);
+        console.log(academyId);
+        console.log("newGradeId============", newGradeId);
+        console.log(newGradeId);
 
         if (!newGradeId) {
             showToast('업데이트할 등급을 선택하세요.');
