@@ -44,7 +44,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div style="margin-top: 30px;">
-                            <form th:action="@{/profile/add}" method="post" enctype="multipart/form-data">
+                            <form th:action="@{/teacher/profile/add}" method="post" enctype="multipart/form-data">
                                 <!-- 파일명 입력 -->
                                 <div class="row mb-3">
                                     <label for="career_name" class="col-sm-2 col-form-label">약력 제목</label>
@@ -82,7 +82,6 @@
         </div>
 
     </main><!-- End #main -->
-</div>
 
 <script th:inline="javascript">
     // 이미지 미리보기 스크립트
@@ -109,5 +108,7 @@
         }
     });
 </script>
+</div>
+
 </body>
 </html>

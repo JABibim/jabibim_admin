@@ -13,7 +13,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @EnableWebSecurity
 @Configuration
@@ -60,18 +59,6 @@ public class SecurityConfig {
                 .logoutUrl("/logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("remember-me", "JSESSION_ID"));
-
-
-
-        // 해당 URL 에 대해 csrf 무시.
-        http
-            .csrf(
-                (csrfConfig) ->
-                    // 해당 URL 에서 오는 post 요청에 대해 csrf 토큰 제한 풀기
-                    csrfConfig.ignoringRequestMatchers("/api/public/**", "/webhook/**")
-                        // api 요청에 대해 csrf 토큰 발행
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            );
 
         return http.build();
     }
