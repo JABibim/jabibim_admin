@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.QnaMapper">
+
+    <select id="getListCount" resultType="int">
+        select count(*)
+        from qna
+        where academy_id = #{academyId}
+        AND deleted_at IS NULL
+        AND qna_re_lev = 0
+    </select>
+
+    <select id="getQnaList" resultType="qna">
+        SELECT
+            q.qna_id, q.created_at, q.qna_re_ref, q.qna_re_lev, q.qna_re_seq,
+            q.qna_subject, q.qna_content, q.qna_readcount, q.qna_exposure_stat, q.qna_answer_status,
+            q.qna_file_name, q.qna_file_origin, q.teacher_id, t.teacher_name,
+            q.student_id, s.student_name, q.course_id, c.course_name,
+            q.class_id, l.class_name
+        FROM qna q
+                 JOIN student s ON q.student_id = s.student_id
+                 JOIN course c ON q.course_id = c.course_id
+                 JOIN class l ON q.class_id = l.class_id
+                 LEFT JOIN teacher t ON c.teacher_id = t.teacher_id
+        WHERE q.deleted_at IS NULL
+          AND q.academy_id = #{academyId}
+          AND q.qna_re_lev = 0
+        ORDER BY q.created_at DESC
+            LIMIT #{end} OFFSET #{start};
+    </select>
+
+    <select id="getDetail" parameterType="string" resultType="qna">
+        SELECT *
+        FROM ( SELECT ROW_NUMBER() OVER (ORDER BY q.created_at DESC) AS rnum, q.qna_id, q.created_at, q.qna_re_ref, q.qna_re_lev, q.qna_re_seq,
+                      q.qna_subject, q.qna_content, q.qna_readcount, q.qna_exposure_stat, q.qna_answer_status,
+                      q.qna_file_name, q.qna_file_origin, q.teacher_id, t.teacher_name,
+                      q.student_id, s.student_name, q.course_id, c.course_name,
+                      q.class_id, l.class_name
+               FROM qna q
+                        JOIN student s ON q.student_id = s.student_id
+                        JOIN course c ON q.course_id = c.course_id
+                        JOIN class l ON q.class_id = l.class_id
+                        JOIN teacher t ON q.teacher_id = t.teacher_id
+
+             ) as temp
+        WHERE qna_id = #{qnaId}
+    </select>
+
+    <select id="getPreData" resultType="qna">
+        SELECT *
+        FROM qna
+        WHERE academy_id = #{academyId}
+        AND deleted_at IS NULL
+        AND qna_re_lev = 0
+        AND created_at &lt;(
+        SELECT created_at
+        FROM qna
+        WHERE qna_id = #{qnaId}
+        )
+        ORDER BY created_at DESC
+        LIMIT 1;
+    </select>
+
+    <select id="getNextData" resultType="qna">
+        SELECT *
+        FROM qna
+        WHERE academy_id = #{academyId}
+          AND deleted_at IS NULL
+          AND qna_re_lev = 0
+          AND created_at &gt;(
+            SELECT created_at
+            FROM qna
+            WHERE qna_id = #{qnaId}
+        )
+        ORDER BY created_at DESC
+            LIMIT 1;
+    </select>
+
+    <update id="setReadCountUpdate">
+        UPDATE qna
+        SET qna_readcount = qna_readcount + 1
+        WHERE qna_id = #{id}
+    </update>
+
+    <select id="getQnaById" resultType="qna">
+        SELECT *
+        FROM qna
+        WHERE qna_id= #{detailId}
+    </select>
+
+    <insert id="replyQna">
+        INSERT INTO qna
+        (qna_id, created_at, qna_re_ref, qna_re_lev, qna_re_seq,
+         qna_subject, qna_password ,qna_content, qna_readcount, qna_exposure_stat,
+         qna_answer_status, qna_file_name, qna_file_origin, teacher_id, course_id,
+         class_id, student_id, academy_id)
+        VALUES
+            (#{qnaId}, NOW(), #{qnaReRef}, #{qnaReLev}, 1,
+             #{qnaSubject}, #{qnaPassword} ,#{qnaContent}, 0, #{qnaExposureStat},
+             #{qnaAnswerStatus}, #{qnaFileName}, #{qnaFileOrigin}, #{teacherId}, #{courseId},
+             #{classId}, #{studentId}, #{academyId})
+    </insert>
+
+    <update id="answerQna">
+        UPDATE qna
+        SET qna_answer_status = 1
+        WHERE qna_id = #{id}
+    </update>
+
+    <select id="getUpData" resultType="qna">
+        SELECT *
+        FROM qna
+        WHERE qna_re_ref = (SELECT qna_re_ref
+                            FROM qna
+                            WHERE qna_id = #{id}
+                            AND qna_re_lev = 0)
+        AND qna_re_lev &gt; 0
+        AND deleted_at IS NULL
+    </select>
+
+    <select id="isBoardWriter" resultType="qna">
+        SELECT *
+        FROM qna
+        WHERE qna_id = #{id}
+          AND qna_password = #{pass}
+    </select>
+
+    <update id="qnaModify">
+        UPDATE qna
+        SET qna_subject  = #{qnaSubject},
+            qna_content  = #{qnaContent},
+            qna_file_name     = #{qnaFileName},
+            qna_file_origin = #{qnaFileOrigin},
+            qna_exposure_stat = #{qnaExposureStat}
+        WHERE qna_id = #{qnaId}
+    </update>
+
+    <update id="qnaDelete">
+        UPDATE qna
+        SET deleted_at = NOW()
+        WHERE qna_id = #{updateId}
+    </update>
+
+    <update id="qnaAnswerStat">
+        UPDATE qna
+        SET qna_answer_status = 0
+        WHERE qna_id = #{qnaId}
+    </update>
+</mapper>
+
+
+

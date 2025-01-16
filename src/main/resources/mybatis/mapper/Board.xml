@@ -12,7 +12,8 @@
             WHERE board_type_name = '공지사항'
             LIMIT 1
             )
-        and ACADEMY_ID = #{academyId}
+        AND academy_id = #{academyId}
+        AND deleted_at IS NULL
     </select>
 
     <select id="getNoticeList" resultType="board">
@@ -61,7 +62,7 @@
         FROM ( SELECT ROW_NUMBER() OVER (ORDER BY b.CREATED_AT DESC) AS rnum,
                        b.course_id, b.board_id, b.board_subject,
                       b.teacher_id, s.teacher_name, b.created_at, b.board_readcount,
-                      b.board_exposure_stat, b.board_content, c.course_name
+                      b.board_exposure_stat, b.board_notice, b.board_content, c.course_name
                FROM BOARD b
                         JOIN TEACHER s ON b.teacher_id = s.teacher_id
                         JOIN COURSE c ON b.course_id = c.course_id
@@ -77,38 +78,69 @@
 
     <select id="getPreData" parameterType="int" resultType="board">
         SELECT *
-        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, board_subject, board_id
+        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, board_subject, board_id, deleted_at
                FROM BOARD
                WHERE board_type_id = (
                    SELECT board_type_id
                    FROM board_type
                    WHERE board_type_name = '공지사항'
-                   LIMIT 1
+               LIMIT 1
             )
-               AND deleted_at IS NULL
             )AS temp
-        WHERE rnum = #{rnum}
+        WHERE  deleted_at IS NULL
+        AND rnum &gt; #{rnum}
+        ORDER BY rnum ASC
+        LIMIT 1
     </select>
 
     <select id="getNextData" parameterType="int" resultType="board">
         SELECT *
-        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, board_subject, board_id
+        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, board_subject, board_id, deleted_at
                FROM BOARD
                WHERE board_type_id = (
                    SELECT board_type_id
                    FROM board_type
                    WHERE board_type_name = '공지사항'
-                   LIMIT 1
+                LIMIT 1
             )
-            AND deleted_at IS NULL
             )AS temp
-        WHERE rnum = #{rnum}
+        WHERE deleted_at IS NULL
+        AND rnum &lt; #{rnum}
+        ORDER BY rnum DESC
+        LIMIT 1
     </select>
 
     <update id="setReadCountUpdate">
         UPDATE board
         SET board_readcount = board_readcount + 1
+        WHERE board_id = #{id}
+    </update>
+
+    <select id="isBoardWriter" resultType="board">
+        SELECT *
+        FROM BOARD
+        WHERE board_id = #{id}
+        AND board_password = #{pass}
+    </select>
+
+    <update id="boardModify">
+        UPDATE BOARD
+        SET course_id = #{courseId},
+            board_subject  = #{boardSubject},
+            board_content  = #{boardContent},
+            board_file_name     = #{boardFileName},
+            board_file_origin = #{boardFileOrigin},
+            board_exposure_stat = #{boardExposureStat},
+            board_notice = #{boardNotice}
         WHERE board_id = #{boardId}
     </update>
 
+    <update id="boardDelete">
+        UPDATE BOARD
+        SET deleted_at = NOW()
+        WHERE board_id = #{boardId}
+    </update>
 </mapper>
+
+
+

@@ -11,16 +11,16 @@ import java.util.List;
 @Mapper
 public interface TermMapper {
     //  글의 갯수 구하기
-    public int getListCount();
+    public int getListCount(String academyId);
 
-    public List<Term> getTermList(HashMap<String, Integer> map);
+    public List<Term> getTermList(HashMap<String, Object> map);
 
     // 글 등록하기
     public void insertTerm(Term term);
 
-    public Term getLatestTermPolicy();
+    public Term getLatestTermPolicy(String academyId);
 
     Term getDetail(int rnum);
 
-    int getMaxRnum();
+    int getMaxRnum(String academyId);
 }

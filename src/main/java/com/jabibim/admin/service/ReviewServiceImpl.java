@@ -5,8 +5,10 @@ import com.jabibim.admin.dto.ReviewDetailVO;
 import com.jabibim.admin.dto.ReviewListVO;
 import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.mybatis.mapper.ReviewMapper;
+import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.security.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -17,35 +19,34 @@ import java.util.Optional;
 public class ReviewServiceImpl implements ReviewService {
 
   private ReviewMapper dao;
-  private SecurityUtil securityUtil;
 
   @Autowired
-  public ReviewServiceImpl(ReviewMapper dao, SecurityUtil securityUtil) {
+  public ReviewServiceImpl(ReviewMapper dao) {
     this.dao = dao;
-    this.securityUtil = securityUtil;
   }
 
   @Override
-  public int getSearchListCount(HashMap<String, String> hm) {
+  public int getSearchListCount(HashMap<String, String> hm, Authentication auth) {
 
     HashMap<String, Object> map = searchMap(hm);
-//    String teacherEmail = securityUtil.getCurrentUsername();
-//    String academyId = dao.getAcademyId(teacherEmail);
-    map.put("academyId", "f236923c-4746-4b5a-8377-e7c5b53799c2");
+
+    AccountDto account = (AccountDto) auth.getPrincipal();
+    String academyId = account.getAcademyId();
+
+    map.put("academyId", academyId);
 
     return dao.getSearchListCount(map);
   }
 
   @Override
-  public List<ReviewListVO> getSearchList(HashMap<String, String> hm, int page, int limit) {
+  public List<ReviewListVO> getSearchList(HashMap<String, String> hm, int page, int limit, Authentication auth) {
 
     HashMap<String, Object> map = searchMap(hm);
-//    String teacherEmail = securityUtil.getCurrentUsername();
-//    String academyId = dao.getAcademyId(teacherEmail);
-    map.put("academyId", "f236923c-4746-4b5a-8377-e7c5b53799c2");
 
-//    int startrow = (page - 1) * limit + 1;
-//    int endrow = startrow + limit - 1;
+    AccountDto account = (AccountDto) auth.getPrincipal();
+    String academyId = account.getAcademyId();
+
+    map.put("academyId", academyId);
 
     map.put("offset", (page - 1) * limit);  // offset
     map.put("limit", limit);         // limit
@@ -56,13 +57,13 @@ public class ReviewServiceImpl implements ReviewService {
   }
 
   @Override
-  public List<ReviewDetailVO> getReviewDetails(String reviewId) {
+  public List<ReviewDetailVO> getReviewDetails(String reviewId, Authentication auth) {
 
     int ref = dao.getReviewRef(reviewId);
-    //    String teacherEmail = securityUtil.getCurrentUsername();
-    //    String academyId = dao.getAcademyId(teacherEmail);
 
-    String academyId = "f236923c-4746-4b5a-8377-e7c5b53799c2";
+    AccountDto account = (AccountDto) auth.getPrincipal();
+    String academyId = account.getAcademyId();
+
 
     List<ReviewDetailVO> list = dao.getReviewDetails(ref, academyId);
     return list;

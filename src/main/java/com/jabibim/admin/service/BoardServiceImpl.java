@@ -50,7 +50,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void insertNotice(Board notice) {
-        System.out.println("Service layer - boardExposureStat: " + notice.getBoardExposureStat());
         dao.insertNotice(notice);
     }
 
@@ -77,6 +76,35 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public void setReadCountUpdate(String id) {
         dao.setReadCountUpdate(id);
+    }
+
+    @Override
+    public boolean isBoardWriter(String boardId, String boardPassword) {
+        HashMap<String, Object> map = new HashMap<>();
+
+
+        map.put("id", boardId);
+        map.put("pass", boardPassword);
+
+        Board result = dao.isBoardWriter(map);
+
+        return result != null;
+    }
+
+    @Override
+    public int boardModify(Board noticeData) {
+        return dao.boardModify(noticeData);
+    }
+
+    @Override
+    public int boardDelete(String boardId) {
+        int result = 0;
+        Board notice = dao.getDetail(boardId);
+        if (notice != null) {
+            result = dao.boardDelete(notice);
+        }
+
+        return result;
     }
 
 

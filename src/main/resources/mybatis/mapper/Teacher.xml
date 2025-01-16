@@ -54,10 +54,12 @@
         WHERE rnum BETWEEN #{start} AND #{end}
     </select>
 
-    <select id="teacherInfo" resultType="teacher">
-        select *
-        from teacher
-        where teacher_id = #{id}
+    <select id="teacherInfo" resultType="TeacherProfileDTO">
+        select t.teacher_name, a.academy_name, t.teacher_job, t.teacher_password,
+               t.teacher_email, t.teacher_phone, t.teacher_img_name
+        from teacher t, academy a
+        where t.academy_id = a.academy_id
+        and teacher_id = #{id}
     </select>
 
     <update id="update">
@@ -66,7 +68,6 @@
             teacher_phone = #{teacherPhone},
             teacher_email = #{teacherEmail}
         where teacher_id = #{teacherId}
-
     </update>
 
     <update id="updatePassword">
@@ -126,4 +127,27 @@
                , #{teacherPassword}
                , #{authRole})
     </insert>
+
+    <select id="getcareerList" parameterType="map" resultType="TeacherCareer">
+        SELECT career_id, career_name, C.created_at, display_status
+        FROM career C
+        JOIN teacher T ON C.teacher_id = T.teacher_id
+        <where>
+            <if test="!isAdmin">
+                AND T.academy_id = #{academyId} <!-- 관리자가 아닐 경우 학원 ID로 필터 -->
+            </if>
+        </where>
+    </select>
+
+    <update id="resetAllCareers">
+        UPDATE career
+        SET display_status = 0
+    </update>
+
+    <update id="updateCareerActive">
+        UPDATE career
+        SET display_status = #{displayStatus}
+        WHERE career_name = #{careerName}
+    </update>
+
 </mapper>

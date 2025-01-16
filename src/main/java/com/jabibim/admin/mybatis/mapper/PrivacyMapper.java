@@ -10,16 +10,16 @@ import java.util.List;
 @Mapper
 public interface PrivacyMapper {
     //  글의 갯수 구하기
-    public int getListCount();
+    public int getListCount(String academyId);
 
-    public List<Privacy> getPrivacyList(HashMap<String, Integer> map);
+    public List<Privacy> getPrivacyList(HashMap<String, Object> map);
 
     // 글 등록하기
     public void insertPrivacy(Privacy privacy);
 
-    public Privacy getLatestPrivacyPolicy();
+    public Privacy getLatestPrivacyPolicy(String academyId);
 
     public Privacy getDetail(int rnum);
 
-    int getMaxRnum();
+    public int getMaxRnum(String academyId);
 }

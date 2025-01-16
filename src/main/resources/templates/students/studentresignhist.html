@@ -36,7 +36,7 @@
       $('form').submit();
     }
   </script>
-  <!--    <script th:src="@{/assets/js/resignHist.js}"></script>-->
+  <!--    <script th:src="@{/assets/js/Hist.js}"></script>-->
 </head>
 <body>
 <div layout:fragment="content">
@@ -70,15 +70,15 @@
                 <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">날짜 검색</div>
                 <div class="input-group align-self-center">
                   <div class="col-3 col-md-4">
-                    <label for='resignDate1' hidden></label><input type="date" id='resignDate1' name='resignDate1'
+                    <label for='Date1' hidden></label><input type="date" id='Date1' name='Date1'
                                                                    class="form-control start_date"
-                                                                   th:value="${resignDate1 != '' ? #dates.format(resignDate1, 'yyyy-MM-dd') : ''}">
+                                                                   th:value="${Date1 != '' ? #dates.format(Date1, 'yyyy-MM-dd') : ''}">
                   </div>
                   <b class="col-auto my-1 mx-1 px-2 text-middle">-</b>
                   <div class="col-3 col-md-4">
-                    <label for='resignDate2' hidden></label><input type="date" id='resignDate2' name='resignDate2'
+                    <label for='Date2' hidden></label><input type="date" id='Date2' name='Date2'
                                                                    class="form-control end_date"
-                                                                   th:value="${resignDate2 != '' ? #dates.format(resignDate2, 'yyyy-MM-dd') : ''}">
+                                                                   th:value="${Date2 != '' ? #dates.format(Date2, 'yyyy-MM-dd') : ''}">
                   </div>
                   <div class="col-3 col-md-2">
                     <label for="dateField1">
@@ -130,7 +130,7 @@
               <span style="margin-left: 5px;">건씩 보기</span>
             </div>
 
-            <table class="table table-striped" id="resignHistory-table" th:if="${listcount > 0}">
+            <table class="table table-striped" id="History-table" th:if="${listcount > 0}">
               <thead>
               <tr>
                 <th>No.</th>
@@ -160,7 +160,7 @@
           </div>
         </div>
         <th:block th:if="${listcount > 0}">
-          <th:block th:replace="~{fragments/paging :: paging('list', |&limit=${limit}&resignDate1=${resignDate1 != '' ? #dates.format(resignDate1, 'yyyy-MM-dd') : ''}&resignDate2=${resignDate2 != '' ? #dates.format(resignDate2, 'yyyy-MM-dd') : ''}&dateField=${dateField}&searchField=${searchField}&searchWord=${searchWord}|)}"/>
+          <th:block th:replace="~{fragments/paging :: paging('list', |&limit=${limit}&Date1=${Date1 != '' ? #dates.format(Date1, 'yyyy-MM-dd') : ''}&Date2=${Date2 != '' ? #dates.format(Date2, 'yyyy-MM-dd') : ''}&dateField=${dateField}&searchField=${searchField}&searchWord=${searchWord}|)}"/>
         </th:block>
       </div>
     </div>

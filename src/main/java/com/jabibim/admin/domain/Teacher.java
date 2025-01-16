@@ -1,7 +1,6 @@
 package com.jabibim.admin.domain;
 
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
 @Data

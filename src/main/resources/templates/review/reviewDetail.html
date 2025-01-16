@@ -334,8 +334,9 @@
   <!--        <c:if test="${sessionScope.id == review.teacher_id && empty reply}">-->
   <th:block th:if="${#lists.size(detaillist) == 1}">
     <th:block th:with="incharge=${detaillist[0].getTeacherEmail()}, name=${detaillist[0].getTeacherName()}">
-      <div class="card-body" th:if="${incharge == #authentication.name or isAdmin}">
+      <div class="card-body" th:if="${incharge == account.getEmail()}">
         <!-- 담당 강사거나 어드민 role(추후 manager role로)이면 작성할 수 있다. -->
+
         <h5 class="card-title">답변</h5>
         <!-- Multi Columns Form -->
         <form class="row g-3" th:action="@{/board/review/detail/reply}" method="post" id="writeForm">
@@ -377,6 +378,7 @@
           </div>
         </form><!-- End Multi Columns Form -->
       </div>
+      </th:block>
     </th:block>
   </th:block>
   <!--        </c:if>-->

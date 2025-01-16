@@ -9,112 +9,121 @@
     <script th:inline="javascript">
         const gradeListSize = /*[[${gradeList.size()}]]*/ 0;
     </script>
-    <script th:src="@{/static/js/studentGrade.js}"></script>
+    <script th:src="@{/js/studentGrade.js}"></script>
+    <style>
+        .text-highlight {
+            font-family: 'Arial Black', sans-serif; /* 굵고 강조된 글씨체 */
+            font-size: 1em; /* 크기를 키워 강조 */
+            color: #d9534f; /* 경고 색상 (빨강 계열) */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* 약간의 그림자 효과 */
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
-<main id="main" class="main">
-    <div class="pagetitle">
-        <h1>등급 관리</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">수강생 관리</li>
-                <li class="breadcrumb-item active">등급 관리</li>
-            </ol>
-        </nav>
-    </div>
-
-    <div class="card">
-        <div class="card-body">
-            <button class="addBtn btn btn-primary float-end" style="margin-top: 30px;" id="">등급 추가하기</button>
-            <div style="margin-top: 30px;">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th style="width: 10%">순위</th>
-                        <th style="width: 20%">등급명</th>
-                        <th style="width: 20%">등급할인율</th>
-                        <th style="width: 20%">회원수</th>
-                        <th style="width: 30%"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <th:block th:if="${!#lists.isEmpty(gradeList)}">
-                        <tr th:each="grade, status : ${gradeList}">
-                            <td style="width: 10%" th:text="${grade.rnum}"></td>
-                            <td style="width: 20%" th:text="${grade.grade_name}"></td>
-                            <td style="width: 20%" th:text="${grade.grade_discount_rate}"></td>
-                            <td style="width: 20%" th:text="${grade.student_count}"></td>
-                            <td style="width: 30%; text-align: end">
-                                <button class="btn btn-outline-success modifyBtn"
-                                        th:attr="data-grade-id=${grade.grade_id}, data-academy-id=${grade.academy_id}">
-                                    <i class="bi bi-pencil"></i> 수정
-                                </button>
-                                <button class="btn btn-outline-danger deleteBtn"
-                                        th:attr="data-grade-id=${grade.grade_id}, data-academy-id=${grade.academy_id}"
-                                        data-bs-toggle="modal" data-bs-target="#verticalycentered"
-                                        th:disabled="${gradeList.size() == 1}">
-                                    <i class="bi bi-trash"></i> 삭제
-                                </button>
-                            </td>
-                        </tr>
-                    </th:block>
-                    <th:block th:if="${#lists.isEmpty(gradeList)}">
-                        <tr class="text-center">
-                            <td colspan="10">데이터가 존재하지 않습니다.</td>
-                        </tr>
-                    </th:block>
-                    </tbody>
-                </table>
-            </div>
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>등급 관리</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">수강생 관리</li>
+                    <li class="breadcrumb-item active">등급 관리</li>
+                </ol>
+            </nav>
         </div>
-    </div>
 
-</main><!-- End #main -->
-</div>
-
-<div class="modal fade" id="verticalycentered" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content shadow-lg rounded">
-            <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold text-danger">등급 삭제 확인</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                <p class="text-muted fs-6">
-                    삭제된 등급에 해당하던 학생들에게 <br/>부여할 <span class="fw-bold">새로운 등급</span>을 아래에서 선택해주세요.
-                </p>
-                <div class="alert alert-warning mt-3" role="alert">
-                    이 작업은 되돌릴 수 없습니다. 신중히 결정하세요.
-                </div>
-                <div class="mt-4">
-                    <label for="updatableGradeSelect" class="form-label fw-bold">업데이트 가능한 등급</label>
-                    <select id="updatableGradeSelect" class="form-select">
-                        <option value="">선택하세요</option>
-                    </select>
+        <div class="card">
+            <div class="card-body">
+                <button class="addBtn btn btn-primary float-end" style="margin-top: 30px;" id="">등급 추가하기</button>
+                <div style="margin-top: 30px;">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th style="width: 10%">순위</th>
+                            <th style="width: 20%">등급명</th>
+                            <th style="width: 20%">등급할인율</th>
+                            <th style="width: 20%">회원수</th>
+                            <th style="width: 30%"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <th:block th:if="${!#lists.isEmpty(gradeList)}">
+                            <tr th:each="grade, status : ${gradeList}">
+                                <td style="width: 10%" th:text="${grade.rnum}"></td>
+                                <td style="width: 20%" th:text="${grade.gradeName}"></td>
+                                <td style="width: 20%" th:text="${grade.discountRate}"></td>
+                                <td style="width: 20%" th:text="${grade.studentCount}"></td>
+                                <td style="width: 30%; text-align: end">
+                                    <button class="btn btn-outline-success modifyBtn"
+                                            th:attr="data-grade-id=${grade.gradeId}, data-academy-id=${grade.academyId}">
+                                        <i class="bi bi-pencil"></i> 수정
+                                    </button>
+                                    <button class="btn btn-outline-danger deleteBtn"
+                                            th:attr="data-grade-id=${grade.gradeId}, data-academy-id=${grade.academyId}"
+                                            data-bs-toggle="modal" data-bs-target="#verticalycentered"
+                                            th:disabled="${#lists.size(gradeList) == 1}">
+                                        <i class="bi bi-trash"></i> 삭제
+                                    </button>
+                                </td>
+                            </tr>
+                        </th:block>
+                        <th:block th:if="${#lists.isEmpty(gradeList)}">
+                            <tr class="text-center">
+                                <td colspan="10">데이터가 존재하지 않습니다.</td>
+                            </tr>
+                        </th:block>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="modal-footer border-0 justify-content-center">
-                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-danger px-4 confirmDeleteBtn"
-                        th:attr="data-grade-id='', data-academy-id=''"><!-- Dynamic attributes will be set via JavaScript -->
-                    삭제
-                </button>
+        </div>
+
+
+    </main><!-- End #main -->
+    <div class="modal fade" id="verticalycentered" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg rounded">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold text-danger">등급 삭제 확인</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="text-muted fs-6">
+                        삭제된 등급에 해당하던 학생들에게 <br/>부여할 <span class="fw-bold">새로운 등급</span>을 아래에서 선택해주세요.
+                    </p>
+                    <div class="alert alert-warning mt-3" role="alert">
+                        <strong class="text-highlight">이 작업은 되돌릴 수 없습니다!! 신중히 결정하세요.</strong>
+                    </div>
+                    <div class="mt-4">
+                        <label for="updatableGradeSelect" class="form-label fw-bold">업데이트 가능한 등급</label>
+                        <select id="updatableGradeSelect" class="form-select">
+                            <option value="">선택하세요</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-danger px-4 confirmDeleteBtn"
+                            th:attr="data-grade-id='', data-academy-id=''">
+                        <!-- Dynamic attributes will be set via JavaScript -->
+                        삭제
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"
-         style="z-index: 11">
-        <!-- 토스트 예시 -->
-        <div class="toast" id="validationToast" role="alert" aria-live="assertive" aria-atomic="true"
-             data-bs-delay="3000">
-            <div class="toast-header">
-                <strong class="me-auto" style="color: red;">알림</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                입력된 값이 유효하지 않습니다.
+        <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"
+             style="z-index: 11">
+            <!-- 토스트 예시 -->
+            <div class="toast" id="validationToast" role="alert" aria-live="assertive" aria-atomic="true"
+                 data-bs-delay="3000">
+                <div class="toast-header">
+                    <strong class="me-auto" style="color: red;">알림</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    입력된 값이 유효하지 않습니다.
+                </div>
             </div>
         </div>
     </div>

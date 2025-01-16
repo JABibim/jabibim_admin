@@ -6,19 +6,21 @@
     <select id="getListCount" resultType="int">
         select count(*)
         from privacy_term
+        where academy_id =  #{academyId}
     </select>
 
     <select id="getPrivacyList" resultType="privacy">
         SELECT *
         FROM (
         SELECT
-        ROW_NUMBER() OVER (ORDER BY PRIVACY_TERM_EFFECTIVE_DATE DESC) AS rnum,
-        PRIVACY_TERM_ID,
-        PRIVACY_TERM_SUBJECT,
-        PRIVACY_TERM_NAME,
-        PRIVACY_TERM_CONTENT,
-        PRIVACY_TERM_EFFECTIVE_DATE
+        ROW_NUMBER() OVER (ORDER BY privacy_term_effective_date DESC) AS rnum,
+        privacy_term_id,
+        privacy_term_subject,
+        privacy_term_name,
+        privacy_term_content,
+        privacy_term_effective_date
         FROM privacy_term
+        WHERE academy_id =  #{academyId}
         ) AS ranked_terms
         WHERE rnum &gt;= #{start} AND rnum &lt;= #{end}
     </select>
@@ -26,17 +28,18 @@
     <insert id="insertPrivacy">
         INSERT INTO privacy_term
         (privacy_term_id, created_at, privacy_term_subject, privacy_term_name,
-         privacy_term_content, privacy_term_expiration_date, privacy_term_effective_date, privacy_term_status)
+         privacy_term_content, privacy_term_expiration_date, privacy_term_effective_date, privacy_term_status, academy_id)
         VALUES
             (#{privacyTermId}, NOW(), #{privacyTermSubject}, #{privacyTermName},
-             #{privacyTermContent}, #{privacyTermExpirationDate}, #{privacyTermEffectiveDate}, #{privacyTermStatus})
+             #{privacyTermContent}, #{privacyTermExpirationDate}, #{privacyTermEffectiveDate}, #{privacyTermStatus}, #{academyId})
     </insert>
 
     <select id="getLatestPrivacyPolicy" resultType="com.jabibim.admin.domain.Privacy">
         SELECT *
         FROM privacy_term
-        ORDER BY PRIVACY_TERM_EFFECTIVE_DATE DESC
-            LIMIT 1
+        WHERE academy_id =  #{academyId}
+        ORDER BY privacy_term_effective_date DESC
+        LIMIT 1
     </select>
 
     <select id="getDetail" parameterType="int" resultType="privacy">
@@ -54,7 +57,9 @@
         FROM (
                  SELECT ROW_NUMBER() OVER (ORDER BY privacy_term_effective_date DESC) AS rnum
                  FROM privacy_term
+                 WHERE academy_id =  #{academyId}
              ) AS subquery
+
     </select>
 
 </mapper>
