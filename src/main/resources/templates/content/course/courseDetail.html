@@ -126,6 +126,10 @@
                     <button type="submit" class="btn btn-success" id="modifyBtn">
                         수정&nbsp;&nbsp;<i class="bi bi-pencil"></i>
                     </button>
+                    <button type="button" class="btn btn-danger deleteCourseBtn" data-bs-toggle="modal"
+                            th:data-course-id="${course.courseId}" data-bs-target="#deleteCourseModal">
+                        삭제&nbsp;&nbsp;<i class="bi bi-trash"></i>
+                    </button>
                 </div>
             </form>
         </div>
@@ -204,6 +208,24 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
                 <button type="button" class="btn btn-danger confirmDeleteBtn">삭제</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteCourseModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCourseModalLabel">과정 삭제 확인</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>정말로 이 과정을 삭제하시겠습니까?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-danger confirmCourseDeleteBtn" id="confirmCourseDeleteBtn">삭제</button>
             </div>
         </div>
     </div>

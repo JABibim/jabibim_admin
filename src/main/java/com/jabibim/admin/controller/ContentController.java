@@ -123,7 +123,6 @@ public class ContentController {
     }
 
     @PostMapping(value = "/updateCourseActivation")
-    @Transactional
     @ResponseBody
     public ResponseEntity<ApiResponse<HashMap<String, Object>>> updateCourseActivation(
             @RequestParam(required = true) String courseId,
@@ -138,7 +137,6 @@ public class ContentController {
     }
 
     @PostMapping(value = "/modifyCourse")
-    @Transactional
     public String modifyCourse(
             Authentication authentication
             , @RequestPart("course_id") String courseId
@@ -157,5 +155,18 @@ public class ContentController {
         contentService.updateCourse(teacherId, academyId, courseId, courseName, courseSubject, isProfileChanged, courseImage, courseInfo, coursePrice, courseTag, courseDiff);
 
         return "redirect:/content";
+    }
+
+    @PostMapping(value = "/deleteCourse")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<HashMap<String, Object>>> deleteCourse(
+            @RequestParam(required = true) String courseId
+    ) {
+        try {
+            contentService.deleteCourse(courseId);
+            return ResponseEntity.ok(new ApiResponse<>(true, null, "과정 삭제가 정상적으로 처리되었습니다."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>(false, null, "과정 삭제 도중 오류가 발생했습니다.: " + e.getMessage()));
+        }
     }
 }

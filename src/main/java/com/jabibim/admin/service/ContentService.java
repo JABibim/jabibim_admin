@@ -20,4 +20,6 @@ public interface ContentService {
     Course getCourseById(String courseId);
 
     void updateCourse(String teacherId, String academyId, String courseId, String courseName, String courseSubject, String isProfileChanged, MultipartFile courseImage, String courseInfo, String coursePrice, String courseTag, String courseDiff);
+
+    void deleteCourse(String courseId);
 }

@@ -179,4 +179,40 @@
         WHERE course_id = #{courseId}
     </update>
 
+    <select id="getCourseClassFileList" resultType="String">
+        SELECT
+            class_file_path
+        FROM
+            class c,
+            class_file cf
+        WHERE
+            c.deleted_at IS NULL
+          AND c.course_id = #{courseId}
+          AND c.course_id = cf.course_id;
+    </select>
+
+    <update id="deleteCourse">
+        UPDATE course
+        SET
+            deleted_at = CURRENT_TIMESTAMP
+        WHERE
+            course_id = #{courseId}
+    </update>
+
+    <update id="deleteClass">
+        UPDATE class
+        SET
+            deleted_at = CURRENT_TIMESTAMP
+        WHERE
+            course_id = #{courseId}
+    </update>
+
+    <update id="deleteClassFile">
+        UPDATE class_file
+        SET
+            deleted_at = CURRENT_TIMESTAMP
+        WHERE
+            course_id = #{courseId}
+    </update>
+
 </mapper>

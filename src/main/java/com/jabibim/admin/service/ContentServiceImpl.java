@@ -4,10 +4,12 @@ import com.jabibim.admin.domain.Course;
 import com.jabibim.admin.dto.content.course.request.InsertCourseReqDto;
 import com.jabibim.admin.dto.content.course.request.SelectCourseListReqDto;
 import com.jabibim.admin.dto.content.course.response.SelectCourseListResDto;
+import com.jabibim.admin.func.S3Deleter;
 import com.jabibim.admin.func.S3Uploader;
 import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.mybatis.mapper.ContentMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
@@ -17,10 +19,12 @@ import java.util.List;
 public class ContentServiceImpl implements ContentService {
     private final ContentMapper contentDao;
     private final S3Uploader s3Uploader;
+    private final S3Deleter s3Deleter;
 
-    public ContentServiceImpl(ContentMapper contentDao, S3Uploader s3Uploader) {
+    public ContentServiceImpl(ContentMapper contentDao, S3Uploader s3Uploader, S3Deleter s3Deleter) {
         this.contentDao = contentDao;
         this.s3Uploader = s3Uploader;
+        this.s3Deleter = s3Deleter;
     }
 
     @Override
@@ -61,6 +65,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    @Transactional
     public void updateCourseActivation(String courseId, boolean isActive) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("courseId", courseId);
@@ -75,6 +80,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    @Transactional
     public void updateCourse(String teacherId, String academyId, String courseId, String courseName, String courseSubject, String isProfileChanged, MultipartFile courseImage, String courseInfo, String coursePrice, String courseTag, String courseDiff) {
         HashMap<String, Object> map = new HashMap<>();
 
@@ -99,6 +105,21 @@ public class ContentServiceImpl implements ContentService {
         map.put("courseDiff", courseDiff);
 
         contentDao.updateCourse(map);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCourse(String courseId) {
+        List<String> fileList = contentDao.getCourseClassFileList(courseId);
+        fileList.add(contentDao.getAsIsProfileImagePath(courseId));
+
+        // deleted_at 처리 ( course, class, class_file table )
+        contentDao.deleteCourse(courseId);
+        contentDao.deleteClass(courseId);
+        contentDao.deleteClassFile(courseId);
+
+        // s3에서 파일 삭제 ( 해당 과정에 속한 모든 파일 (프로필 이미지, 강의 영상 및 강의 자료 ), 배치로 처리 할지 고려
+        s3Deleter.deleteFiles(fileList);
     }
 
     private String uploadNewCourseProfile(String courseId, MultipartFile courseImage) {

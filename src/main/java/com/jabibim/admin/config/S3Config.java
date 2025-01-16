@@ -7,6 +7,10 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
 
 @Configuration
 public class S3Config {
@@ -30,4 +34,10 @@ public class S3Config {
                 .build();
     }
 
+    @Bean
+    public S3AsyncClient s3AsyncClient() {
+        StaticCredentialsProvider staticCredentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create(iamAccessKey, iamSecretKey));
+
+        return S3AsyncClient.builder().credentialsProvider(staticCredentialsProvider).region(Region.of(region)).build();
+    }
 }

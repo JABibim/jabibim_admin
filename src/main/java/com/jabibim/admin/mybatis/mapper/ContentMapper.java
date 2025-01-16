@@ -23,4 +23,12 @@ public interface ContentMapper {
     String getAsIsProfileImagePath(String courseId);
 
     void updateCourse(HashMap<String, Object> map);
+
+    List<String> getCourseClassFileList(String courseId);
+
+    void deleteCourse(String courseId);
+
+    void deleteClass(String courseId);
+
+    void deleteClassFile(String courseId);
 }

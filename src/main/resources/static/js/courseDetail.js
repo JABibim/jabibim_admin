@@ -328,18 +328,13 @@ $(function () {
         reader.readAsDataURL(file);
     }
 
-    // 이미지 삭제 버튼 클릭 이벤트
     imgReSelectBtn.addEventListener("click", (event) => {
         event.preventDefault();
 
-        // 미리보기 이미지 숨기기
         previewImage.src = "";
         previewImage.style.display = "none";
 
-        // 파일 입력 초기화
         fileInput.value = "";
-
-        // 삭제 버튼 숨기기
         imgReSelectBtn.style.display = "none";
     });
 
@@ -377,4 +372,36 @@ $(function () {
             showToast('유효한 이미지 파일을 선택해주세요.');
         }
     })
+
+    $('#deleteCourseModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget);
+        const courseId = button.data('course-id');
+
+        $(this).find('#confirmCourseDeleteBtn').data('course-id', courseId);
+    });
+
+    $(document).on('click', '#confirmCourseDeleteBtn', function () {
+        const courseId = $(this).data('course-id');
+        if (!courseId) {
+            alert('삭제할 Course ID가 없습니다.');
+            return;
+        }
+
+        $.ajax({
+            url: '/content/deleteCourse',
+            method: 'POST',
+            data: {courseId},
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function () {
+                $('#deleteCourseModal').modal('hide');
+
+                location.href = '/content';
+            },
+            error: function () {
+                alert('삭제 처리 중 문제가 발생했습니다.');
+            }
+        });
+    });
 })
