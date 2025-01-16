@@ -136,18 +136,27 @@ public class TeacherController {
             HttpServletRequest request) {
 
         System.out.println("============ careerAdd 실행 ================");
+        session.setAttribute("referer", "list");
         String teacherId = (String) session.getAttribute("id");
+        String academyId = (String) session.getAttribute("aid");
+
 
 
         // 약력 정보 설정
         career.setCareerId(UUID.randomUUID().toString());
         career.setCareerName(request.getParameter("career_name"));
         career.setTeacherId(teacherId);
+        career.setAcademyId(academyId);
 
         // 서비스 계층을 통해 약력 추가
         teacherService.insertCareer(career);
         return "redirect:/teacher/profile";
 
+    }
+
+    @GetMapping("profile/detail")
+    public String careerDetail(){
+        return "teachers/profile_detail";
     }
 
     
