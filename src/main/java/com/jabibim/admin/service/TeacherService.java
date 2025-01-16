@@ -33,4 +33,6 @@ public interface TeacherService {
     void resetAllCareers();
 
     int updateCareerActive(String careerName, int displayStatus);
+
+    void insertCareer(TeacherCareer career);
 }

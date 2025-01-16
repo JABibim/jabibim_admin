@@ -150,4 +150,13 @@
         WHERE career_name = #{careerName}
     </update>
 
+    <insert id="insertCareer">
+        INSERT INTO career
+        (career_id, created_at, career_name, career_file_name,
+         career_file_origin, display_status, teacher_id)
+        VALUES
+            (#{carrerId}, current_timestamp, #{careerName}, '',
+             '', 0, #{teacherId})
+    </insert>
+
 </mapper>
