@@ -1,4 +1,4 @@
-package com.jabibim.admin.dto;
+package com.jabibim.admin.dto.common;
 
 import lombok.Data;
 

@@ -10,7 +10,6 @@ function showToast(message) {
 }
 
 const deleteClass = (courseId, classId) => {
-
     $.ajax({
         url: 'deleteClass',
         data: {courseId, classId},
@@ -33,7 +32,6 @@ const deleteClass = (courseId, classId) => {
         }
     })
 }
-
 const loadClassDetails = (classId, targetElement) => {
     $.ajax({
         url: 'getClassDetail',
@@ -152,7 +150,6 @@ const getCourseClassList = (courseId) => {
         }
     })
 }
-
 $(function () {
     const quill = new Quill('#editor', {
         theme: 'snow',
@@ -185,14 +182,6 @@ $(function () {
         if ($courseSubject.val().trim() === '') {
             showToast('과정이 속한 과목(예) 수학, 과학, ...)을 입력해주세요.');
             $courseSubject.focus();
-
-            return false;
-        }
-
-        // 과정 대표이미지
-        const $courseImage = $('#course_image');
-        if ($courseImage[0].files.length <= 0) {
-            showToast('과정 대표 이미지를 첨부해주세요.');
 
             return false;
         }
@@ -289,4 +278,130 @@ $(function () {
     $(document).on('click', '.confirmDeleteBtn', function () {
         deleteClass(courseId, selectedClassId);
     })
+
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("update_course_image");
+    const previewImage = document.getElementById("updatePreviewImage");
+    const imgReSelectBtn = document.getElementById("imgReSelectBtn");
+
+    // 클릭 시 파일 선택 창 열기
+    dropZone.addEventListener("click", () => {
+        fileInput.click();
+    });
+
+    // 파일 선택 시 미리보기 처리
+    fileInput.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            displayPreview(file);
+        }
+    });
+
+    // 드래그앤드롭 이벤트 처리
+    dropZone.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        dropZone.classList.add("dragover");
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("dragover");
+    });
+
+    dropZone.addEventListener("drop", (event) => {
+        event.preventDefault();
+        dropZone.classList.remove("dragover");
+
+        const file = event.dataTransfer.files[0];
+        if (file) {
+            fileInput.files = event.dataTransfer.files; // 파일 입력에 할당
+            displayPreview(file);
+        }
+    });
+
+    function displayPreview(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImage.src = e.target.result;
+            previewImage.style.display = "block";
+            imgReSelectBtn.style.display = 'inline-block';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    imgReSelectBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+
+        previewImage.src = "";
+        previewImage.style.display = "none";
+
+        fileInput.value = "";
+        imgReSelectBtn.style.display = "none";
+    });
+
+    $(document).on('click', '#confirmUpdateBtn', () => {
+        // 파일 입력 요소와 미리보기 이미지 참조
+        const fileInput = document.getElementById("update_course_image");
+        const previewImage = document.getElementById("previewImage");
+
+        // 파일이 선택되었는지 확인
+        if (fileInput.files.length === 0) {
+            showToast('파일이 선택되지 않았습니다. 이미지를 선택하거나 업로드해주세요.');
+            return;
+        }
+
+        // 선택된 파일 가져오기
+        const file = fileInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                // 기존 이미지 창에 선택한 이미지 표시
+                previewImage.src = e.target.result;
+                previewImage.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+
+            // 기존 파일 input 태그에 파일 값 할당
+            const mainFileInput = document.getElementById("course_image");
+            mainFileInput.files = fileInput.files;
+
+            $('#is_profile_changed').val(true);
+
+            // 모달 닫기
+            $('#verticalycentered').modal('hide');
+        } else {
+            showToast('유효한 이미지 파일을 선택해주세요.');
+        }
+    })
+
+    $('#deleteCourseModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget);
+        const courseId = button.data('course-id');
+
+        $(this).find('#confirmCourseDeleteBtn').data('course-id', courseId);
+    });
+
+    $(document).on('click', '#confirmCourseDeleteBtn', function () {
+        const courseId = $(this).data('course-id');
+        if (!courseId) {
+            alert('삭제할 Course ID가 없습니다.');
+            return;
+        }
+
+        $.ajax({
+            url: '/content/deleteCourse',
+            method: 'POST',
+            data: {courseId},
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function () {
+                $('#deleteCourseModal').modal('hide');
+
+                location.href = '/content';
+            },
+            error: function () {
+                alert('삭제 처리 중 문제가 발생했습니다.');
+            }
+        });
+    });
 })

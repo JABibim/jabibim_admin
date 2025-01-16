@@ -18,7 +18,6 @@ import java.util.List;
 public class SettingServiceImpl implements SettingService {
     @Value("${admin.settingPassword}")
     private String settingPassword;
-
     private final PasswordEncoder passwordEncoder;
     private final AcademyMapper academyDao;
     private final TeacherMapper teacherDao;

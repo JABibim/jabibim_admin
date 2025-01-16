@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>강의 관리</title>
+    <th:block th:replace="~{fragments/headerImport :: HeaderImportFragment}"></th:block>
+    <script th:src="@{/js/classList.js}" charset="UTF-8"></script>
+</head>
+<body>
+<th:block th:replace="~{fragments/header :: Header}"></th:block>
+<th:block th:replace="~{fragments/sidebar :: SideBar}"></th:block>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>강의 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">콘텐츠 관리</li>
+                <li class="breadcrumb-item active">강의 관리</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form th:action="@{/search}" id="searchClassForm" method="get">
+
+                <!-- 과정명 선택 -->
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label pt-4 fw-bold">과정명</label>
+                    <div class="col-sm-10 pt-4">
+                        <select class="form-select" aria-label="Default select example" id="courseId" name="courseId">
+<!--                            <option value="all" ${param.courseId == 'all' ? 'selected' : ''}>전체</option>-->
+<!--                            <c:forEach var="course" items="${requestScope.courseClassList}">-->
+<!--                                <option value="${course.course_id}" ${param.courseId == course.course_id ? 'selected' : ''}>-->
+<!--                                ${course.course_name}(${course.course_class_count})-->
+<!--                                </option>-->
+<!--                            </c:forEach>-->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 검색어 입력 -->
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label fw-bold">검색</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="searchKeyword" name="searchKeyword"
+                               placeholder="검색어를 입력해주세요."
+                               th:value="${searchKeyword != null ? searchKeyword : ''}">
+                    </div>
+                </div>
+
+                <!-- 검색 버튼 -->
+                <div style="float: right;">
+                    <button type="submit" class="btn btn-primary" id="searchBtn">
+                        강의 검색&nbsp;&nbsp;<i class="bi bi-search"></i>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end align-items-center pt-2 pb-2">
+        <button type="submit" class="btn btn-primary" style="height: fit-content;" id="addClassBtn">
+            신규 강의 업로드&nbsp;&nbsp;<i class="bi bi-pencil"></i>
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center pt-2">
+                <h5 class="card-title mb-0">Total : <span id="courseListCount"
+                                                          style="font-size: 18px; font-weight: 500; color: #012970; font-family: 'Poppins', sans-serif">${requestScope.courseClassDetailCount}</span>건
+                </h5>
+            </div>
+
+            <th:block th:if="${courseClassDetailCount > 0}">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col" style="width: 10%;">번호</th>
+                        <th scope="col" style="width: 20%;">강의 타입</th>
+                        <th scope="col" style="width: 40%;">강의 제목</th>
+                        <th scope="col" style="width: 30%;">강사</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:if="${courseClassDetailList != null}">
+                        <th:block th:each="c, iterStat : ${courseClassDetailList}">
+                            <tr>
+                                <th scope="col" style="width: 10%;">${c.rownum}</th>
+                                <th scope="col" style="width: 20%;">
+                                    <th:block th:if="${c.has_video == 1}">
+                                        <i class="bi bi-play-btn"></i>
+                                    </th:block>
+                                    <th:block th:if="${c.has_file} == 1">
+                                        <i class="bi bi-file-earmark-text"></i>
+                                    </th:block>
+                                </th>
+                                <th scope="col" style="width: 40%;">${c.class_name}</th>
+                                <th scope="col" style="width: 30%;">${c.teacher_name}</th>
+                            </tr>
+                        </th:block>
+                    </th:block>
+                    <th:block th:if="${courseClassDetailList == null}">
+                        <tr class="text-center">
+                            <td colspan="6">데이터가 없습니다.</td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+                <!--                <div class="d-flex align-items-center justify-content-center">-->
+                <!--                    <div>-->
+                <!--                        <ul class="pagination justify-content-center" style="margin: 0;">-->
+                <!--                            <li class="page-item">-->
+                <!--                                <a class="page-link ${requestScope.page <= 1 ? 'disabled' : ''}" ${page > 1 ? 'href=?page=' += (requestScope.page - 1) : ''}>이전</a>-->
+                <!--                            </li>-->
+
+                <!--                            <c:forEach var="a" begin="${requestScope.startPage}" end="${requestScope.endPage}">-->
+                <!--                                <li class="page-item ${a == requestScope.page ? 'active' : ''}">-->
+                <!--                                    <a class="page-link" ${a == requestScope.page ? '' : 'href=?page=' += a}>${a}</a>-->
+                <!--                                </li>-->
+                <!--                            </c:forEach>-->
+
+                <!--                            <li class="page-item">-->
+                <!--                                <a class="page-link ${requestScope.page >= requestScope.maxPage ? 'disabled' : ''}" ${requestScope.page < requestScope.maxPage ? 'href=?page=' += (requestScope.page + 1) : ''}>다음</a>-->
+                <!--                            </li>-->
+                <!--                        </ul>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+            </th:block>
+
+            <th:block th:if="${courseClassDetailCount <= 0}">
+                <div>데이터가 존재하지 않습니다.</div>
+            </th:block>
+
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/footerImport :: FooterImportFragment}"></th:block>
+</body>
+</html>
