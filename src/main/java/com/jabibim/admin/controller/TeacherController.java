@@ -13,8 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 @RequestMapping(value = "/teacher")
@@ -124,10 +126,31 @@ public class TeacherController {
 
 
     @GetMapping(value ="/write")
-    public String teacherWrite(Model model, HttpServletRequest request) {
-        model.addAttribute("contextPath", request.getContextPath());
+    public String teacherWrite() {
         return "teachers/profile_write";
     }
+
+    @PostMapping("/profile/add")
+    public String careerAdd(
+            @ModelAttribute TeacherCareer career,
+            HttpSession session,
+            HttpServletRequest request) {
+
+        System.out.println("============ careerAdd 실행 ================");
+        String teacherId = (String) session.getAttribute("id");
+
+
+        // 약력 정보 설정
+        career.setCareerId(UUID.randomUUID().toString());
+        career.setCareerName(request.getParameter("career_name"));
+        career.setTeacherId(teacherId);
+
+        // 서비스 계층을 통해 약력 추가
+        teacherService.insertCareer(career);
+        return "redirect:/teacher/profile";
+
+    }
+
     
     
     //어디에 만들어야 제일 좋을지 모르겠는데, teacher 계정들을 피해 만드는거니

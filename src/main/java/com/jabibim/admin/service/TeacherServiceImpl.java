@@ -117,5 +117,10 @@ public class TeacherServiceImpl implements TeacherService {
         return dao.updateCareerActive(careerName, displayStatus);
     }
 
+    @Override
+    public void insertCareer(TeacherCareer career) {
+        dao.insertCareer(career);
+    }
+
 
 }
