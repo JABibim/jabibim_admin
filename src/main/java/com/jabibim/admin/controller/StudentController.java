@@ -19,9 +19,9 @@ import java.util.List;
 @Controller
 @RequestMapping(value = "/student")
 public class StudentController {
-    private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
 
-    private StudentService studentService;
+    private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
+    private final StudentService studentService;
 
     public StudentController(StudentService studentService) {
         this.studentService = studentService;

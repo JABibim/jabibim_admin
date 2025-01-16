@@ -30,7 +30,6 @@ public class TeacherController {
     }
 
 
-
     @GetMapping(value = "")
     public String teacher(
             @RequestParam(defaultValue = "1") int page,
