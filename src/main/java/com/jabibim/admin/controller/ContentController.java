@@ -36,6 +36,24 @@ public class ContentController {
         return "content/course/courseList";
     }
 
+    @GetMapping(value = "/class")
+    public ModelAndView classListPage(
+            Authentication authentication,
+            ModelAndView modelAndView,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        AccountDto account = (AccountDto) authentication.getPrincipal();
+        boolean isAdmin = account.getRoles().contains("ROLE_ADMIN");
+        String academyId = account.getAcademyId();
+
+
+
+        modelAndView.setViewName("content/class/classList");
+
+        return modelAndView;
+    }
+
     @GetMapping(value = "/addCourse")
     public String addCoursePage() {
         return "content/course/addCourse";
