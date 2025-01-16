@@ -91,7 +91,7 @@
                     <tr th:each="career, iterStat : ${careerList}">
                         <td th:text="${iterStat.index + 1}"></td>
                         <td>
-                            <a th:href="@{/profile/detail(id=${career.careerId})}" th:text="${career.careerName}"></a>
+                            <a th:href="@{profile/detail(id=${career.careerId})}" th:text="${career.careerName}"></a>
                         </td>
                         <td th:text="${#dates.format(career.createdAt, 'yyyy-MM-dd')}"></td>
                         <td>
