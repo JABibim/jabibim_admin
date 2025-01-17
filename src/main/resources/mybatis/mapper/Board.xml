@@ -12,7 +12,7 @@
             WHERE board_type_name = '공지사항'
             LIMIT 1
             )
-        AND ACADEMY_ID = #{academyId}
+        AND academy_id = #{academyId}
         AND deleted_at IS NULL
     </select>
 
@@ -130,7 +130,6 @@
             board_content  = #{boardContent},
             board_file_name     = #{boardFileName},
             board_file_origin = #{boardFileOrigin},
-            board_notice =  #{boardNotice},
             board_exposure_stat = #{boardExposureStat},
             board_notice = #{boardNotice}
         WHERE board_id = #{boardId}

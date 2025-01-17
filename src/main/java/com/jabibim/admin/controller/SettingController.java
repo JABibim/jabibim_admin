@@ -1,7 +1,7 @@
 package com.jabibim.admin.controller;
 
 import com.jabibim.admin.domain.Academy;
-import com.jabibim.admin.dto.ApiResponse;
+import com.jabibim.admin.dto.common.ApiResponse;
 import com.jabibim.admin.dto.setting.AddAcademyDto;
 import com.jabibim.admin.dto.setting.AddTeacherDto;
 import com.jabibim.admin.service.SettingService;
@@ -40,6 +40,7 @@ public class SettingController {
     public HashMap<String, Object> getAcademyList() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("academyList", settingService.getAcademyList());
+
         return result;
     }
 
@@ -57,6 +58,7 @@ public class SettingController {
         HashMap<String, Object> result = new HashMap<>();
         Academy newAcademy = settingService.addAcademy(addAcademyDto);
         result.put("academy", newAcademy);
+
         return result;
     }
 
@@ -72,10 +74,12 @@ public class SettingController {
         try {
             HashMap<String, Object> result = new HashMap<>();
             result.put("teacherList", settingService.getTeacherList(academyId));
-            ApiResponse<HashMap<String, Object>> response = new ApiResponse<>(true, result, "선생 목록을 불러오는데 성공했습니다.");
+            ApiResponse<HashMap<String, Object>> response = new ApiResponse<>(true, result, "강사 목록을 불러오는데 성공했습니다.");
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            ApiResponse<HashMap<String, Object>> response = new ApiResponse<>(false, null, "선생 목록을 불러오는데 실패했습니다: " + e.getMessage());
+            ApiResponse<HashMap<String, Object>> response = new ApiResponse<>(false, null, "강사 목록을 불러오는데 실패했습니다: " + e.getMessage());
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

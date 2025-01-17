@@ -1,18 +1,16 @@
 package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Student;
-import com.jabibim.admin.dto.GetStudentGradesDTO;
+import com.jabibim.admin.dto.DeleteGradeDTO;
 import com.jabibim.admin.mybatis.mapper.StudentMapper;
 import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
-
 
 @Service
 public class StudentServiceImpl implements StudentService {
 
-    private StudentMapper dao;
+    private final StudentMapper dao;
 
     public StudentServiceImpl(StudentMapper dao) {
         this.dao = dao;
@@ -55,10 +53,6 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-
-    public List<GetStudentGradesDTO> getStudentGrades(String academyId) {
-        return dao.getStudentGrades(academyId);
-    }
     public int getStudentAdCount(String academyId, boolean isAdmin, String search_field, String search_word) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("academyId", academyId);
@@ -82,6 +76,11 @@ public class StudentServiceImpl implements StudentService {
         params.put("search_word", search_word);
 
         return dao.getStudentAdList(params);
+    }
+
+    @Override
+    public int replaceGrade(DeleteGradeDTO deleteGradeDTO) {
+        return dao.replaceGrade(deleteGradeDTO);
     }
 
 

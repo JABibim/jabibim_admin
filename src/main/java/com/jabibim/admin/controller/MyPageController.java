@@ -1,18 +1,19 @@
 package com.jabibim.admin.controller;
 
 import com.jabibim.admin.domain.Teacher;
+import com.jabibim.admin.dto.TeacherProfileDTO;
 import com.jabibim.admin.service.TeacherService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,9 +24,12 @@ public class MyPageController {
     private static final Logger logger = LoggerFactory.getLogger(MyPageController.class);
 
     private final TeacherService teacherService;
+    private final PasswordEncoder passwordEncoder;
 
-    public MyPageController(TeacherService teacherService) {
+
+    public MyPageController(TeacherService teacherService, PasswordEncoder passwordEncoder) {
         this.teacherService = teacherService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping(value = "/detail")
@@ -33,7 +37,7 @@ public class MyPageController {
                                     ModelAndView mv,
                                     HttpServletRequest request) {
 
-        Teacher t = teacherService.teacherInfo(id);
+        TeacherProfileDTO t = teacherService.teacherInfo(id);
 
         if (t != null) {
             mv.setViewName("member/myProfile");
@@ -47,32 +51,34 @@ public class MyPageController {
     }
 
     @PostMapping(value = "/updateProcess")
-    public String updateProcess(@ModelAttribute Teacher teacher, Model model, HttpServletRequest request,
+    public String updateProcess(@ModelAttribute Teacher teacher, Model model,
+                                HttpServletRequest request,
                                 @RequestParam("profileImage") MultipartFile profileImage,
                                 RedirectAttributes redirectAttributes) {
         HttpSession session = request.getSession();
         String teacherId = (String) session.getAttribute("id");
         teacher.setTeacherId(teacherId);
 
-        if (!profileImage.isEmpty()) {
-            try {
-                //파일 저장 경로부터 설쟁해야함
-                String uploadDir =
-                        request.getSession().getServletContext().
-                                getRealPath("/resources/static/uploadFiles/profileImageUpload");
-                String newFileName = teacherService.saveProfileImage(profileImage, uploadDir);
-
-                //Teacher 객체에 저장된 파일명 설정
-                teacher.setTeacherImgName(newFileName);
-
-                teacherService.updateProfileImage(teacherId, newFileName);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                model.addAttribute("message", "파일 업로드 중 오류가 발생했습니다.");
-                return "error/common";
-            }
-        }
+        //프로필 사진 업로드 파트는 DB 방식 바뀐후에 그것에 맞춰 차후 구현 예정
+//        if (!profileImage.isEmpty()) {
+//            try {
+//                //파일 저장 경로부터 설쟁해야함
+//                String uploadDir =
+//                        request.getServletContext().
+//                                getRealPath("/resources/static/uploadFiles/profileImageUpload");
+//                String newFileName = teacherService.saveProfileImage(profileImage, uploadDir);
+//
+//                //Teacher 객체에 저장된 파일명 설정
+//                teacher.setTeacherImgName(newFileName);
+//
+//                teacherService.updateProfileImage(teacherId, newFileName);
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                model.addAttribute("message", "파일 업로드 중 오류가 발생했습니다.");
+//                return "error/common";
+//            }
+//        }
 
         int result = teacherService.update(teacher);
 
@@ -94,6 +100,7 @@ public class MyPageController {
 
         HttpSession session = request.getSession();
         String teacherId = (String) session.getAttribute("id");
+        System.out.println("teacherId=============================" + teacherId);
 
         Teacher teacher = teacherService.getTeacherById(teacherId);
         if (teacher == null) {
@@ -102,7 +109,7 @@ public class MyPageController {
         }
 
         //현재 비밀번호와 데이터베이스 비밀번호 비교
-        if (!teacher.getTeacherPassword().equals(currentPassword)) {
+        if (!passwordEncoder.matches(currentPassword, teacher.getTeacherPassword())) {
             rattr.addAttribute("errorMessage", "현재 비밀번호가 일치하지 않습니다.");
             return "redirect:/mypage/detail?id=" + teacherId;
         }
@@ -114,7 +121,7 @@ public class MyPageController {
         }
 
         //새 비밀번호 업데이트
-        teacher.setTeacherPassword(newPassword);
+        teacher.setTeacherPassword(passwordEncoder.encode(newPassword));
         int updateResult = teacherService.updatePassword(teacher);
 
         if (updateResult == 1) {
@@ -128,15 +135,18 @@ public class MyPageController {
 
     @PostMapping(value = "/checkPassword")
     @ResponseBody
-    public Map<String, Object> checkPassword(@RequestBody Map<String, String> requestData, HttpServletRequest request) {
+    public Map<String, Object> checkPassword(@RequestBody Map<String, String> requestData,
+                                             HttpServletRequest request) {
+
         // 클라이언트에서 전달된 비밀번호를 받아옴
-        String password = requestData.get("password");
+        String password = requestData.get("password");  //입력받은 패스워드 값
+
         HttpSession session = request.getSession();
         String teacherId = (String) session.getAttribute("id");
-
         Teacher teacher = teacherService.getTeacherById(teacherId);
+
         Map<String, Object> response = new HashMap<>();
-        if (teacher != null && teacher.getTeacherPassword().equals(password)) {
+        if (teacher != null && passwordEncoder.matches(password, teacher.getTeacherPassword())) {
             response.put("valid", true);
         } else {
             response.put("valid", false);

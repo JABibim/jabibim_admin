@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>과정 등록</title>
+    <th:block th:replace="~{fragments/headerImport :: HeaderImportFragment}"></th:block>
+    <script>
+        let isAdmin = [[${session.isAdmin}]];
+    </script>
+    <script th:src="@{/js/courseAdd.js}" charset="UTF-8"></script>
+    <link rel="stylesheet" th:href="@{/css/courseAdd.css}">
+</head>
+<body>
+<th:block th:replace="~{fragments/header :: Header}"></th:block>
+<th:block th:replace="~{fragments/sidebar :: SideBar}"></th:block>
+
+<main id="main" class="main">
+    <!-- Start Page Title -->
+    <div class="pagetitle">
+        <h1>콘텐츠 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/content">과정 관리</a></li>
+                <li class="breadcrumb-item active">신규 과정 등록</li>
+            </ol>
+        </nav>
+    </div>
+    <!-- End Page Title -->
+
+    <div class="card">
+        <div class="card-body p-4">
+            <form>
+                <!-- 과정명 -->
+                <div class="row mb-3">
+                    <label for="course_name" class="col-sm-2 col-form-label fw-bold">과정명</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="과정명을 입력해주세요." id="course_name"
+                               name="course_name">
+                    </div>
+                </div>
+
+                <!-- 과목명 -->
+                <div class="row mb-3">
+                    <label for="course_subject" class="col-sm-2 col-form-label fw-bold">과목명</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="상세 과목을 입력해주세요." id="course_subject"
+                               name="course_subject">
+                    </div>
+                </div>
+
+                <!-- 과정 대표 이미지 -->
+                <div class="row mb-3 align-items-center">
+                    <label for="course_image" class="col-sm-2 col-form-label fw-bold">과정 대표 이미지</label>
+                    <div class="col-sm-10">
+                        <!-- 드래그 앤 드롭 영역 -->
+                        <div id="dropZone" class="drop-zone">
+                            <p>이미지를 이곳에 드래그 앤 드롭하거나 클릭하여 업로드하세요.</p>
+                            <img id="previewImage" src="" alt="미리보기" style="display: none;">
+                        </div>
+                        <!-- 실제 파일 입력 (숨김 처리) -->
+                        <input class="form-control" type="file" id="course_image" name="course_image"
+                               style="display: none;">
+                        <button type="submit" class="btn btn-danger mt-2 float-end" id="imgDeleteBtn"
+                                style="display: none;">
+                            삭제&nbsp;&nbsp;<i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 상세 설명 -->
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label fw-bold">상세 설명</label>
+                    <div class="col-sm-10 pb-5">
+                        <div id="editor"></div>
+                        <input type="hidden" name="course_info" id="course_info">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="course_subject" class="col-sm-2 col-form-label fw-bold">수강 금액</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="과정의 수강 금액을 입력해주세요." id="course_price"
+                               name="course_price" pattern="\d+">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label for="course_subject" class="col-sm-2 col-form-label fw-bold">태그</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="과정을 나타내는 태그를 ','로 구분하여 입력해주세요."
+                               id="course_tag"
+                               name="course_tag">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <legend class="col-form-label col-sm-2 pt-0 fw-bold">난이도</legend>
+                    <div class="col-sm-10 d-flex">
+                        <div class="form-check" style="padding-right: 16px;">
+                            <input class="form-check-input" name="course_diff" type="radio" id="beginner"
+                                   value="beginner"
+                                   checked>
+                            <label class="form-check-label" for="beginner">
+                                초급
+                            </label>
+                        </div>
+                        <div class="form-check" style="padding-right: 16px;">
+                            <input class="form-check-input" name="course_diff" type="radio" id="intermediate"
+                                   value="intermediate">
+                            <label class="form-check-label" for="intermediate">
+                                중급
+                            </label>
+                        </div>
+                        <div class="form-check" style="padding-right: 16px;">
+                            <input class="form-check-input" name="course_diff" type="radio" id="advanced"
+                                   value="advanced">
+                            <label class="form-check-label" for="advanced">
+                                고급
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div style="float: right;">
+                <button type="reset" class="btn btn-secondary" id="cancelBtn"
+                        th:onclick="|location.href='@{/content}'|">
+                    목록&nbsp;&nbsp;<i class="bi bi-backspace"></i>
+                </button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    등록&nbsp;&nbsp;<i class="bi bi-pencil"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/footerImport :: FooterImportFragment}"></th:block>
+</body>
+</html>

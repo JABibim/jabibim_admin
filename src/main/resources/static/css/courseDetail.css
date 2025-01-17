@@ -1,0 +1,100 @@
+.card {
+    width: 100%;
+}
+
+#newContent {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background-color: #f8f9fa;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+#course_image {
+    display: none;
+}
+
+img {
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.image-container {
+    position: relative;
+    display: flex; /* 이미지 중앙 정렬을 위한 flex 사용 */
+    justify-content: center;
+    align-items: center;
+    height: 40vh; /* 높이를 40vh로 고정 */
+    width: 100%; /* 부모 요소의 너비를 기준으로 설정 */
+}
+
+#previewImage {
+    height: 40vh; /* 높이를 40vh로 고정 */
+    width: auto; /* 높이에 비례해 너비 자동 조정 */
+    transition: opacity 0.5s ease; /* 부드러운 전환 효과 */
+    -webkit-transition: opacity 0.5s ease; /* 사파리 호환 */
+}
+
+.change-image-btn {
+    opacity: 0; /* 기본적으로 투명 */
+    visibility: hidden; /* 화면에서 제거 */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    z-index: 10; /* 버튼을 이미지 위로 */
+    transition: opacity 0.3s ease, visibility 0.3s ease, background-color 0.3s ease;
+    -webkit-transition: opacity 0.3s ease, visibility 0.3s ease, background-color 0.3s ease; /* 사파리 호환 */
+}
+
+.image-container:hover .change-image-btn {
+    opacity: 1; /* 버튼 표시 */
+    visibility: visible; /* 화면에 나타남 */
+}
+
+.change-image-btn:hover {
+    background-color: rgba(0, 0, 0, 0.9); /* 버튼 강조 효과 */
+}
+
+.drop-zone {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    position: relative;
+}
+
+.drop-zone:hover {
+    border-color: #007bff;
+}
+
+.drop-zone.dragover {
+    border-color: #0056b3;
+    background-color: #f8f9fa;
+}
+
+.drop-zone img {
+    max-width: 100%;
+    max-height: 300px;
+    display: block;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+.drop-zone p {
+    margin: 0;
+    font-size: 14px;
+    color: #6c757d;
+}

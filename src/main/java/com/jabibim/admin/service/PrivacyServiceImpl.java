@@ -16,20 +16,22 @@ public class PrivacyServiceImpl implements PrivacyService {
     }
 
     @Override
-    public int getListCount() {
-        return dao.getListCount();
+    public int getListCount(String academyId) {
+
+        return dao.getListCount(academyId);
     }
 
     @Override
-    public List<Privacy> getPrivacyList(int page, int limit) {
+    public List<Privacy> getPrivacyList(int page, int limit, String academyId) {
        // double i =1/0;
-        HashMap<String, Integer> map = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
 
         int startRow = (page - 1) * limit + 1;
         int endRow = startRow + limit - 1;
 
         map.put("start", startRow);
         map.put("end", endRow);
+        map.put("academyId", academyId);
 
         return dao.getPrivacyList(map);
     }
@@ -40,9 +42,9 @@ public class PrivacyServiceImpl implements PrivacyService {
     }
 
     @Override
-    public Privacy getLatestPrivacyPolicy() {
+    public Privacy getLatestPrivacyPolicy(String academyId) {
         // 최신 본문을 데이터베이스에서 가져옴
-        return dao.getLatestPrivacyPolicy();
+        return dao.getLatestPrivacyPolicy(academyId);
     }
 
     @Override
@@ -51,8 +53,8 @@ public class PrivacyServiceImpl implements PrivacyService {
     }
 
     @Override
-    public int getMaxRnum() {
-        return dao.getMaxRnum();
+    public int getMaxRnum(String academyId) {
+        return dao.getMaxRnum(academyId);
     }
 
 }

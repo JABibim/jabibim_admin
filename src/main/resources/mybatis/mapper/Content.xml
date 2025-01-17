@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.ContentMapper">
+
+    <select id="getCourseList">
+        SELECT course_id
+             , course_name
+        FROM course
+    </select>
+
+    <insert id="addCourse">
+        INSERT INTO course
+        ( course_id
+        , created_at
+        , course_name
+        , course_subject
+        , course_info
+        , course_tag
+        , course_diff
+        , course_price
+        , course_activation
+        , course_profile_origin_name
+        , course_profile_path
+        , academy_id
+        , teacher_id)
+        VALUES ( #{courseId}
+               , current_timestamp
+               , #{courseName}
+               , #{courseSubject}
+               , #{courseInfo}
+               , #{courseTag}
+               , #{courseDiff}
+               , #{coursePrice}
+               , false
+               , #{courseProfileOriginName}
+               , #{courseProfilePath}
+               , #{academyId}
+               , #{teacherId})
+    </insert>
+
+    <select id="getCoursesCnt" parameterType="map" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            (
+                SELECT
+                    c.course_id
+                FROM
+                    course c
+                        LEFT JOIN class cl ON c.course_id = cl.course_id
+                        INNER JOIN teacher t ON c.teacher_id = t.teacher_id
+                <where>
+                    c.deleted_at is null
+                    <choose>
+                        <when test="isAdmin != true">
+                            AND c.academy_id = #{academyId}
+                        </when>
+                    </choose>
+                </where>
+                <include refid="searchList_" />
+                GROUP BY
+                    c.course_id,
+                    c.course_name,
+                    c.created_at,
+                    c.course_activation,
+                    t.teacher_name
+                ORDER BY
+                    c.created_at DESC
+            ) r
+    </select>
+
+    <select id="getCourses" parameterType="map" resultType="selectCourseListResDto">
+        SELECT
+            *
+        FROM
+            (
+                SELECT
+                    ROW_NUMBER() OVER (ORDER BY c.created_at) AS row_num,
+                    c.course_id,
+                    c.course_name,
+                    count(cl.class_id) AS class_count,
+                    c.created_at,
+                    t.teacher_name,
+                    c.course_activation
+                FROM
+                    course c
+                        LEFT JOIN class cl ON c.course_id = cl.course_id
+                        AND cl.deleted_at IS NULL
+                        INNER JOIN teacher t ON c.teacher_id = t.teacher_id
+                <where>
+                    c.deleted_at is null
+                    <choose>
+                        <when test="isAdmin != true">
+                            AND c.academy_id = #{academyId}
+                        </when>
+                    </choose>
+                </where>
+                <include refid="searchList_" />
+                GROUP BY
+                    c.course_id,
+                    c.course_name,
+                    c.created_at,
+                    c.course_activation,
+                    t.teacher_name
+                ORDER BY
+                    c.created_at DESC
+            ) AS c
+        LIMIT
+            #{limit}
+            OFFSET
+            #{offset}
+    </select>
+
+    <sql id="searchList_">
+        <choose>
+            <when test="useStatus == 'used'">
+                AND c.course_activation = true
+            </when>
+            <when test="useStatus == 'unused'">
+                AND c.course_activation = false
+            </when>
+        </choose>
+        <choose>
+            <when test="searchCondition == 1">
+                AND c.course_name LIKE concat('%', #{searchKeyword}, '%')
+            </when>
+            <when test="searchCondition == 2">
+                AND t.teacher_name LIKE concat('%', #{searchKeyword}, '%')
+            </when>
+            <when test="searchCondition == 3">
+                AND DATE_FORMAT(c.created_at, '%Y-%m-%d') BETWEEN #{startDate} AND #{endDate}
+            </when>
+        </choose>
+    </sql>
+
+    <update id="updateCourseActivation">
+        UPDATE course
+           SET course_activation = #{courseActivation}
+         WHERE course_id = #{courseId}
+    </update>
+
+    <select id="getCourseById" resultType="course">
+        SELECT
+            course_id
+          , course_name
+          , course_subject
+          , course_info
+          , course_profile_origin_name
+          , course_profile_path
+          , course_price
+          , course_tag
+          , course_diff
+        FROM course
+        WHERE course_id = #{courseId}
+    </select>
+
+    <select id="getAsIsProfileImagePath" resultType="String">
+        SELECT
+            course_profile_path
+        FROM
+            course
+        WHERE
+            course_id = #{courseId}
+    </select>
+
+    <update id="updateCourse">
+        UPDATE course
+           SET course_name = #{courseName}
+             , course_subject = #{courseSubject}
+             , course_info = #{courseInfo}
+             , course_price = #{coursePrice}
+             , course_tag = #{courseTag}
+             , course_diff = #{courseDiff}
+           <if test="isProfileChanged == true">
+             , course_profile_origin_name = #{courseProfileOriginName}
+             , course_profile_path = #{courseProfilePath}
+           </if>
+        WHERE course_id = #{courseId}
+    </update>
+
+    <select id="getCourseClassFileList" resultType="String">
+        SELECT
+            class_file_path
+        FROM
+            class c,
+            class_file cf
+        WHERE
+            c.deleted_at IS NULL
+          AND c.course_id = #{courseId}
+          AND c.course_id = cf.course_id;
+    </select>
+
+    <update id="deleteCourse">
+        UPDATE course
+        SET
+            deleted_at = CURRENT_TIMESTAMP
+        WHERE
+            course_id = #{courseId}
+    </update>
+
+    <update id="deleteClass">
+        UPDATE class
+        SET
+            deleted_at = CURRENT_TIMESTAMP
+        WHERE
+            course_id = #{courseId}
+    </update>
+
+    <update id="deleteClassFile">
+        UPDATE class_file
+        SET
+            deleted_at = CURRENT_TIMESTAMP
+        WHERE
+            course_id = #{courseId}
+    </update>
+
+</mapper>

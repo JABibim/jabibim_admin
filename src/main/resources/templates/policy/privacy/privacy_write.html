@@ -59,13 +59,13 @@
                 </div>
 
                 <!-- 작성자 -->
-                <div class="form-row h-33 text-center d-flex border">
-                    <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">작성자</div>
+                <div class="form-row h-33 d-flex border">
+                    <div class="col-form-label text-center align-self-center col-auto col-md-2 fw-bold border">작성자</div>
                     <div class="input-group align-self-center">
                         <div class="col-3 col-md-10">
                             <label class="w-100" for="privacyTermName">
-                               <input name="privacyTermName" id="privacyTermName" readOnly
-                                     type="text" class="form-control" th:value="${id}">
+                                &nbsp;&nbsp;<input name="privacyTermName" id="privacyTermName" readOnly
+                                       type="hidden" class="form-control" th:value="${name}" th:text="${name}">
                             </label>
                         </div>
                     </div>

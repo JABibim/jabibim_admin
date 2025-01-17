@@ -36,11 +36,12 @@ public class PolicyController {
             @RequestParam(defaultValue = "1") int page,
             ModelAndView mv,
             HttpSession session) {
-        session.setAttribute("referer", "list");
         int limit =10;
 
-        int listcount = privacyService.getListCount();
-        List<Privacy> list = privacyService.getPrivacyList(page, limit);
+        String academyId = (String) session.getAttribute("aid");
+
+        int listcount = privacyService.getListCount(academyId);
+        List<Privacy> list = privacyService.getPrivacyList(page, limit, academyId);
 
         PolicyPage result = new PolicyPage(page, limit, listcount);
 
@@ -59,13 +60,16 @@ public class PolicyController {
     @PostMapping(value="/list_ajax")
     public Map<String, Object> PrivacyListAjax(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit
+            @RequestParam(defaultValue = "10") int limit,
+            HttpSession session
     ){
 
         System.out.println("PrivacyListAjax 호출됨!");
 
-        int listcount = privacyService.getListCount(); //총 리스트 수를 받아옴
-        List<Privacy> list = privacyService.getPrivacyList(page, limit); // 리스트를 받아옴
+        String academyId = (String) session.getAttribute("aid");
+
+        int listcount = privacyService.getListCount(academyId); //총 리스트 수를 받아옴
+        List<Privacy> list = privacyService.getPrivacyList(page, limit, academyId); // 리스트를 받아옴
         PolicyPage result = new PolicyPage(page, limit, listcount);
 
         Map<String, Object> map = new HashMap<String, Object>();
@@ -83,12 +87,13 @@ public class PolicyController {
 
     @ResponseBody
     @PostMapping("/privacy/previous")
-    public Map<String, Object> getPreviousContent() {
+    public Map<String, Object> getPreviousContent(HttpSession session) {
         Map<String, Object> response = new HashMap<>();
+        String academyId = (String) session.getAttribute("aid");
 
         try {
             // 이전 본문 내용을 데이터베이스에서 가져오는 로직
-            Privacy previousPolicy = privacyService.getLatestPrivacyPolicy(); // 최신 본문 불러오기
+            Privacy previousPolicy = privacyService.getLatestPrivacyPolicy(academyId); // 최신 본문 불러오기
             if (previousPolicy != null && previousPolicy.getPrivacyTermContent() != null) {
                 response.put("privacyTermContent", previousPolicy.getPrivacyTermContent());
             } else {
@@ -108,18 +113,21 @@ public class PolicyController {
         String teacherName = (String) session.getAttribute("name");
 
         mv.setViewName("policy/privacy/privacy_write");
-        mv.addObject("id", teacherName);
+        mv.addObject("name", teacherName);
 
         return mv;
     }
 
     @PostMapping(value="/privacy/add")
-    public String addPolicy(Privacy privacy, HttpServletRequest request) {
+    public String addPolicy(Privacy privacy, HttpServletRequest request,HttpSession session) {
         // UUID 생성
         String privacyTermId = UUIDGenerator.getUUID();
+        String aid = (String) session.getAttribute("aid");
+
 
         // 생성한 UUID를 Privacy 객체에 설정
         privacy.setPrivacyTermId(privacyTermId);
+        privacy.setAcademyId(aid);
         privacyService.insertPrivacy(privacy);
         logger.info(privacy.toString());
         return "redirect:/policy/privacy";
@@ -127,10 +135,11 @@ public class PolicyController {
 
     @GetMapping(value="/privacy/detail")
     public ModelAndView privacyDetail(int rnum, ModelAndView mv,
-                                      HttpServletRequest request) {
+                                      HttpServletRequest request, HttpSession session) {
 
+        String academyId = (String) session.getAttribute("aid");
         Privacy privacy = privacyService.getDetail(rnum);
-        int maxRnum = privacyService.getMaxRnum();
+        int maxRnum = privacyService.getMaxRnum(academyId);
 
         if (privacy == null) {
             logger.info("상세보기 실패");
@@ -152,11 +161,11 @@ public class PolicyController {
             @RequestParam(defaultValue = "1") int page,
             ModelAndView mv,
             HttpSession session) {
-        session.setAttribute("referer", "list");
         int limit =10;
 
-        int listcount = termService.getListCount();
-        List<Term> list = termService.getTermList(page, limit);
+        String academyId = (String) session.getAttribute("aid");
+        int listcount = termService.getListCount(academyId);
+        List<Term> list = termService.getTermList(page, limit,academyId);
 
         PolicyPage result = new PolicyPage(page, limit, listcount);
 
@@ -175,11 +184,13 @@ public class PolicyController {
     @PostMapping(value="/list_ajax2")
     public Map<String, Object> ServiceListAjax(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit
+            @RequestParam(defaultValue = "10") int limit,
+            HttpSession session
     ){
 
-        int listcount = termService.getListCount(); //총 리스트 수를 받아옴
-        List<Term> list = termService.getTermList(page, limit); // 리스트를 받아옴
+        String academyId = (String) session.getAttribute("aid");
+        int listcount = termService.getListCount(academyId); //총 리스트 수를 받아옴
+        List<Term> list = termService.getTermList(page, limit,academyId); // 리스트를 받아옴
         PolicyPage result = new PolicyPage(page, limit, listcount);
 
         Map<String, Object> map = new HashMap<String, Object>();
@@ -197,12 +208,13 @@ public class PolicyController {
 
     @ResponseBody
     @PostMapping("/service/previous")
-    public Map<String, Object> getContent() {
+    public Map<String, Object> getContent(HttpSession session) {
         Map<String, Object> response = new HashMap<>();
+        String academyId = (String) session.getAttribute("aid");
 
         try {
             // 이전 본문 내용을 데이터베이스에서 가져오는 로직
-            Term previousPolicy = termService.getLatestTermPolicy(); // 최신 본문 불러오기
+            Term previousPolicy = termService.getLatestTermPolicy(academyId); // 최신 본문 불러오기
             if (previousPolicy != null && previousPolicy.getServiceTermContent() != null) {
                 response.put("serviceTermContent", previousPolicy.getServiceTermContent());
             } else {
@@ -217,12 +229,14 @@ public class PolicyController {
     }
 
     @PostMapping(value="/service/add")
-    public String addService(Term term, HttpServletRequest request) {
+    public String addService(Term term, HttpServletRequest request, HttpSession session) {
         // UUID 생성
         String serviceTermId = UUIDGenerator.getUUID();
+        String aid = (String) session.getAttribute("aid");
 
         // 생성한 UUID를 Privacy 객체에 설정
         term.setServiceTermId(serviceTermId);
+        term.setAcademyId(aid);
         termService.insertTerm(term);
         logger.info(term.toString());
         return "redirect:/policy/service";
@@ -233,17 +247,18 @@ public class PolicyController {
         String teacherName = (String) session.getAttribute("name");
 
         mv.setViewName("policy/service/service_write");
-        mv.addObject("id", teacherName);
+        mv.addObject("name", teacherName);
 
         return mv;
     }
 
     @GetMapping(value="/service/detail")
     public ModelAndView serviceDetail(int rnum, ModelAndView mv,
-                                      HttpServletRequest request) {
+                                      HttpServletRequest request, HttpSession session) {
 
+        String academyId = (String) session.getAttribute("aid");
         Term term = termService.getDetail(rnum);
-        int maxRnum = termService.getMaxRnum();
+        int maxRnum = termService.getMaxRnum(academyId);
 
         if (term == null) {
             logger.info("상세보기 실패");

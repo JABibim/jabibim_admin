@@ -141,7 +141,7 @@
                     <tr th:each="student, iterStat : ${studentlist}">
                         <td th:text="${iterStat.index + startnumber}"></td>
                         <td>
-                            <a th:href="@{/students/detail(id=${student.studentId})}" th:text="${student.studentName}"></a>
+                            <a th:href="@{/student/detail(id=${student.studentId})}" th:text="${student.studentName}"></a>
                         </td>
                         <td th:text="${student.studentEmail}"></td>
 <!--                        <td th:text="${student.enrollmentCount} + '건'"></td>-->
