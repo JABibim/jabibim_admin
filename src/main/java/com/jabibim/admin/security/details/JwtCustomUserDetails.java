@@ -1,37 +1,39 @@
 package com.jabibim.admin.security.details;
 
-import com.jabibim.admin.dto.StudentUserVO;
+import java.util.Collection;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import com.jabibim.admin.dto.StudentUserVO;
 
 public class JwtCustomUserDetails implements UserDetails {
 
+  private final String email;
+  private final String password;
+  private Collection<? extends GrantedAuthority> authorities;
   private final StudentUserVO user;
 
-  public JwtCustomUserDetails(StudentUserVO user) {
+  public JwtCustomUserDetails(StudentUserVO user, Collection<? extends GrantedAuthority> authorities) {
     this.user = user;
+    this.email = user.getStudentEmail();
+    this.password = user.getStudentPassword();
+    this.authorities = authorities;
   }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    Collection<GrantedAuthority> collection = new ArrayList<GrantedAuthority>();
-
-    collection.add((GrantedAuthority) () -> user.getAuthRole());
-
-    return collection;
+    return authorities;
   }
 
   @Override
   public String getPassword() {
-    return user.getStudentPassword();
+    return password;
   }
 
   @Override
   public String getUsername() {
-    return user.getStudentEmail();
+    return email;
   }
 
   @Override
@@ -52,5 +54,9 @@ public class JwtCustomUserDetails implements UserDetails {
   @Override
   public boolean isEnabled() {
     return true;
+  }
+
+  public StudentUserVO getUser() {
+    return user;
   }
 }
