@@ -1,16 +1,23 @@
 package com.jabibim.admin.security.service;
 
-import com.jabibim.admin.dto.StudentUserVO;
-import com.jabibim.admin.mybatis.mapper.StudentMapper;
-import com.jabibim.admin.security.details.JwtCustomUserDetails;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import com.jabibim.admin.dto.StudentUserVO;
+import com.jabibim.admin.mybatis.mapper.StudentMapper;
+import com.jabibim.admin.security.details.JwtCustomUserDetails;
+
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +37,13 @@ public class JwtUserDetailService implements UserDetailsService {
     StudentUserVO user = dao.getStudentByEmail(email, academyId);
     logger.info("JwtUserDetailService" + user.toString());
 
+    Collection<? extends GrantedAuthority> authorities = Collections
+        .singletonList(new SimpleGrantedAuthority(user.getAuthRole()));
+
     if (user != null) {
-      return new JwtCustomUserDetails(user);
+      return new JwtCustomUserDetails(user, authorities);
       // userDetails 에 담아서 넘기면 AuthenticationManager 가 검증 실시
     }
-    return null;
+    return null;  
   }
 }
