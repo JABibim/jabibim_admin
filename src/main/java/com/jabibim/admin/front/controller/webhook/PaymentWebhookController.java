@@ -7,10 +7,7 @@ import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -33,9 +30,7 @@ public class PaymentWebhookController {
 
   @PostMapping("/receive")
   @ResponseBody
-  public String receive(@RequestParam(required=false) String type
-                        , @RequestParam(required=false) String timestamp
-                        , @RequestParam(required=false) HashMap<String, String> data
+  public String receive(@RequestBody HashMap<String, Object> map
                         , HttpServletRequest request
                         , HttpServletResponse response
   ) throws Exception {
@@ -47,12 +42,8 @@ public class PaymentWebhookController {
       return null;
     }
 
-    logger.info(type);
-    logger.info(timestamp);
-    Set<String> entry =  data.keySet();
-    for (String key : entry) {
-      logger.info(key + " : " + data.get(key));
-    }
+    // 넘어온 데이터 출력
+    logger.info(map.toString());
 
     // 웹훅에 대한 처리하고 회신
     JsonObject json = new JsonObject();

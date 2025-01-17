@@ -190,4 +190,14 @@
             ORDER BY discount_rate DESC
             ) g;
     </select>
+
+
+
+
+    <select id="getStudentByEmail" resultType="studentUserVO">
+        SELECT *
+        FROM student
+        WHERE academy_id= #{academyId}
+        AND student_email = #{email}
+    </select>
 </mapper>
