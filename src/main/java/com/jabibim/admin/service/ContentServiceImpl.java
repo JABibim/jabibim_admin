@@ -1,6 +1,8 @@
 package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Course;
+import com.jabibim.admin.dto.content.classes.response.SelectCourseClassDetailListResDto;
+import com.jabibim.admin.dto.content.classes.response.SelectCourseClassListResDto;
 import com.jabibim.admin.dto.content.course.request.InsertCourseReqDto;
 import com.jabibim.admin.dto.content.course.request.SelectCourseListReqDto;
 import com.jabibim.admin.dto.content.course.response.SelectCourseListResDto;
@@ -120,6 +122,40 @@ public class ContentServiceImpl implements ContentService {
 
         // s3에서 파일 삭제 ( 해당 과정에 속한 모든 파일 (프로필 이미지, 강의 영상 및 강의 자료 ), 배치로 처리 할지 고려
         s3Deleter.deleteFiles(fileList);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SelectCourseClassListResDto> getCourseClassList(boolean isAdmin, String academyId) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("isAdmin", isAdmin);
+        map.put("academyId", academyId);
+
+        return contentDao.getCourseClassList(map);
+    }
+
+    @Override
+    public List<SelectCourseClassDetailListResDto> getCourseClassDetailList(int page, int limit, boolean isAdmin, String academyId, String courseId, String searchKeyword) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("isAdmin", isAdmin);
+        map.put("academyId", academyId);
+        map.put("limit", limit);
+        map.put("offset", (page - 1) * limit);
+        map.put("courseId", courseId);
+        map.put("searchKeyword", searchKeyword.equals("") ? "" : '%' + searchKeyword + '%');
+
+        return contentDao.getCourseClassDetailList(map);
+    }
+
+    @Override
+    public int getCourseClassDetailCount(boolean isAdmin, String academyId, String courseId, String searchKeyword) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("isAdmin", isAdmin);
+        map.put("academyId", academyId);
+        map.put("courseId", courseId);
+        map.put("searchKeyword", searchKeyword.equals("") ? "" : '%' + searchKeyword + '%');
+
+        return contentDao.getCourseClassDetailListCount(map);
     }
 
     private String uploadNewCourseProfile(String courseId, MultipartFile courseImage) {

@@ -3,6 +3,8 @@ package com.jabibim.admin.controller;
 import com.google.gson.Gson;
 import com.jabibim.admin.domain.Course;
 import com.jabibim.admin.dto.common.ApiResponse;
+import com.jabibim.admin.dto.content.classes.response.SelectCourseClassDetailListResDto;
+import com.jabibim.admin.dto.content.classes.response.SelectCourseClassListResDto;
 import com.jabibim.admin.dto.content.course.request.InsertCourseReqDto;
 import com.jabibim.admin.dto.content.course.request.SelectCourseListReqDto;
 import com.jabibim.admin.dto.content.course.response.SelectCourseListResDto;
@@ -41,15 +43,33 @@ public class ContentController {
             Authentication authentication,
             ModelAndView modelAndView,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "") String courseId,
+            @RequestParam(defaultValue = "") String searchKeyword
     ) {
         AccountDto account = (AccountDto) authentication.getPrincipal();
         boolean isAdmin = account.getRoles().contains("ROLE_ADMIN");
         String academyId = account.getAcademyId();
 
+        List<SelectCourseClassListResDto> courseClassList = contentService.getCourseClassList(isAdmin, academyId);
 
+        List<SelectCourseClassDetailListResDto> courseClassDetailList = contentService.getCourseClassDetailList(page, limit, isAdmin, academyId, courseId, searchKeyword);
+        int courseClassDetailListCount = contentService.getCourseClassDetailCount(isAdmin, academyId, courseId, searchKeyword);
+
+        PaginationResult result = new PaginationResult(page, limit, courseClassDetailListCount);
 
         modelAndView.setViewName("content/class/classList");
+
+        modelAndView.addObject("courseClassList", courseClassList);
+        modelAndView.addObject("courseClassListCount", courseClassList.size());
+        modelAndView.addObject("page", page);
+        modelAndView.addObject("maxpage", result.getMaxpage());
+        modelAndView.addObject("startpage", result.getStartpage());
+        modelAndView.addObject("endpage", result.getEndpage());
+        modelAndView.addObject("courseClassDetailListCount", courseClassDetailListCount);
+        modelAndView.addObject("courseClassDetailList", courseClassDetailList);
+        modelAndView.addObject("limit", limit);
+        modelAndView.addObject("selectedCourseId", courseId);
 
         return modelAndView;
     }

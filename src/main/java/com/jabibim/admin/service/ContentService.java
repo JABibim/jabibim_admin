@@ -1,6 +1,8 @@
 package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Course;
+import com.jabibim.admin.dto.content.classes.response.SelectCourseClassDetailListResDto;
+import com.jabibim.admin.dto.content.classes.response.SelectCourseClassListResDto;
 import com.jabibim.admin.dto.content.course.request.InsertCourseReqDto;
 import com.jabibim.admin.dto.content.course.request.SelectCourseListReqDto;
 import com.jabibim.admin.dto.content.course.response.SelectCourseListResDto;
@@ -22,4 +24,10 @@ public interface ContentService {
     void updateCourse(String teacherId, String academyId, String courseId, String courseName, String courseSubject, String isProfileChanged, MultipartFile courseImage, String courseInfo, String coursePrice, String courseTag, String courseDiff);
 
     void deleteCourse(String courseId);
+
+    List<SelectCourseClassListResDto> getCourseClassList(boolean isAdmin, String academyId);
+
+    List<SelectCourseClassDetailListResDto> getCourseClassDetailList(int page, int limit, boolean isAdmin, String academyId, String courseId, String searchKeyword);
+
+    int getCourseClassDetailCount(boolean isAdmin, String academyId, String courseId, String searchKeyword);
 }

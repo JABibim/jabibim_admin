@@ -1,6 +1,8 @@
 package com.jabibim.admin.mybatis.mapper;
 
 import com.jabibim.admin.domain.Course;
+import com.jabibim.admin.dto.content.classes.response.SelectCourseClassDetailListResDto;
+import com.jabibim.admin.dto.content.classes.response.SelectCourseClassListResDto;
 import com.jabibim.admin.dto.content.course.request.InsertCourseReqDto;
 import com.jabibim.admin.dto.content.course.response.SelectCourseListResDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -31,4 +33,10 @@ public interface ContentMapper {
     void deleteClass(String courseId);
 
     void deleteClassFile(String courseId);
+
+    List<SelectCourseClassListResDto> getCourseClassList(HashMap<String, Object> map);
+
+    List<SelectCourseClassDetailListResDto> getCourseClassDetailList(HashMap<String, Object> map);
+
+    int getCourseClassDetailListCount(HashMap<String, Object> map);
 }
