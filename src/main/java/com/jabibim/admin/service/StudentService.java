@@ -2,7 +2,6 @@ package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Student;
 import com.jabibim.admin.dto.DeleteGradeDTO;
-
 import java.util.List;
 
 public interface StudentService {

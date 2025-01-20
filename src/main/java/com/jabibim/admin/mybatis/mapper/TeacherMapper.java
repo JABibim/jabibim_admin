@@ -38,4 +38,5 @@ public interface TeacherMapper {
     int updateCareerActive(String careerName, int displayStatus);
 
     void insertCareer(TeacherCareer career);
+
 }
