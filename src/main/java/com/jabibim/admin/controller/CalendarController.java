@@ -16,6 +16,6 @@ public class CalendarController {
     @GetMapping(value="")
     public String boardList(
     ) {
-        return "calendar/calendar2";
+        return "calendar/calendar3";
     }
 }

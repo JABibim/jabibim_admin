@@ -7,6 +7,22 @@
 <head>
     <meta charset="UTF-8">
     <title>중앙비빔 Admin</title>
+    <style>
+        dialog{
+            position : fixed;
+            width: 300px;
+            z-index: 100;
+            padding : 30px;
+            margin: 0;
+            background: white;
+            left:50%;
+            top:50%;
+            transform: translate(-50%,-50%);
+            box-shadow: 2px 2px 5px rgba(0,0,0,.5);
+            border:none;
+            border-radius:10px;
+        }
+    </style>
 
 </head>
 <body>
@@ -16,14 +32,26 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
+            let popup = document.querySelector('dialog');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 googleCalendarApiKey: 'AIzaSyBXFz8vCh6SbLBDmddYajLubFWJMGs2DRM',
                 events: {
                     googleCalendarId: 'f42bfe4a0e07e48e56920950dbe4b49dd6a91d6c265b0af89a28cf6ab17f22bd@group.calendar.google.com'
+                },
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault(); // don't let the browser navigate
+                    popup.querySelector('div').innerHTML = `
+                        <h3>${info.event.title}</h3>
+                        <div>${info.event.extendedProps.description}</div>
+                    `;
+                    popup.setAttribute('open','open');
                 }
             });
             calendar.render();
+            popup.querySelector('button').addEventListener('click',()=>{
+                popup.removeAttribute('open');
+            });
         });
     </script>
     <main id="main" class="main">
@@ -39,6 +67,10 @@
         <div class="card">
             <div class="card-body">
                  <div id='calendar'></div>
+                <dialog>
+                    <div>제목 테스트</div>
+                    <button>닫기</button>
+                </dialog>
             </div>
         </div>
     </main><!-- End #main -->
