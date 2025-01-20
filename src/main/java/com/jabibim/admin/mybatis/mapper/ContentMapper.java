@@ -39,4 +39,10 @@ public interface ContentMapper {
     List<SelectCourseClassDetailListResDto> getCourseClassDetailList(HashMap<String, Object> map);
 
     int getCourseClassDetailListCount(HashMap<String, Object> map);
+
+    void addNewClassInfo(HashMap<String, Object> map);
+
+    int getMaxClassSeq(String courseId);
+
+    void addNewClassFileInfo(HashMap<String, Object> map);
 }

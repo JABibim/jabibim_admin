@@ -11,7 +11,6 @@ import com.jabibim.admin.dto.content.course.response.SelectCourseListResDto;
 import com.jabibim.admin.func.PaginationResult;
 import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.service.ContentService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -74,6 +73,23 @@ public class ContentController {
         return modelAndView;
     }
 
+    @GetMapping(value = "/class/addClass")
+    public ModelAndView addClassPage(
+            Authentication authentication
+    ) {
+        AccountDto account = (AccountDto) authentication.getPrincipal();
+        boolean isAdmin = account.getRoles().contains("ROLE_ADMIN");
+        String academyId = account.getAcademyId();
+
+        List<SelectCourseClassListResDto> courseClassList = contentService.getCourseClassList(isAdmin, academyId);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("content/class/classAdd");
+        modelAndView.addObject("courseClassList", courseClassList);
+
+        return modelAndView;
+    }
+
     @GetMapping(value = "/addCourse")
     public String addCoursePage() {
         return "content/course/addCourse";
@@ -81,7 +97,6 @@ public class ContentController {
 
     @GetMapping("/detail/{courseId}")
     public ModelAndView courseDetailPage(
-            HttpServletRequest request,
             @PathVariable String courseId,
             ModelAndView modelAndView
     ) {
@@ -205,6 +220,65 @@ public class ContentController {
             return ResponseEntity.ok(new ApiResponse<>(true, null, "과정 삭제가 정상적으로 처리되었습니다."));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>(false, null, "과정 삭제 도중 오류가 발생했습니다.: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping(value = "/class/addClassProcess")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<HashMap<String, Object>>> addClassProcess(
+            Authentication authentication
+            , @RequestParam String courseId
+            , @RequestParam String classSubject
+            , @RequestParam String classContent
+            , @RequestParam String classType
+    ) {
+        try {
+            AccountDto account = (AccountDto) authentication.getPrincipal();
+            String academyId = account.getAcademyId();
+            String teacherId = account.getId();
+
+            String newClassId = contentService.addNewClassInfo(academyId, teacherId, courseId, classSubject, classContent, classType);
+            HashMap<String, Object> result = new HashMap<>();
+            result.put("classId", newClassId);
+
+            ApiResponse<HashMap<String, Object>> response = new ApiResponse<>(true, result, "강의 데이터 추가를 성공했습니다.");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponse<HashMap<String, Object>> response = new ApiResponse<>(false, null, "강의 추가에 실패했습니다: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping(value = "/class/addClassFilesProcess")
+    @ResponseBody
+    public ResponseEntity<ApiResponse<HashMap<String, Object>>> addClassFilesProcess(
+            Authentication authentication,
+            @RequestParam("courseId") String courseId,
+            @RequestParam("classId") String classId,
+            @RequestParam("classType") String classType,
+            @RequestParam("file") MultipartFile file
+    ) {
+        HashMap<String, Object> result = new HashMap<>();
+        try {
+            AccountDto account = (AccountDto) authentication.getPrincipal();
+            String academyId = account.getAcademyId();
+            String teacherId = account.getId();
+
+            contentService.addNewClassFileInfo(academyId, teacherId, courseId, classId, classType, file);
+
+            result.put("status", "success");
+
+            ApiResponse<HashMap<String, Object>> response = new ApiResponse<>(true, result, "강의 데이터 추가를 성공했습니다.");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            result.put("status", "fail");
+
+            ApiResponse<HashMap<String, Object>> response = new ApiResponse<>(false, result, "강의 추가에 실패했습니다: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }

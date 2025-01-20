@@ -158,6 +158,52 @@ public class ContentServiceImpl implements ContentService {
         return contentDao.getCourseClassDetailListCount(map);
     }
 
+    @Override
+    @Transactional
+    public String addNewClassInfo(String academyId, String teacherId, String courseId, String classSubject, String classContent, String classType) {
+        String newClassId = UUIDGenerator.getUUID();
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("classId", newClassId);
+        map.put("courseId", courseId);
+        map.put("className", classSubject);
+        map.put("classContent", classContent);
+        map.put("classType", classType);
+        map.put("academyId", academyId);
+        map.put("teacherId", teacherId);
+        map.put("classSeq", contentDao.getMaxClassSeq(courseId));
+
+        contentDao.addNewClassInfo(map);
+
+        return newClassId;
+    }
+
+    @Override
+    public void addNewClassFileInfo(String academyId, String teacherId, String courseId, String classId, String classType, MultipartFile file) {
+        String newClassFileUUID = UUIDGenerator.getUUID();
+        if (file.getOriginalFilename() == null) {
+            throw new IllegalArgumentException("file 또는 파일 이름이 null입니다.");
+        }
+        String fileName = classType + "." + getExtension(file.getOriginalFilename());
+        String uploadPath = "course/" + courseId + "/class/" + classId + "/classFile/" + newClassFileUUID + "/" + fileName;
+
+        String uploadedPath = s3Uploader.uploadFileToS3(file, uploadPath);
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("classFileId", newClassFileUUID);
+        map.put("classFileOriginName", file.getOriginalFilename()); // 파일 원본 이름
+        map.put("classFilePath", uploadedPath); // 파일 경로
+        map.put("classFileType", file.getContentType()); // 파일 유형
+        map.put("classFileSize", file.getSize()); // 파일 크기(바이트)
+        map.put("academyId", academyId);
+        map.put("teacherId", teacherId);
+        map.put("courseId", courseId);
+        map.put("classId", classId);
+
+        contentDao.addNewClassFileInfo(map);
+    }
+
+
     private String uploadNewCourseProfile(String courseId, MultipartFile courseImage) {
         if (courseImage.getOriginalFilename() == null) {
             throw new IllegalArgumentException("courseImage 또는 파일 이름이 null입니다.");

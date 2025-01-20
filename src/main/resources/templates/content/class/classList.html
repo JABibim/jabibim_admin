@@ -109,7 +109,7 @@
                     </th:block>
                     </tbody>
                 </table>
-                <th:block th:replace="~{fragments/paging :: paging('', |&searchKeyword=${searchKeyword}|)}"/>
+                <th:block th:replace="~{fragments/paging :: paging('', ${searchKeyword != null ? '&searchKeyword=' + searchKeyword : ''})}"/>
             </th:block>
 
             <th:block th:if="${courseClassDetailListCount <= 0}">

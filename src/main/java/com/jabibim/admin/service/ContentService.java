@@ -30,4 +30,8 @@ public interface ContentService {
     List<SelectCourseClassDetailListResDto> getCourseClassDetailList(int page, int limit, boolean isAdmin, String academyId, String courseId, String searchKeyword);
 
     int getCourseClassDetailCount(boolean isAdmin, String academyId, String courseId, String searchKeyword);
+
+    String addNewClassInfo(String academyId, String teacherId, String courseId, String classSubject, String classContent, String classType);
+
+    void addNewClassFileInfo(String academyId, String teacherId, String courseId, String classId, String classType, MultipartFile file);
 }

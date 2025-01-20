@@ -263,7 +263,7 @@
                                     class_file cf
                                 WHERE
                                     cf.class_id = c.class_id
-                                    AND cf.class_file_type = 'mp4'
+                                    AND c.class_type = 'video'
                             ) AS has_video,
                             (
                                 SELECT
@@ -272,7 +272,7 @@
                                     class_file cf
                                 WHERE
                                     cf.class_id = c.class_id
-                                    AND cf.class_file_type != 'mp4'
+                                    AND c.class_type != 'video'
                             ) AS has_file
                         FROM
                             teacher t,
@@ -320,5 +320,61 @@
             </if>
         </where>
     </select>
+
+    <insert id="addNewClassInfo">
+        INSERT INTO class
+            ( class_id
+            , created_at
+            , class_name
+            , class_content
+            , class_seq
+            , class_type
+            , academy_id
+            , teacher_id
+            , course_id)
+        VALUES
+            ( #{classId}
+            , current_timestamp
+            , #{className}
+            , #{classContent}
+            , #{classSeq}
+            , #{classType}
+            , #{academyId}
+            , #{teacherId}
+            , #{courseId})
+    </insert>
+
+    <select id="getMaxClassSeq" resultType="int">
+        SELECT
+            COALESCE(MAX(class_seq), 0) + 1 as next_seq
+        FROM class
+        WHERE course_id = #{courseId}
+          AND deleted_at IS NULL
+    </select>
+
+    <insert id="addNewClassFileInfo">
+        INSERT INTO class_file
+            ( class_file_id
+            , created_at
+            , class_file_origin_name
+            , class_file_type
+            , class_file_size
+            , class_file_path
+            , academy_id
+            , teacher_id
+            , course_id
+            , class_id)
+        VALUES
+            ( #{classFileId}
+            , current_timestamp
+            , #{classFileOriginName}
+            , #{classFileType}
+            , #{classFileSize}
+            , #{classFilePath}
+            , #{academyId}
+            , #{teacherId}
+            , #{courseId}
+            , #{classId})
+    </insert>
 
 </mapper>
