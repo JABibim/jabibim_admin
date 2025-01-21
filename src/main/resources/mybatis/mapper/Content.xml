@@ -377,4 +377,45 @@
             , #{classId})
     </insert>
 
+    <select id="getClassList" resultType="selectCourseClassReqDto">
+        SELECT class_id
+             , class_name
+             , class_seq
+             , class_name
+             , class_content
+             , class_type
+        FROM class
+        WHERE course_id = #{courseId}
+          AND deleted_at IS NULL
+    </select>
+
+    <select id="getClassInfoById" resultType="selectCourseClassReqDto">
+        SELECT class_id
+             , class_name
+             , class_seq
+             , class_content
+             , class_type
+        FROM class
+        WHERE class_id = #{classId}
+    </select>
+
+    <select id="getFileInfoByClassId" resultType="selectCourseClassFileReqDto">
+        SELECT class_file_id
+             , class_file_name
+             , class_file_origin_name
+             , class_file_path
+             , class_file_type
+             , class_file_size
+        FROM class_file
+        WHERE class_id = #{classId}
+          AND deleted_at IS NULL
+    </select>
+
+    <select id="getClassFilePath" resultType="selectClassFileDownResDto">
+        SELECT class_file_origin_name
+             , class_file_path
+        FROM class_file
+        WHERE class_file_id = #{classFileId}
+    </select>
+
 </mapper>

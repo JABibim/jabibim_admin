@@ -4,7 +4,10 @@ import com.jabibim.admin.domain.Course;
 import com.jabibim.admin.dto.content.classes.response.SelectCourseClassDetailListResDto;
 import com.jabibim.admin.dto.content.classes.response.SelectCourseClassListResDto;
 import com.jabibim.admin.dto.content.course.request.InsertCourseReqDto;
+import com.jabibim.admin.dto.content.course.request.SelectCourseClassFileReqDto;
+import com.jabibim.admin.dto.content.course.request.SelectCourseClassReqDto;
 import com.jabibim.admin.dto.content.course.request.SelectCourseListReqDto;
+import com.jabibim.admin.dto.content.course.response.SelectClassFileDownResDto;
 import com.jabibim.admin.dto.content.course.response.SelectCourseListResDto;
 import com.jabibim.admin.func.S3Deleter;
 import com.jabibim.admin.func.S3Uploader;
@@ -203,6 +206,29 @@ public class ContentServiceImpl implements ContentService {
         contentDao.addNewClassFileInfo(map);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<SelectCourseClassReqDto> getClassList(String courseId) {
+        return contentDao.getClassList(courseId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SelectCourseClassReqDto getClassInfoById(String classId) {
+        return contentDao.getClassInfoById(classId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SelectCourseClassFileReqDto getFileInfoByClassId(String classId) {
+        return contentDao.getFileInfoByClassId(classId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SelectClassFileDownResDto getClassFilePath(String classFileId) {
+        return contentDao.getClassFilePath(classFileId);
+    }
 
     private String uploadNewCourseProfile(String courseId, MultipartFile courseImage) {
         if (courseImage.getOriginalFilename() == null) {

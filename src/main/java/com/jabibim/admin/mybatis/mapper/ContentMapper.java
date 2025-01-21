@@ -4,6 +4,9 @@ import com.jabibim.admin.domain.Course;
 import com.jabibim.admin.dto.content.classes.response.SelectCourseClassDetailListResDto;
 import com.jabibim.admin.dto.content.classes.response.SelectCourseClassListResDto;
 import com.jabibim.admin.dto.content.course.request.InsertCourseReqDto;
+import com.jabibim.admin.dto.content.course.request.SelectCourseClassFileReqDto;
+import com.jabibim.admin.dto.content.course.request.SelectCourseClassReqDto;
+import com.jabibim.admin.dto.content.course.response.SelectClassFileDownResDto;
 import com.jabibim.admin.dto.content.course.response.SelectCourseListResDto;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -45,4 +48,12 @@ public interface ContentMapper {
     int getMaxClassSeq(String courseId);
 
     void addNewClassFileInfo(HashMap<String, Object> map);
+
+    List<SelectCourseClassReqDto> getClassList(String courseId);
+
+    SelectCourseClassReqDto getClassInfoById(String classId);
+
+    SelectCourseClassFileReqDto getFileInfoByClassId(String classId);
+
+    SelectClassFileDownResDto getClassFilePath(String classFileId);
 }
