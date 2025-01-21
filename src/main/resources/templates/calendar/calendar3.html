@@ -9,14 +9,13 @@
     <title>중앙비빔 Admin</title>
     <style>
         dialog{
-            position : fixed;
             width: 300px;
             z-index: 100;
             padding : 30px;
             margin: 0;
             background: white;
             left:50%;
-            top:50%;
+            top:40%;
             transform: translate(-50%,-50%);
             box-shadow: 2px 2px 5px rgba(0,0,0,.5);
             border:none;
@@ -63,7 +62,7 @@
                     },
                 eventSources:
                     {
-                        googleCalendarId: 'en.south_korea#holiday@group.v.calendar.google.com',
+                        googleCalendarId: 'ko.south_korea#holiday@group.v.calendar.google.com',
                         backgroundColor: 'red',
                         textColor: 'white' // 추가로 글자 색상 지정 가능
                     },
@@ -85,9 +84,17 @@
                 },
                 eventClick: function (info) {
                     info.jsEvent.preventDefault(); // 브라우저 기본 동작 방지
+                    const eventDescription = info.event.extendedProps.description || '설명 없음';
+                    const eventStart = info.event.start.toLocaleString(); // 시작 시간
+                    const eventEnd = info.event.end ? info.event.end.toLocaleString() : '없음'; // 종료 시간
+                    const eventLocation = info.event.extendedProps.location || '위치 정보 없음'; // 위치
+                    console.log(info.event.extendedProps);
                     popup.querySelector('div').innerHTML = `
                     <h3>${info.event.title}</h3>
-                    <div>${info.event.extendedProps.description || ''}</div>
+                    <div><strong>설명:</strong> ${eventDescription}</div>
+                    <div><strong>시작 시간:</strong> ${eventStart}</div>
+                    <div><strong>종료 시간:</strong> ${eventEnd}</div>
+                    <div><strong>위치:</strong> ${eventLocation}</div>
                 `;
                     popup.setAttribute('open', 'open');
                 },
