@@ -1,4 +1,4 @@
-package com.jabibim.admin.front.controller.webhook;
+package com.jabibim.admin.front.api_receive.controller.webhook;
 
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.Set;
 
 import static com.jabibim.admin.func.IpInfo.getClientIp;
 
+// 결제관련 웹 훅을 받는 엔드포인트
 @Controller
 @RequestMapping("/webhook/payments")
 @PropertySource("/properties/payments.properties")

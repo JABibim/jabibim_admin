@@ -1,10 +1,9 @@
-package com.jabibim.admin.front.controller;
+package com.jabibim.admin.front.api_receive.controller;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.jabibim.admin.dto.OrderApiVO;
 import com.jabibim.admin.front.dto.PaymentVO;
-import com.jabibim.admin.front.httpinterface.PortOneComponent;
+import com.jabibim.admin.front.api_send.httpinterface.PortOneComponent;
 import com.jabibim.admin.service.OrderService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -14,13 +13,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Optional;
 
+// 결제 관련 api 요청 처리하는 컨트롤러
 @Controller
 @RequiredArgsConstructor
 public class PaymentsController {
@@ -37,8 +36,6 @@ public class PaymentsController {
   public String getOrderById(@RequestBody(required = true) PaymentVO payment, HttpServletResponse response) throws Exception {
 
     logger.info(payment.toString());
-
-    Gson gson = new Gson();
 
     JsonObject jsonObject = new JsonObject();
 

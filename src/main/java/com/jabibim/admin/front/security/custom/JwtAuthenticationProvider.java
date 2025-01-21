@@ -1,4 +1,4 @@
-package com.jabibim.admin.security.provider;
+package com.jabibim.admin.front.security.custom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,8 +10,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import com.jabibim.admin.security.service.JwtUserDetailService;
 
 import lombok.RequiredArgsConstructor;
 

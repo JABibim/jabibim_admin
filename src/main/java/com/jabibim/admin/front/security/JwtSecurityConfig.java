@@ -1,10 +1,10 @@
-package com.jabibim.admin.security.config;
+package com.jabibim.admin.front.security;
 
-import com.jabibim.admin.security.customfilter.JwtAuthenticationFilter;
-import com.jabibim.admin.security.customfilter.LoginFilter;
-import com.jabibim.admin.security.dto.AcademyProperties;
-import com.jabibim.admin.security.provider.JwtAuthenticationProvider;
-import com.jabibim.admin.security.provider.JwtTokenProvider;
+import com.jabibim.admin.front.security.custom.JwtAuthenticationFilter;
+import com.jabibim.admin.front.security.custom.LoginFilter;
+import com.jabibim.admin.front.properties.AcademyProperties;
+import com.jabibim.admin.front.security.custom.JwtAuthenticationProvider;
+import com.jabibim.admin.front.security.custom.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,19 +22,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.util.Collections;
 
 @Configuration
-@Order(1) // 우선 순위 시큐리티 컨피그
+@Order(1)
 @RequiredArgsConstructor
 public class JwtSecurityConfig {
 
         private final Logger logger = LoggerFactory.getLogger(JwtSecurityConfig.class);
+        // jwt 토큰 발급 클래스
         private final JwtTokenProvider jwtTokenProvider;
-        // 학원 정보
+        // 학원 id 를 인식 받기 위해 필요한 데이터 조회용 클래스 
         private final AcademyProperties academyProperties;
-        // AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
+        // AuthenticationManager가 사용할 커스텀 Provider 클래스
         private final JwtAuthenticationProvider jwtAuthenticationProvider;
 
         @Bean
         public AuthenticationManager authenticationManager() {
+                // 로그인 처리 과정에서
+                // 세션 로그인에 사용되는 default AuthenticationManager 를 호출하여
+                // teacher 테이블을 조회하여 인증하는 세션 로그인용 Provider 객체가 사용되므로
+                // 수동으로 AuthenticationManager 객체를 생성하여
+                // student 테이블을 조회하여 인증하는 학생 로그인용 Provider 객체를 주입한다.
                 return new ProviderManager(Collections.singletonList(jwtAuthenticationProvider));
         }
 
@@ -47,7 +53,7 @@ public class JwtSecurityConfig {
                 loginFilter.setFilterProcessesUrl("/api/auth/login");
 
                 http
-                                .securityMatcher("/api/**") // API 경로만 처리
+                                .securityMatcher("/api/**") // "/api/**" 경로만 처리
 
                                 .formLogin((AbstractHttpConfigurer::disable)) // formLogin 필터 무효화
 
@@ -55,25 +61,22 @@ public class JwtSecurityConfig {
 
                                 .csrf(AbstractHttpConfigurer::disable) // csrf 무효화
 
-                                .authenticationProvider(jwtAuthenticationProvider)
+                                .authenticationProvider(jwtAuthenticationProvider) // 커스텀 인증 클래스 설정
 
-                                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/login", "/api/public/**")
+                                // 회원 가입, 로그인 요청 url, 외부 api 엔드포인트에 대해 보안 필터 해제
+                                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/login","/api/auth/join", "/api/public/**")
                                                 .permitAll()
-                                                // "/api/auth/**" 를 통한 로그인, 회원가입 요청과
-                                                // "/api/public/**" 을 통해 받는 api 엔드포인트는
-                                                // 모두 허용 이후 더 추가 가능하다.
+                                                // 이후 더 추가 가능하다.
                                                 .anyRequest().authenticated())
+                                // 기본 UsernamePasswordFilter 자리에 커스텀 UsernamePassword 필터 대신 주입
                                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
-                                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                                // 로그인 처리를 할 UsernamePassword 필터 뒤에 jwt 검사를 할 필터 추가
+                                .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider),
                                                 UsernamePasswordAuthenticationFilter.class)
 
+                                // 세션 로그인 방식을 사용하지 않으므로 요청 처리가 끝날 때 마다 session 삭제하는 STATELESS 설정
                                 .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // session
-                                                                                                          // 사용하지
-                                                                                                          // 않으므로
-                                                                                                          // STATELESS
-                                                                                                          // 로 고정
-
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)); 
                 return http.build();
         }
 

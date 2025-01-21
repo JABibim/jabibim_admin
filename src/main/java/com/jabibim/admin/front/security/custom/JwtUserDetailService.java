@@ -1,4 +1,4 @@
-package com.jabibim.admin.security.service;
+package com.jabibim.admin.front.security.custom;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import com.jabibim.admin.dto.StudentUserVO;
 import com.jabibim.admin.mybatis.mapper.StudentMapper;
-import com.jabibim.admin.security.details.JwtCustomUserDetails;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

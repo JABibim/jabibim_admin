@@ -1,4 +1,4 @@
-package com.jabibim.admin.security.details;
+package com.jabibim.admin.front.security.custom;
 
 import java.util.Collection;
 

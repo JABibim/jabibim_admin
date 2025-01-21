@@ -11,6 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @ToString
 public class LoginRequest implements Serializable {
+  // 로그인 요청 body 에 들어 있는 값을 받는 dto
 
   @NotBlank(message = "이메일은 필수입니다.") // 공백, null, 빈문자열 불가
   private String email;

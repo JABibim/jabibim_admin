@@ -1,4 +1,4 @@
-package com.jabibim.admin.front.payment;
+package com.jabibim.admin.front.api_receive.domain.payment;
 
 public interface PaymentTypeFactory {
 

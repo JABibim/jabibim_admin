@@ -50,13 +50,9 @@ public class SecurityConfig {
                                 .formLogin(form -> form
                                                 // loginPage 경로 설정
                                                 .loginPage("/login").permitAll()
-                                                .loginProcessingUrl("/loginprocess")
-
                                                 // authenticationDetailsSource 설정 ( 부가정보 셋팅할 수 있음 )
                                                 .authenticationDetailsSource(authenticationDetailsSource)
-                                                // usernameParameter, passwordParameter 설정 ( name property가 email,
-                                                // password인
-                                                // input 태그를 찾아서 처리 )
+                                                // usernameParameter, passwordParameter 설정 ( name property가 email, // password인 // input 태그를 찾아서 처리 )
                                                 .usernameParameter("email")
                                                 .passwordParameter("password")
                                                 // 성공 처리 Handler
@@ -64,6 +60,7 @@ public class SecurityConfig {
                                                 // 실패 처리 Handler
                                                 .failureHandler(failureHandler))
                                 // authenticationProvider 설정
+                                // DB에서 인증에 필요한 데이터를 가져다 비교하는 커스텀 Provider 객체를 AuthenticationManager에게 사용하도록 설정
                                 .authenticationProvider(formAuthenticationProvider)
                                 // exceptionHandling 설정 ( 인증 받은 상태에서 호출되는거! 로그인한 사용자가 접근할 수 없는 페이지에 접근했을 때 )
                                 .exceptionHandling(exception -> exception
