@@ -159,4 +159,5 @@
              '', 0, #{teacherId}, #{academyId})
     </insert>
 
+
 </mapper>

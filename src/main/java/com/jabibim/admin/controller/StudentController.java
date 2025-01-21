@@ -25,6 +25,7 @@ import java.util.Map;
 public class StudentController {
 
     private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
+
     private final StudentService studentService;
     private final GradeService gradeService;
 
@@ -106,7 +107,7 @@ public class StudentController {
 
         // Pagination 객체 생성
         PaginationResult result = new PaginationResult(page, limit, listcount);
-
+        
         // 모델에 데이터 추가
         model.addAttribute("page", page);
         model.addAttribute("maxpage", result.getMaxpage());

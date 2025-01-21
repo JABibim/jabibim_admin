@@ -1,0 +1,56 @@
+#classVideo {
+    display: none;
+}
+
+#classFile {
+    display: none;
+}
+
+img {
+    cursor: pointer;
+    width: 20px;
+}
+
+#course_image {
+    display: none;
+}
+
+#previewImage {
+    cursor: auto;
+    width: 150px;
+    height: 150px;
+    margin-left: 20px;
+}
+
+.drop-zone {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    position: relative;
+}
+
+.drop-zone:hover {
+    border-color: #007bff;
+}
+
+.drop-zone.dragover {
+    border-color: #0056b3;
+    background-color: #f8f9fa;
+}
+
+.drop-zone img {
+    max-width: 100%;
+    max-height: 300px;
+    display: block;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+.drop-zone p {
+    margin: 0;
+    font-size: 14px;
+    color: #6c757d;
+}
