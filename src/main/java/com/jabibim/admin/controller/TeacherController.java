@@ -3,17 +3,20 @@ package com.jabibim.admin.controller;
 import com.jabibim.admin.domain.PaginationResult;
 import com.jabibim.admin.domain.Teacher;
 import com.jabibim.admin.domain.TeacherCareer;
+import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.service.TeacherService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,12 +26,11 @@ import java.util.UUID;
 public class TeacherController {
     private static final Logger logger = LoggerFactory.getLogger(TeacherController.class);
 
-    private TeacherService teacherService;
+    private final TeacherService teacherService;
 
     public TeacherController(TeacherService teacherService) {
         this.teacherService = teacherService;
     }
-
 
     @GetMapping(value = "")
     public String teacher(
@@ -38,8 +40,8 @@ public class TeacherController {
             @RequestParam(defaultValue = "0") String search_field,  //0:전체, 1:이메일 2:이름
             @RequestParam(defaultValue = "") String search_word,
             Model model,
-            HttpSession session) {
-
+            HttpSession session
+    ) {
         logger.info("---------->>>>> page: {}, limit: {}, state: {}, search_field: {}, search_word: {}",
                 page, limit, state, search_field, search_word);
 
@@ -68,16 +70,15 @@ public class TeacherController {
         model.addAttribute("state", state);
         model.addAttribute("search_field", search_field);
         model.addAttribute("search_word", search_word);
-        model.addAttribute("startnumber",(page - 1) * limit + 1 );
+        model.addAttribute("startnumber", (page - 1) * limit + 1);
 
         return "teachers/teacher";
     }
 
-
-    @GetMapping(value ="/profile")
+    @GetMapping(value = "/profile")
     public String teacherProfile(
-            Model model, HttpSession session, HttpServletRequest request) {
-
+            Model model, HttpSession session, HttpServletRequest request
+    ) {
         session.setAttribute("referer", "list");
         String academyId = (String) session.getAttribute("aid");
         boolean isAdmin = academyId.equals("ADMIN");
@@ -87,7 +88,8 @@ public class TeacherController {
         model.addAttribute("contextPath", request.getContextPath());
         model.addAttribute("academyId", academyId);
         model.addAttribute("isAdmin", isAdmin);
-        model.addAttribute("careerList",list);
+        model.addAttribute("careerList", list);
+
         return "teachers/teacherprofile";
     }
 
@@ -96,8 +98,8 @@ public class TeacherController {
     @ResponseBody
     public ResponseEntity<String> updateCareerActive(
             @RequestParam("careerName") String careerName,
-            @RequestParam("displayStatus") int displayStatus) {
-
+            @RequestParam("displayStatus") int displayStatus
+    ) {
         try {
             System.out.println("------updateCareerActiveController 실행---------");
             System.out.println("받은 careerName: " + careerName);
@@ -122,45 +124,39 @@ public class TeacherController {
         }
     }
 
-
-
-    @GetMapping(value ="/write")
+    @GetMapping(value = "/profile/add")
     public String teacherWrite() {
         return "teachers/profile_write";
     }
 
-    @PostMapping("/profile/add")
+    @PostMapping("/profile/addProcess")
     public String careerAdd(
-            @ModelAttribute TeacherCareer career,
-            HttpSession session,
-            HttpServletRequest request) {
-
-        System.out.println("============ careerAdd 실행 ================");
-        session.setAttribute("referer", "list");
-        String teacherId = (String) session.getAttribute("id");
-        String academyId = (String) session.getAttribute("aid");
-
-
-
-        // 약력 정보 설정
-        career.setCareerId(UUID.randomUUID().toString());
-        career.setCareerName(request.getParameter("career_name"));
-        career.setTeacherId(teacherId);
-        career.setAcademyId(academyId);
+            Authentication authentication,
+            @RequestPart("careerName") String careerName,
+            @RequestPart("careerImage") MultipartFile careerImage
+    ) {
+        AccountDto account = (AccountDto) authentication.getPrincipal();
+        String academyId = account.getAcademyId();
+        String teacherId = account.getId();
 
         // 서비스 계층을 통해 약력 추가
-        teacherService.insertCareer(career);
-        return "redirect:/teacher/profile";
+        teacherService.insertCareer(academyId, teacherId, careerName, careerImage);
 
+        return "redirect:/teacher/profile";
     }
 
     @GetMapping("profile/detail")
-    public String careerDetail(){
-        return "teachers/profile_detail";
+    public ModelAndView careerDetail(
+            @RequestParam("id") String id
+    ) {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("teachers/profile_detail");
+        mv.addObject("careerFilePath", teacherService.getUploadPathByCareerId(id));
+
+        return mv;
     }
 
-    
-    
+
     //어디에 만들어야 제일 좋을지 모르겠는데, teacher 계정들을 피해 만드는거니
     //그냥 TeacherController 에 만듦
     @GetMapping(value = "/prepareDashboard")

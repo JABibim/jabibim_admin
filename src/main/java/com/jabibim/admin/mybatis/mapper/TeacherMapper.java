@@ -37,6 +37,7 @@ public interface TeacherMapper {
 
     int updateCareerActive(String careerName, int displayStatus);
 
-    void insertCareer(TeacherCareer career);
+    void insertCareer(HashMap<String, Object> map);
 
+    String getUploadPathByCareerId(String careerId);
 }

@@ -34,5 +34,7 @@ public interface TeacherService {
 
     int updateCareerActive(String careerName, int displayStatus);
 
-    void insertCareer(TeacherCareer career);
+    void insertCareer(String academyId, String teacherId, String careerName, MultipartFile careerImage);
+
+    String getUploadPathByCareerId(String careerId);
 }
