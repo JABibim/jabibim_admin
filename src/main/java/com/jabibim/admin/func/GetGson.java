@@ -23,7 +23,7 @@ public class GetGson {
             }
         }
 
-        class LocalDateDeserializer implements JsonDeserializer <LocalDate> {
+        class LocalDateDeserializer implements JsonDeserializer<LocalDate> {
             @Override
             public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
                     throws JsonParseException {
@@ -31,7 +31,7 @@ public class GetGson {
                         DateTimeFormatter.ofPattern("yyyy-MM-dd").withLocale(Locale.KOREA));
             }
         }
-        class LocalDateTimeSerializer implements JsonSerializer <LocalDateTime> {
+        class LocalDateTimeSerializer implements JsonSerializer<LocalDateTime> {
             private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
             @Override
@@ -40,7 +40,7 @@ public class GetGson {
             }
         }
 
-        class LocalDateTimeDeserializer implements JsonDeserializer <LocalDateTime> {
+        class LocalDateTimeDeserializer implements JsonDeserializer<LocalDateTime> {
             @Override
             public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
                     throws JsonParseException {
@@ -50,8 +50,8 @@ public class GetGson {
         }
 
         gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateSerializer());
-        gsonBuilder.registerTypeAdapter(LocalDateTime .class, new LocalDateTimeSerializer());
-        gsonBuilder.registerTypeAdapter(LocalDate .class, new LocalDateDeserializer());
+        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
+        gsonBuilder.registerTypeAdapter(LocalDate.class, new LocalDateDeserializer());
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer());
         gson = gsonBuilder.setPrettyPrinting().create();
 
