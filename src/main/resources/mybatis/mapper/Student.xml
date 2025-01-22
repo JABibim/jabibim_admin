@@ -199,10 +199,53 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     <select id="getStudentByEmail" resultType="studentUserVO">
         SELECT *
         FROM student
         WHERE academy_id= #{academyId}
         AND student_email = #{email}
     </select>
+
+
+
+
+
+
+
+
+
+
+    <insert id="insertStudent" >
+        INSERT INTO student
+        VALUES (#{studentId}, CURRENT_TIMESTAMP()
+                , NULL, NULL
+                , #{studentName}, #{studentEmail}
+                , #{studentPhone}, #{studentPassword}
+                , NULL, 0
+                , NULL, NULL
+                , #{adsAgreed}, 'ROLE_STUDENT'
+                ,(SELECT grade_id
+                  FROM grade
+                  where academy_id=#{academyId}
+                  ORDER BY discount_rate
+                  LIMIT 1 OFFSET 0), #{academyId})
+    </insert>
 </mapper>

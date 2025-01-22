@@ -116,7 +116,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     // 5. 응답 바디 작성
     Map<String, Object> responseBody = new HashMap<>();
+    responseBody.put("userId", user.getStudentId());
+    responseBody.put("studentName", user.getStudentName());
     responseBody.put("accessToken", "Bearer " + accessToken);
+
 
     new ObjectMapper().writeValue(response.getWriter(), responseBody);
     /*
