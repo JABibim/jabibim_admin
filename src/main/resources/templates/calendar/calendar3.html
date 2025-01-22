@@ -72,16 +72,6 @@
                 }
             }, 500);
         }
-
-        window.addEventListener('message', (event) => {
-            if (event.data.type === 'google-auth-success') {
-                console.log('===============================> event.data : ', event.data);
-                const accessToken = event.data.token;
-                console.log('Access Token:', accessToken);
-
-                // Access Token을 서버로 전송하거나 로컬에 저장
-            }
-        });
     </script>
     <main id="main" class="main">
         <div class="pagetitle">
