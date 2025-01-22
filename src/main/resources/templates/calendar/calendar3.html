@@ -52,40 +52,24 @@
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.15/index.global.min.js"></script>
     <script th:src="@{/js/calendar.js}"></script>
     <script>
-        function openPopup() {
-            const popupWidth = 500;
-            const popupHeight = 600;
-            const left = (window.innerWidth - popupWidth) / 2;
-            const top = (window.innerHeight - popupHeight) / 2;
 
-            const popup = window.open(
-                '/auth/oauth2/authorize', // OAuth 요청을 처리하는 URL
-                'Google Calendar Auth',
-                `width=${popupWidth},height=${popupHeight},top=${top},left=${left},scrollbars=yes`
-            );
-
-            // 팝업 창에서 부모로 데이터 전달
-            const interval = setInterval(() => {
-                if (popup.closed) {
-                    clearInterval(interval);
-                    console.log('팝업 닫힘');
-                }
-            }, 500);
-        }
     </script>
     <main id="main" class="main">
         <div class="pagetitle">
             <h1>개인일정 관리</h1>
             <nav>
-                <div style="display: flex;">
-                    <ol class="breadcrumb">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <ol class="breadcrumb" style="margin: 0; padding: 0;">
                         <li class="breadcrumb-item"><a th:href="@{dashboard}">개인일정</a></li>
                         <li class="breadcrumb-item active">개인일정 목록</li>
                     </ol>
-                    <button type="button" class="btn btn-primary" style="justify-content: flex-end; "
-                            onclick="openPopup()">
-                        구글 캘린더 연동하기
-                    </button>
+                    <th:block th:if="${#strings.isEmpty(calendarInfo)}">
+                        <button id="joinGCalBtn"
+                                type="button" class="btn btn-primary" style="margin-left: auto;"
+                                onclick="openPopup()">
+                            구글 캘린더 연동하기
+                        </button>
+                    </th:block>
                 </div>
             </nav>
         </div><!-- End Page Title -->

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.CalendarMapper">
+
+    <insert id="insertNewCalendarInfo">
+        INSERT INTO calendar
+        ( calendar_id
+        , created_at
+        , google_calendar_id
+        , access_token
+        , refresh_token
+        , expires_in
+        , academy_id
+        , teacher_id)
+        VALUES ( #{calendarId}
+               , current_timestamp
+               , #{googleCalendarId}
+               , #{accessToken}
+               , #{refreshToken}
+               , #{expiresIn}
+               , #{academyId}
+               , #{teacherId})
+    </insert>
+
+    <select id="getTeacherCalendarId" resultType="selectTeacherCalInfoReqDto">
+        SELECT calendar_id
+             , google_calendar_id
+          FROM calendar
+         WHERE deleted_at IS NULL
+           AND teacher_id = #{teacherId}
+           AND academy_id = #{academyId}
+    </select>
+
+</mapper>
