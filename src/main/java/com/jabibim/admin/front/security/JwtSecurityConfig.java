@@ -1,10 +1,10 @@
 package com.jabibim.admin.front.security;
 
-import com.jabibim.admin.front.security.custom.JwtAuthenticationFilter;
-import com.jabibim.admin.front.security.custom.LoginFilter;
 import com.jabibim.admin.front.properties.AcademyProperties;
+import com.jabibim.admin.front.security.custom.JwtAuthenticationFilter;
 import com.jabibim.admin.front.security.custom.JwtAuthenticationProvider;
 import com.jabibim.admin.front.security.custom.JwtTokenProvider;
+import com.jabibim.admin.front.security.custom.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +18,12 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Collections;
+import java.util.*;
+
 
 @Configuration
 @Order(1)
@@ -61,6 +65,8 @@ public class JwtSecurityConfig {
 
                                 .csrf(AbstractHttpConfigurer::disable) // csrf 무효화
 
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                                 .authenticationProvider(jwtAuthenticationProvider) // 커스텀 인증 클래스 설정
 
                                 // 회원 가입, 로그인 요청 url, 외부 api 엔드포인트에 대해 보안 필터 해제
@@ -79,5 +85,21 @@ public class JwtSecurityConfig {
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)); 
                 return http.build();
         }
+
+
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                configuration.setAllowedHeaders(Arrays.asList("*"));
+                configuration.setAllowCredentials(true);
+
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/api/**", configuration);
+
+                return source;
+        }
+
 
 }

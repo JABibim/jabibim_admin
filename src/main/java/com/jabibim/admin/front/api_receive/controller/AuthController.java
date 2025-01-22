@@ -2,13 +2,13 @@ package com.jabibim.admin.front.api_receive.controller;
 
 import java.util.Map;
 
+import com.jabibim.admin.domain.Student;
+import com.jabibim.admin.service.StudentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,11 +20,12 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
   private final Logger logger = LoggerFactory.getLogger(AuthController.class);
+  private final StudentService studentService;
 
-   @PostMapping("/logout")
- public ResponseEntity<?> logout(
-  @RequestHeader("Authorization") String token
-  , HttpServletResponse response
+  @PostMapping("/logout")
+  public ResponseEntity<?> logout(
+      @RequestHeader("Authorization") String token
+      , HttpServletResponse response
   ) {
 
     // Authorization 헤더에서 토큰 추출
@@ -40,9 +41,25 @@ public class AuthController {
     response.addCookie(cookie);
 
     return ResponseEntity.ok()
-    .body(Map.of("message", "Logout successful")); 
-   
- }
+        .body(Map.of("message", "Logout successful"));
+
+  }
+
+  @PostMapping("/join")
+  public ResponseEntity<?> join(
+      @RequestBody(required = true) Student student) {
+
+    logger.info(student.toString());
+
+    if (studentService.insertStudent(student)) {
+      return ResponseEntity.ok()
+          .body(Map.of("message", "Signup successful"));
+    } else {
+
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(Map.of("message", "Signup failed"));
+    }
+  }
 
 
 //  @PostMapping("/signup")
