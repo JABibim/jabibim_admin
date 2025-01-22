@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>JABIBIM 구글 캘린더 인증</title>
+</head>
+<body>
+<div th:fragment="success">
+    <script>
+        // 부모 창에 메시지 전달
+        window.opener.postMessage({
+            type: 'google-auth-success',
+            token: '[[${accessToken}]]'
+        }, '*');
+
+        // 팝업 창 닫기
+        window.close();
+    </script>
+    <h1>인증 성공</h1>
+</div>
+</body>
+</html>

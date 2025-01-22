@@ -10,7 +10,7 @@ public class CalendarController {
     @GetMapping(value="")
     public String boardList(
     ) {
+
         return "calendar/calendar5";
     }
-
 }
