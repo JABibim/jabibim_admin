@@ -106,53 +106,37 @@
             popup.querySelector('button').addEventListener('click', () => {
                 popup.removeAttribute('open');
             });
+        });
 
-            // 구글 캘린더 연동하기 버튼 클릭 이벤트
-            document.getElementById('googleCalendarBtn').addEventListener('click', function () {
-                const clientId = '528933010317-q1atrvppp0hcg68qi2mmm94m82n7dhgc.apps.googleusercontent.com';
-                const redirectUri = 'https://localhost:5000/auth/google/callback';
-                const scope = 'https://www.googleapis.com/auth/calendar';
-                const responseType = 'code';
+        function openPopup() {
+            const popupWidth = 500;
+            const popupHeight = 600;
+            const left = (window.innerWidth - popupWidth) / 2;
+            const top = (window.innerHeight - popupHeight) / 2;
 
-                // Google OAuth 인증 URL 생성
-                const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=${responseType}
-                                                                                       &client_id=${clientId}
-                                                                                       &redirect_uri=${encodeURIComponent(redirectUri)}
-                                                                                       &scope=${encodeURIComponent(scope)}`;
+            const popup = window.open(
+                '/auth/oauth2/authorize', // OAuth 요청을 처리하는 URL
+                'Google Calendar Auth',
+                `width=${popupWidth},height=${popupHeight},top=${top},left=${left},scrollbars=yes`
+            );
 
-                // 팝업 창 열기
-                const width = 600;
-                const height = 700;
-                const left = (window.screen.width - width) / 2;
-                const top = (window.screen.height - height) / 2;
+            // 팝업 창에서 부모로 데이터 전달
+            const interval = setInterval(() => {
+                if (popup.closed) {
+                    clearInterval(interval);
+                    console.log('팝업 닫힘');
+                }
+            }, 500);
+        }
 
-                const popupWindow = window.open(authUrl, 'GoogleOAuthPopup', `width=${width},height=${height},left=${left},top=${top}`);
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'google-auth-success') {
+                console.log('===============================> event.data : ', event.data);
+                const accessToken = event.data.token;
+                console.log('Access Token:', accessToken);
 
-                // 부모 창과 팝업 창 통신 처리
-                const interval = setInterval(() => {
-                    try {
-                        // 팝업 창이 닫혔는지 확인
-                        if (popupWindow.closed) {
-                            clearInterval(interval);
-                            alert('팝업이 닫혔습니다. 인증이 완료되지 않았습니다.');
-                        }
-
-                        // 인증 코드가 전달되었는지 확인
-                        const url = new URL(popupWindow.location);
-                        if (url.searchParams.get('code')) {
-                            const code = url.searchParams.get('code');
-                            console.log('인증 코드:', code);
-
-                            // 부모 창에서 인증 코드로 추가 작업
-                            popupWindow.close(); // 팝업 닫기
-                            clearInterval(interval);
-                            alert('인증이 완료되었습니다!');
-                        }
-                    } catch (e) {
-                    }
-                }, 1000);
-            });
-
+                // Access Token을 서버로 전송하거나 로컬에 저장
+            }
         });
     </script>
 
@@ -169,7 +153,8 @@
         <div class="card">
             <div class="card-body">
                 <br>
-                <button class="btn btn-outline-primary btn-sm" style="float: right" id="googleCalendarBtn"><img style="width:25px" th:src="@{/img/calendar.png}">구글 캘린더 연동하기</button>
+                <button class="btn btn-outline-primary btn-sm" style="float: right" id="googleCalendarBtn" onclick="openPopup()">
+                        <img style="width:25px" th:src="@{/img/calendar.png}">구글 캘린더 연동하기</button>
                 <br><br>
                 <div id='calendar'></div>
                 <dialog>
