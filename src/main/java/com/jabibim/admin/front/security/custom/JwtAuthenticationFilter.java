@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -14,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jabibim.admin.dto.StudentUserVO;
+import com.jabibim.admin.front.security.custom.JwtTokenProvider.TokenValidationResult;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -29,7 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   // jwt 토큰 유효성 검사하는 필터 요청이 올 때마다 한 번씩 실행된다.
 
   private final JwtTokenProvider jwtTokenProvider;
-
+  private final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -45,68 +48,66 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
 
     try {
-
       // Authorization 헤더에서 액세스 토큰 추출
       // jwt 액세스 토큰을 가져와서 jwtTokenProvider 에서 유효성 검사 및
       // 통과 시 SecurityContextHolder 에 유저 정보 저장
       String token = getJwtFromRequest(request);
 
-      // 액세스 토큰이 아예 없는 경우
+      // 토큰이 없는 경우
       if (!StringUtils.hasText(token)) {
         handleMissingToken(response);
+        return; // 중요: 필터 체인 종료
       }
 
-      // 액세스 토큰이 유효한 경우
-      if (jwtTokenProvider.validateToken(token)) {
-        Authentication auth = jwtTokenProvider.getAuthentication(token);
-        // 반환 받은 JwtUserDetails 를 SecurityContextHolder 에 주입
-        // 액세스 토큰은 만료 후 리프레쉬 토큰으로 재발급하므로 매번 갱신할 필요 없다.
-        SecurityContextHolder.getContext().setAuthentication(auth);
-      }
-
-      // 유효한 토큰이 아닌 경우
-      else if (!jwtTokenProvider.validateToken(token)) {
-
-        // 쿠키로부터 리프레쉬 토큰을 가져와 검증한다.
-        String refreshToken = getRefreshTokenFromCookie(request);
-
-        try {
-
-          // 리프레쉬 토큰이 없는 경우
-          if (!StringUtils.hasText(refreshToken)) {
-            handleMissingToken(response);
-          }
-
-          // 리프레쉬 토큰이 유효한 경우
-          // 리프레쉬 토큰을 기반으로 새로운 액세스 토큰 발급한다.
-          // 새로운 액세스 토큰을 가지고 유저 정보를 SecurityContextHolder 에 주입한다.
-          if (jwtTokenProvider.validateRefreshToken(refreshToken)) {
-            String newToken = jwtTokenProvider.recreateAccessToken(refreshToken);
-            Authentication auth = jwtTokenProvider.getAuthentication(newToken);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-            // 새로운 액세스 토큰을 응답 헤더에 추가해준다.
-            response.setHeader("Authorization", "Bearer " + newToken);
-
-            // 리프레쉬 토큰이 만료일이 다가올 경우 재발급해준다.
-            checkAndRenewRefreshToken(response, refreshToken, auth);
-
-          } else {
-            // 리프레쉬 토큰 역시 유효하지 않은 경우
-            handleExpiredRefreshToken(response);
-          }
-
-        } catch (JwtException e) {
-          handleInvalidRefreshToken(response);
-        }
-
-        // 다음 필터 진행
+      // 토큰 검증
+      TokenValidationResult result = jwtTokenProvider.validateToken(token);
+      
+      if (result.isValid()) {
+        processValidToken(token);
         filterChain.doFilter(request, response);
+        return;
+      } else if (jwtTokenProvider.validateRefreshToken(token)) {
+        processRefreshToken(request, response);
+        filterChain.doFilter(request, response);
+        return;
       }
 
     } catch (Exception e) {
-      logger.error("JWT 토큰 필터 오류 발생", e);
+      logger.error("JWT 토큰 처리 중 오류 발생", e);
       handleAuthenticationError(response, e);
+      // 에러 응답 후 필터 체인 종료
+    }
+  }
+
+  // 유효한 토큰 처리
+  private void processValidToken(String token) {
+    Authentication auth = jwtTokenProvider.getAuthentication(token);
+    SecurityContextHolder.getContext().setAuthentication(auth);
+  }
+
+  // 리프레쉬 토큰 처리
+  private void processRefreshToken(HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
+    String refreshToken = getRefreshTokenFromCookie(request);
+
+    if (!StringUtils.hasText(refreshToken)) {
+      handleMissingToken(response);
+      return;
+    }
+
+    try {
+      if (jwtTokenProvider.validateRefreshToken(refreshToken)) {
+        String newToken = jwtTokenProvider.recreateAccessToken(refreshToken);
+        Authentication auth = jwtTokenProvider.getAuthentication(newToken);
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        response.setHeader("Authorization", "Bearer " + newToken);
+
+        checkAndRenewRefreshToken(response, refreshToken, auth);
+      } else {
+        handleExpiredRefreshToken(response);
+      }
+    } catch (JwtException e) {
+      handleInvalidRefreshToken(response);
     }
   }
 
@@ -177,11 +178,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   // 액세스 토큰이 없는 경우
   private void handleMissingToken(HttpServletResponse response) throws IOException {
-    response.setStatus(HttpStatus.UNAUTHORIZED.value()); // 401 번 인증 실패 코드 반환
+    response.setStatus(HttpStatus.UNAUTHORIZED.value());
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
     Map<String, Object> responseBody = new HashMap<>();
-    responseBody.put("message", "Invalid Token");
+    responseBody.put("status", "error");
+    responseBody.put("message", "인증 토큰이 필요합니다.");
 
     new ObjectMapper().writeValue(response.getWriter(), responseBody);
   }

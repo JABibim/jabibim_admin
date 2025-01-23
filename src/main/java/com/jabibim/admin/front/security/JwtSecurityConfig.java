@@ -24,7 +24,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.*;
 
-
 @Configuration
 @Order(1)
 @RequiredArgsConstructor
@@ -33,8 +32,6 @@ public class JwtSecurityConfig {
         private final Logger logger = LoggerFactory.getLogger(JwtSecurityConfig.class);
         // jwt 토큰 발급 클래스
         private final JwtTokenProvider jwtTokenProvider;
-        // 학원 id 를 인식 받기 위해 필요한 데이터 조회용 클래스 
-        private final AcademyProperties academyProperties;
         // AuthenticationManager가 사용할 커스텀 Provider 클래스
         private final JwtAuthenticationProvider jwtAuthenticationProvider;
 
@@ -48,12 +45,11 @@ public class JwtSecurityConfig {
                 return new ProviderManager(Collections.singletonList(jwtAuthenticationProvider));
         }
 
-
         @Bean
         public SecurityFilterChain jwtSecurityFilterChain(HttpSecurity http) throws Exception {
                 logger.info("jwtSecurityFilterChain =====>");
 
-                LoginFilter loginFilter = new LoginFilter(authenticationManager(), jwtTokenProvider, academyProperties);
+                LoginFilter loginFilter = new LoginFilter(authenticationManager(), jwtTokenProvider);
                 loginFilter.setFilterProcessesUrl("/api/auth/login");
 
                 http
@@ -70,7 +66,8 @@ public class JwtSecurityConfig {
                                 .authenticationProvider(jwtAuthenticationProvider) // 커스텀 인증 클래스 설정
 
                                 // 회원 가입, 로그인 요청 url, 외부 api 엔드포인트에 대해 보안 필터 해제
-                                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/login","/api/auth/join", "/api/public/**")
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers("/api/auth/login", "/api/auth/join", "/api/public/**")
                                                 .permitAll()
                                                 // 이후 더 추가 가능하다.
                                                 .anyRequest().authenticated())
@@ -82,24 +79,23 @@ public class JwtSecurityConfig {
 
                                 // 세션 로그인 방식을 사용하지 않으므로 요청 처리가 끝날 때 마다 session 삭제하는 STATELESS 설정
                                 .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)); 
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
                 return http.build();
         }
-
 
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // React 개발 서버
                 configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                configuration.setAllowedHeaders(Arrays.asList("*"));
-                configuration.setAllowCredentials(true);
+                configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+                configuration.setExposedHeaders(Arrays.asList("Authorization")); // 프론트에서 헤더 접근 허용
+                configuration.setAllowCredentials(true); // credentials 허용
+                configuration.setMaxAge(3600L); // preflight 캐시
 
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-                source.registerCorsConfiguration("/api/**", configuration);
-
+                source.registerCorsConfiguration("/**", configuration);
                 return source;
         }
-
 
 }
