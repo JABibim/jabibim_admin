@@ -97,24 +97,14 @@ public class TeacherController {
     @PostMapping("/updateCareerActive")
     @ResponseBody
     public ResponseEntity<String> updateCareerActive(
-            @RequestParam("careerName") String careerName,
-            @RequestParam("displayStatus") int displayStatus
+            @RequestParam("asisCareerId") String asisCareerId,
+            @RequestParam("tobeCareerId") String tobeCareerId
     ) {
         try {
-            System.out.println("------updateCareerActiveController 실행---------");
-            System.out.println("받은 careerName: " + careerName);
-            System.out.println("받은 displayStatus: " + displayStatus);
-
-            // 선택된 항목을 1로 설정하고, 나머지는 0으로 초기화하는 로직
-            if (displayStatus == 1) {
-                teacherService.resetAllCareers(); // 모든 항목을 0으로 초기화
-            }
-
-            // 선택된 항목만 활성화 상태(1)로 설정
-            int result = teacherService.updateCareerActive(careerName, displayStatus);
+            int result = teacherService.updateCareerActive(asisCareerId, tobeCareerId);
 
             if (result > 0) {
-                return ResponseEntity.ok("약력 상태가 성공적으로 업데이트되었습니다.");
+                return ResponseEntity.ok("약력 상태가 성공적으로 업데이트 되었습니다.");
             } else {
                 return ResponseEntity.status(400).body("약력 상태 업데이트 실패.");
             }

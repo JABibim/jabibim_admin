@@ -152,29 +152,31 @@
 
     <update id="updateCareerActive">
         UPDATE career
-        SET display_status = #{displayStatus}
-        WHERE career_name = #{careerName}
+        SET display_status = CASE
+                                 WHEN career_id = #{asisCareerId} THEN 0
+                                 WHEN career_id = #{tobeCareerId} THEN 1
+            END
+        WHERE career_id IN (#{asisCareerId}, #{tobeCareerId});
     </update>
 
     <insert id="insertCareer">
         INSERT INTO career
-            ( career_id
-            , created_at
-            , career_name
-            , career_file_origin_name
-            , career_file_path
-            , display_status
-            , teacher_id
-            , academy_id
-            )
-        VALUES (#{careerId}
-              , current_timestamp
-              , #{careerName}
-              , #{careerFileOriginName}
-              , #{careerFilePath}
-              , 0
-              , #{teacherId}
-              , #{academyId} )
+        ( career_id
+        , created_at
+        , career_name
+        , career_file_origin_name
+        , career_file_path
+        , display_status
+        , teacher_id
+        , academy_id)
+        VALUES ( #{careerId}
+               , current_timestamp
+               , #{careerName}
+               , #{careerFileOriginName}
+               , #{careerFilePath}
+               , 0
+               , #{teacherId}
+               , #{academyId})
     </insert>
 
     <select id="getUploadPathByCareerId" resultType="String">
