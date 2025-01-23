@@ -1,6 +1,7 @@
 package com.jabibim.admin.service;
 
 import com.google.api.services.calendar.Calendar;
+import com.google.api.services.calendar.model.AclRule;
 import com.jabibim.admin.dto.calendar.response.SelectTeacherCalInfoReqDto;
 import com.jabibim.admin.func.GoogleCalendar;
 import com.jabibim.admin.func.GoogleCalendarServiceFactory;
@@ -25,6 +26,12 @@ public class CalendarServiceImpl implements CalendarService {
 
             com.google.api.services.calendar.model.Calendar newCalendar = new GoogleCalendar().createGoogleCalendar("JABIBIM", "중앙비빔 캘린더", "Asia/Seoul");
             com.google.api.services.calendar.model.Calendar createdCalendar = calendarService.calendars().insert(newCalendar).execute();
+
+            AclRule publicAclRule = new AclRule()
+                    .setRole("reader")
+                    .setScope(new AclRule.Scope().setType("default"));
+
+            calendarService.acl().insert(createdCalendar.getId(), publicAclRule).execute();
 
             return createdCalendar.getId();
         } catch (Exception e) {
