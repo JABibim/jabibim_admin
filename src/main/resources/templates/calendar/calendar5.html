@@ -8,19 +8,20 @@
     <meta charset="UTF-8">
     <title>중앙비빔 Admin</title>
     <style>
-        dialog{
+        dialog {
             width: 300px;
             z-index: 100;
-            padding : 30px;
+            padding: 30px;
             margin: 0;
             background: white;
-            left:50%;
-            top:40%;
-            transform: translate(-50%,-50%);
-            box-shadow: 2px 2px 5px rgba(0,0,0,.5);
-            border:none;
-            border-radius:10px;
+            left: 50%;
+            top: 40%;
+            transform: translate(-50%, -50%);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
+            border: none;
+            border-radius: 10px;
         }
+
         /* 요일 헤더 색상 */
         .fc-day-sun .fc-col-header-cell-cushion {
             color: red;
@@ -62,12 +63,16 @@
         </div><!-- End Page Title -->
         <div class="card">
             <div class="card-body">
-                <input type="hidden" id="googleCalendarId" th:value="${calendarInfo.googleCalendarId}">
+                <th:block th:if="${not #strings.isEmpty(calendarInfo)}">
+                    <input type="hidden" id="googleCalendarId" th:value="${calendarInfo.googleCalendarId}">
+                </th:block>
                 <br>
                 <th:block th:if="${#strings.isEmpty(calendarInfo)}">
-                <button class="btn btn-outline-primary btn-sm" style="float: right" id="joinGCalBtn" onclick="openPopup()">
-                        <img style="width:25px" th:src="@{/img/calendar.png}">구글 캘린더 연동하기</button>
-                <br><br>
+                    <button class="btn btn-outline-primary btn-sm" style="float: right" id="joinGCalBtn"
+                            onclick="openPopup()">
+                        <img style="width:25px" th:src="@{/img/calendar.png}">&nbsp;&nbsp;구글 캘린더 연동하기
+                    </button>
+                    <br><br>
                 </th:block>
                 <div id='calendar'></div>
                 <dialog>

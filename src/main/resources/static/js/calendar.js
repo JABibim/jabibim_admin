@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log(googleCalendarInfo);  // 값이 잘 출력되는지 확인
     let popup = document.querySelector('dialog');
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        customButtons:{
-            myCustomButton:{
+        customButtons: {
+            myCustomButton: {
                 text: "일정 추가하기",
                 click: function () {
                     openPopup(); // 팝업 열기 함수 호출
@@ -102,13 +102,13 @@ document.addEventListener('DOMContentLoaded', function () {
         $.ajax({
             type: 'POST',
             url: '/calendar/insert',  // 요청을 보낼 URL
-            beforeSend: function(xhr) {  // 데이터 전송 전에 헤더에 CSRF 토큰 설정
+            beforeSend: function (xhr) {  // 데이터 전송 전에 헤더에 CSRF 토큰 설정
                 xhr.setRequestHeader(header, token);
             },
             data: JSON.stringify(item),  // 보낼 데이터 (JSON 문자열로 변환)
             dataType: 'json',  // 응답 데이터 타입
             contentType: 'application/json',  // 전송할 데이터의 타입 (JSON 형식)
-            success: function(response) {
+            success: function (response) {
                 console.log("서버 응답:", response);  // 서버 응답 확인
                 if (response.status === "success") {
                     alert('일정이 추가되었습니다.');
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     popup.close();  // 팝업 닫기
                 }
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.log('일정 추가 중 오류 발생');
                 console.log('서버 오류 발생:', xhr.status);  // HTTP 상태 코드
                 console.log('응답 내용:', xhr.responseText);  // 서버에서 반환된 응답 내용
@@ -127,9 +127,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 popup.close();  // 팝업 닫기
             }
         });
-
-        }
-    })
+    }
+})
 
 $(document).ready(function () {
     $(document).on('click', '#joinGCalBtn', () => {
