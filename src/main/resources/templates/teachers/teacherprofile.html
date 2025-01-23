@@ -6,53 +6,7 @@
 <head>
     <meta charset="utf-8">
     <title>강사 관리 > 약력 관리</title>
-<style>
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 34px;
-        height: 20px;
-    }
-
-    .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        transition: .4s;
-        border-radius: 20px;
-    }
-
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 14px;
-        width: 14px;
-        left: 3px;
-        bottom: 3px;
-        background-color: white;
-        transition: .4s;
-        border-radius: 50%;
-    }
-
-    input:checked + .slider {
-        background-color: #5a5dd2;
-    }
-
-    input:checked + .slider:before {
-        transform: translateX(14px);
-    }
-
-</style>
+    <link rel="stylesheet" th:href="@{/css/profile_list.css}">
     <script th:inline="javascript">
         let contextPath = /*[[${contextPath}]]*/ '';
     </script>
@@ -60,66 +14,77 @@
 </head>
 <body>
 <div layout:fragment="content">
-<main id="main" class="main">
-    <div class="pagetitle">
-        <h1>약력관리</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">강사 관리</li>
-                <li class="breadcrumb-item active">약력 관리</li>
-            </ol>
-        </nav>
-    </div><!-- End Page Title -->
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>약력관리</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">강사 관리</li>
+                    <li class="breadcrumb-item active">약력 관리</li>
+                </ol>
+            </nav>
+        </div>
 
-    <div class="card">
-        <div class="card-body">
-            <div style="margin-top: 30px;">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th>약력 이름</th>
-                        <th>등록 날짜</th>
-                        <th>상태
-                            <span data-bs-toggle="tooltip" data-bs-placement="top" title="약력의 노출여부를 설정합니다.">
+        <div class="card">
+            <div class="card-body">
+                <div style="margin-top: 30px;">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>약력 이름</th>
+                            <th>등록 날짜</th>
+                            <th>상태
+                                <span data-bs-toggle="tooltip" data-bs-placement="top" title="약력의 노출여부를 설정합니다.">
                                 <i class="bi bi-info-circle"></i>
                             </span>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="career, iterStat : ${careerList}">
-                        <td th:text="${iterStat.index + 1}"></td>
-                        <td>
-                            <a th:href="@{profile/detail(id=${career.careerId})}" th:text="${career.careerName}"></a>
-                        </td>
-                        <td th:text="${#dates.format(career.createdAt, 'yyyy-MM-dd')}"></td>
-                        <td>
-                            <label class="switch">
-                                <input type="checkbox"
-                                       th:checked="${career.displayStatus == 1}"
-                                       th:attr="data-career-name=${career.careerName}"
-                                       class="toggle-display-status">
-                                <span class="slider round"></span>
-                            </label>
-                        </td>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="career, iterStat : ${careerList}">
+                            <td th:text="${iterStat.index + 1}"></td>
+                            <td>
+                                <a th:href="@{profile/detail(id=${career.careerId})}"
+                                   th:text="${career.careerName}"></a>
+                            </td>
+                            <td th:text="${#dates.format(career.createdAt, 'yyyy-MM-dd')}"></td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input toggle-course-status toggle-display-status"
+                                           type="checkbox"
+                                           th:checked="${career.displayStatus == 1}"
+                                           th:attr="data-career-id=${career.careerId}">
+                                </div>
+                            </td>
 
-                    </tr>
+                        </tr>
 
-                    <tr th:if="${careerList != null and #lists.isEmpty(careerList)}">
+                        <tr th:if="${careerList != null and #lists.isEmpty(careerList)}" style="text-align: center;">
                             <td colspan="10">데이터가 존재하지 않습니다.</td>
                         </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div style="margin-top: 30px; text-align: right;">
-                <a th:href="@{write}" class="btn btn-success">약력 등록하기</a>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 30px; text-align: right;">
+                    <a th:href="@{profile/add}" class="btn btn-primary">약력 등록하기&nbsp;&nbsp;<i class="bi bi-pencil"></i></a>
+                </div>
             </div>
         </div>
-    </div>
-
-</main><!-- End #main -->
+        <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"
+             style="z-index: 11">
+            <div class="toast" id="validationToast" role="alert" aria-live="assertive" aria-atomic="true"
+                 data-bs-delay="3000">
+                <div class="toast-header">
+                    <strong class="me-auto" style="color: red;">알림</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    입력된 값이 유효하지 않습니다.
+                </div>
+            </div>
+        </div>
+    </main><!-- End #main -->
 </div>
-
 </body>
 </html>

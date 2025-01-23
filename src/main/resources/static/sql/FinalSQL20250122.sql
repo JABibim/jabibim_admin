@@ -99,17 +99,17 @@ VALUES ('be37dd3d-b1c6-4aad-a378-abf2ed133423', '2025-01-03 16:25:14', NULL, NUL
 # S3 또는 DB에 저장 고민
 CREATE TABLE career
 (
-    career_id          varchar(36),
-    created_at         datetime,
-    updated_at         datetime,
-    deleted_at         datetime,
-    career_name        varchar(500), # 목록에 표시될 소개 이미지 이름
-    career_info        varchar(500), # 소개 파일에 대한 간단한 설명?
-    career_file_name   varchar(500), # DB에 저장될 소개 파일 이름
-    career_file_origin varchar(500), # 웹에 표시될 소개 파일 이름
-    display_status     tinyint(1),   # 해당 이미지 공개 여부
-    teacher_id         varchar(36),  # 해당 선생 구분 위해
-    academy_id         varchar(36)   # 학원별 구분 위해
+    career_id               varchar(36),
+    created_at              datetime,
+    updated_at              datetime,
+    deleted_at              datetime,
+    career_name             varchar(500), # 목록에 표시될 소개 이미지 이름
+    career_info             varchar(500), # 소개 파일에 대한 간단한 설명(일단 냅둘게요)
+    career_file_origin_name varchar(500), # 파일 실제 이름
+    career_file_path        varchar(500), # 파일의 s3 경로
+    display_status          tinyint(1),   # 해당 이미지 공개 여부
+    teacher_id              varchar(36),  # 해당 선생 구분 위해
+    academy_id              varchar(36)   # 학원별 구분 위해
 );
 
 
@@ -309,7 +309,7 @@ CREATE TABLE cart (
                         deleted_at datetime ,
                         student_id varchar(36) ,
                         course_id varchar(36) ,
-                        academy_id varchar(36) 
+                        academy_id varchar(36)
 ) ;
 
 
@@ -357,7 +357,7 @@ CREATE TABLE payment (
                            student_id varchar(36) ,              # 결제자 정보
                            orders_id varchar(36) ,               # 상품 이름, 가격, 등등에 대한 정보
                            course_id varchar(100) ,
-                           academy_id varchar(100) 
+                           academy_id varchar(100)
 ) ;
 
 
