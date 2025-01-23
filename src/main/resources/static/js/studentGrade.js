@@ -22,7 +22,8 @@ function getUpdatableGradeList(academyId, gradeId) {
         data: {
             academyId, gradeId
         }
-        , url: 'getUpdatableGradeList'
+        , url: '/student/grade/getUpdatableGradeList'
+        , type : 'GET'
         , dataType: 'json'
         , cache: false
         , success: function (data) {
@@ -33,7 +34,8 @@ function getUpdatableGradeList(academyId, gradeId) {
 
             if (data.gradeList && data.gradeList.length > 0) {
                 data.gradeList.forEach(grade => {
-                    $select.append(`<option value="${grade.grade_id}">${grade.grade_name}</option>`);
+                    console.log(grade.gradeId);
+                    $select.append(`<option value="${grade.gradeId}">${grade.gradeName}</option>`);
                 });
             } else {
                 $select.append('<option value="">업데이트 가능한 등급이 없습니다.</option>');
@@ -59,9 +61,13 @@ function modifyGradeInfo(gradeId, gradeName, discountRate) {
     }
 
     $.ajax({
-        url: `modifyGradeInfo`,
+        url: '/student/grade/modifyGradeInfo',
         type: 'POST',
         contentType: 'application/json',
+        beforeSend : function(xhr)
+        {   //데이터를 전송하기 전에 헤더에 csrf 값을 설정합니다.
+            xhr.setRequestHeader(header, token);
+        },
         data: JSON.stringify({
             gradeId,
             gradeName,
@@ -69,11 +75,12 @@ function modifyGradeInfo(gradeId, gradeName, discountRate) {
         }),
         success: function (res) {
             if (res.status === 'success') {
-                localStorage.setItem('toastMessage', '등급 수정이 성공하였습니다.');
+                localStorage.setItem('toastMessage', res.message);
+                console.log('toastMessage');
 
                 location.reload();
             } else if (res.status === 'fail') {
-                localStorage.setItem('toastMessage', '등급 수정이 실패하였습니다.');
+                localStorage.setItem('toastMessage', res.message);
 
                 location.reload();
             }
@@ -86,20 +93,24 @@ function modifyGradeInfo(gradeId, gradeName, discountRate) {
 
 function addGrade(gradeName, discountRate) {
     $.ajax({
-        url: 'addGrade',
+        url: '/student/grade/addGrade',
         type: 'POST',
         contentType: 'application/json',
+        beforeSend : function(xhr)
+        {   //데이터를 전송하기 전에 헤더에 csrf 값을 설정합니다.
+            xhr.setRequestHeader(header, token);
+        },
         data: JSON.stringify({
             gradeName,
             discountRate,
         }),
         success: function (res) {
             if (res.status === 'success') {
-                localStorage.setItem('toastMessage', '등급 추가가 성공하였습니다.');
+                localStorage.setItem('toastMessage', res.message);
 
                 location.reload();
             } else if (res.status === 'fail') {
-                localStorage.setItem('toastMessage', '등급 추가가 실패하였습니다.');
+                localStorage.setItem('toastMessage', res.message);
 
                 location.reload();
             }
@@ -112,7 +123,11 @@ function addGrade(gradeName, discountRate) {
 
 function deleteGrade(academyId, gradeId, newGradeId) {
     $.ajax({
-        url: 'deleteGrade',
+        url: '/student/grade/deleteGrade',
+        beforeSend : function(xhr)
+        {   //데이터를 전송하기 전에 헤더에 csrf값을 설정합니다.
+            xhr.setRequestHeader(header, token);
+        },
         type: 'post',
         dataType: 'json',
         cache: false,
@@ -295,6 +310,10 @@ $(function () {
         const gradeId = $(this).data('grade-id');
         const academyId = $(this).data('academy-id');
         const newGradeId = $('#updatableGradeSelect').val();
+        console.log(gradeId);
+        console.log(academyId);
+        console.log("newGradeId============", newGradeId);
+        console.log(newGradeId);
 
         if (!newGradeId) {
             showToast('업데이트할 등급을 선택하세요.');
@@ -304,7 +323,7 @@ $(function () {
         deleteGrade(academyId, gradeId, newGradeId);
     });
 
-    // [chan] TOAST 메세지 출력용입니다. 화면에서 reload가 일어나기 때문에 추가한 로직입니다.
+    // [chan] TOAST 메세지 출력용입니다. 화면에서 reload 가 일어나기 때문에 추가한 로직입니다.
     const toastMessage = localStorage.getItem('toastMessage');
     if (toastMessage) {
         showToast(toastMessage);

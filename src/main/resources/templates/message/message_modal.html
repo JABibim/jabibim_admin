@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>모달 출력</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script th:src="@{/js/jquery-3.7.1.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}" type="text/css">
+    <script th:src="@{/js/bootstrap.bundle.js}"></script>
+    <style>
+
+       .modal{
+           position: fixed;
+           left: 39%;
+           animation: fadeIn 400ms;
+           width: 400px;
+       }
+
+       @keyframes fadeIn {
+           from {
+               opacity: 0;
+               transform: scale(0.5);
+           } to {
+                 opacity: 1;
+                 transform: scale(1);
+             }
+       }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- The Modal -->
+    <div class="modal animation my-auto" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Message</h4>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" th:text="${message}">
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+  const url = '[(${url})]';
+
+  if (url) {
+    $("#myModal").show();
+
+    $("[data-dismiss=modal]").click(function (event) {
+      // url 이 'history.back() 인 경우 뒤로가기
+      if (url === 'history.back()') {
+        history.back();
+      } else {
+        // 그렇지 않으면 url 로 이동
+        location.href = url;
+      }
+    });
+  } else {
+    location.href = /*[[@{/front/members/login}]]*/'url';
+  }
+</script>
+</body>
+</html>

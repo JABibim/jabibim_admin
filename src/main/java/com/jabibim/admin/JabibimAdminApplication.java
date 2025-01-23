@@ -5,12 +5,18 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+//@EnableScheduling //스케쥴러 기능 일단 정지
 @SpringBootApplication
 public class JabibimAdminApplication implements CommandLineRunner {
 
     @Autowired
     private Environment env;
+
+    static {
+        System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(JabibimAdminApplication.class, args);

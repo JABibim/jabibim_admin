@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="UTF-8">
+    <title>중앙비빔 Admin</title>
+    <style>
+        select.form-control{
+            width:auto;
+            margin-bottom: 2em;
+            display:inline-block
+        }
+
+        .rows{
+            text-align: right;
+        }
+
+        .gray{
+            color: gray;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <script th:src="@{/js/jquery-3.7.1.js}"></script>
+    <script th:src="@{/js/qnaList.js}"></script>
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>홈페이지 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{dashboard}">게사판</a></li>
+                <li class="breadcrumb-item active">QnA</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <th:block th:if="${listcount >0 }">
+                <br>
+                <div class="rows">
+                    <span>줄보기</span>
+                    <select class="form-control" id="viewcount">
+                        <option value="1">1</option>
+                        <option value="3">3</option>
+                        <option value="5">5</option>
+                        <option value="7">7</option>
+                        <option value="10" selected>10</option>
+                    </select>
+                </div>
+                <table class="table" id="privacy-list-table">
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>과목명</th>
+                        <th>과정명</th>
+                        <th>담당 강사</th>
+                        <th data-type="date" data-format="YYYY/MM/DD">등록일</th>
+                        <th>조회수</th>
+                        <th>노출여부</th>
+                        <th>답변상태</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:with="num=${listcount-(page-1)*limit}">
+                        <th:block th:each="b, iterStat : ${qnaList}">
+                            <tr>
+                                <td><span th:text="${num - (iterStat.index)}"></span></td>
+                                <td>
+                                    <div>
+                                        <a th:href="@{'/board/qna/detail?id=' + ${b.qnaId}}">
+                                            <span th:text="${b.qnaSubject}"></span>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td><div th:text="${b.studentName}"></div></td>
+                                <td><div th:text="${b.courseName}"></div></td>
+                                <td><div th:text="${b.className}"></div></td>
+                                <td><div th:text="${b.teacherName}"></div></td>
+                                <td><div th:text="${#strings.substring(b.createdAt, 0, 10)}"></div></td>
+                                <td><div th:text="${b.qnaReadCount}"></div></td>
+                                <td>
+                                    <div>
+                                        <span class="badge bg-primary" th:if="${b.qnaExposureStat == 1}">노출</span>
+                                        <span class="badge bg-secondary" th:if="${b.qnaExposureStat == 0}">숨김</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <span class="badge bg-primary" th:if="${b.qnaAnswerStatus == 1}">답변 완료</span>
+                                        <span class="badge bg-secondary" th:if="${b.qnaAnswerStatus == 0}">답변 대기</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </th:block>
+                    </th:block>
+                    </tbody>
+                </table>
+                <div class="listcount">
+                    <span>글 개수 : [[${listcount}]]</span>
+                </div>
+                <th:block th:replace="~{fragments/policyPaging :: paging('qna', '')}"/>
+            </th:block>
+            <h6 th:if="${listcount == 0}" style="text-align: center; margin-top: 2rem;">등록된 QNA가 없습니다.</h6>
+        </div>
+    </div>
+
+</main><!-- End #main -->
+</div>
+
+</body>
+</html>

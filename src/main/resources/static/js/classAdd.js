@@ -9,17 +9,27 @@ function showToast(message) {
 
 function submitFormData() {
     return new Promise((resolve, reject) => {
+        const courseId = $('#courseId').val();
+        const classSubject = $('#classSubject').val();
+        const classContent = $('#classContent').val();
+        const classType = $('input[name=type]:checked').val();
+
         $.ajax({
             url: 'addClassProcess',
             type: 'POST',
             data: {
-                course_id: $('#courseId').val(),
-                class_subject: $('#class_subject').val(),
-                class_content: $('#class_content').val(),
+                courseId,
+                classSubject,
+                classContent,
+                classType,
+            },
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(header, token);
             },
             success: function (response) {
-                if (response.class_id) {
-                    resolve(response.class_id); // 서버로부터 class_id 반환받기
+                let newClassId = response.data.classId;
+                if (newClassId) {
+                    resolve({courseId, newClassId, classType}); // 서버로부터 class_id 반환받기
                 } else {
                     reject(new Error("class_id를 반환받지 못했습니다."));
                 }
@@ -34,37 +44,28 @@ function submitFormData() {
 }
 
 function submitFormAndUploadFile() {
-    submitFormData().then(classId => {
-        console.log('====> classId : ', classId);
-
-        const videoFile = $('#class_video')[0].files[0];
-        const generalFile = $('#class_file')[0].files[0];
-
+    submitFormData().then(({courseId, newClassId, classType}) => {
         const uploadPromises = []; // 프로미스객체 배열
+        const file = $('#uploadFile')[0].files[0];
 
-        // 각각의 파일에 대해 업로드 프로세스 시작
-        if (videoFile) {
-            uploadPromises.push(uploadFile(videoFile, 'class_video', classId))
-        }
-        if (generalFile) {
-            uploadPromises.push(uploadFile(generalFile, 'class_file', classId))
-        }
+        uploadPromises.push(uploadFile(courseId, newClassId, classType, file));
 
         return Promise.all(uploadPromises);
     }).then(() => {
         console.log('강의가 성공적으로 등록되었습니다.');
-        window.location.href = contextPath + '/content/class';
+        window.location.href = '/content/class';
     }).catch(err => {
-        console.log('파일 업로드중 오류가 발생했습니다.');
+        console.log('파일 업로드 중 오류가 발생했습니다.');
     })
 }
 
-function uploadFile(file, fileType, classId) {
+function uploadFile(courseId, newClassId, classType, file) {
     return new Promise((resolve, reject) => {
         const formData = new FormData();
+        formData.append('courseId', courseId);
+        formData.append('classId', newClassId);
+        formData.append('classType', classType);
         formData.append('file', file);
-        formData.append('fileType', fileType);
-        formData.append('classId', classId); // class_id 추가
 
         $.ajax({
             url: 'addClassFilesProcess', // 파일 업로드 처리 엔드포인트
@@ -72,6 +73,9 @@ function uploadFile(file, fileType, classId) {
             data: formData,
             processData: false,
             contentType: false,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(header, token);
+            },
             xhr: function () {
                 const xhr = new window.XMLHttpRequest();
                 xhr.upload.addEventListener("progress", function (evt) {
@@ -83,7 +87,7 @@ function uploadFile(file, fileType, classId) {
                 return xhr;
             },
             success: function (response) {
-                console.log(`${fileType} 업로드 완료`);
+                console.log(`업로드 완료`);
                 updateProgress(100);
                 resolve();
             },
@@ -125,32 +129,7 @@ $(function () {
         }
     });
 
-    $('#clipImageVideo').click(function () {
-        $('#class_video').click();
-    })
-    $('#clipImageFile').click(function () {
-        $('#class_file').click();
-    })
-    $('#class_video').change(function () {
-        const file = this.files[0];
-
-        if (file) {
-            const fileType = file.type;
-            const validVideoTypes = ['video/mp4', 'video/webm', 'video/ogg'];
-
-            if (!validVideoTypes.includes(fileType)) {
-                showToast('영상 파일만 업로드 가능합니다. (허용 형식: mp4, webm, ogg)')
-
-                $(this).val('');  // 입력값 초기화
-                $('#videoFileValue').text(''); // 파일명 표시 영역 초기화
-                return;
-            }
-
-            const inputFile = $(this).val().split('\\');
-            $('#videoFileValue').text(inputFile[inputFile.length - 1]);
-        }
-    });
-    $('#class_file').change(function () {
+    $('#classFile').change(function () {
         const file = this.files[0];
 
         if (file) {
@@ -159,6 +138,44 @@ $(function () {
             $('#fileValue').text(inputFile[inputFile.length - 1]);
         }
     });
+
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("uploadFile");
+
+    dropZone.addEventListener('click', (event) => {
+        if (event.target.id !== 'resetUploadFile')
+            fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+
+        if ( $('input[name=type]:checked').val() === 'video' ) {
+            const fileType = file.type;
+            const validVideoTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+
+            if (!validVideoTypes.includes(fileType)) {
+                showToast('영상 파일만 업로드 가능합니다. (허용 형식: mp4, webm, ogg)')
+
+                $(this).val('');  // 입력값 초기화
+                $('#defaultText').text('파일을 이곳에 드래그 앤 드롭하거나 클릭하여 업로드하세요.');
+                $('#resetUploadFile').css('display', 'none');
+                return;
+            }
+        }
+
+        $('#defaultText').text(file.name);
+
+        $('#resetUploadFile').css('display', 'inline-block');
+    });
+
+    $('#resetUploadFile').on('click', function (event) {
+        event.stopPropagation();
+
+        $('#defaultText').text('파일을 이곳에 드래그 앤 드롭하거나 클릭하여 업로드하세요.');
+        $('#uploadFile').val('');
+        $('#resetUploadFile').css('display', 'none');
+    })
 
     $('#submitBtn').on('click', function (e) {
         e.preventDefault(); // 기본 폼 제출 방지
@@ -173,19 +190,10 @@ $(function () {
         }
 
         // 강의명
-        const $classSubject = $('#class_subject');
+        const $classSubject = $('#classSubject');
         if ($classSubject.val().trim() === '') {
             showToast('강의명을 입력해주세요.');
             $classSubject.focus();
-
-            return false;
-        }
-
-        // 강의 정보
-        const $classInfo = $('#class_info');
-        if ($classInfo.val().trim() === '') {
-            showToast('강의정보를 입력해주세요.');
-            $classInfo.focus();
 
             return false;
         }
@@ -200,13 +208,20 @@ $(function () {
 
             return false;
         }
-        $('#class_content').val(introHtml);
+        $('#classContent').val(introHtml);
+
+        // 강의 상세 타입
+        const classType = $('input[name=type]:checked');
+        if (classType.val() === undefined) {
+            showToast('강의 상세 타입을 선택해주세요.');
+
+            return false;
+        }
 
         // 강의 동영상 또는 자료 체크
-        const $classVideo = $('#class_video');
-        const $classFile = $('#class_file');
-        if ($classVideo[0].files.length <= 0 && $classFile[0].files.length <= 0) {
-            showToast('강의 동영상 또는 파일 중 하나는 첨부해야합니다.');
+        const $uploadFile = $('#uploadFile');
+        if ($uploadFile[0].files.length <= 0) {
+            showToast('강의 파일 (영상 또는 강의자료) 중 하나는 필수로 첨부해야합니다.');
 
             return false;
         }

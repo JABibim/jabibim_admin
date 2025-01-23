@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <meta charset="utf-8">
+    <title>약력 관리 > 약력 등록하기</title>
+    <link rel="stylesheet" th:href="@{/css/profile_write.css}">
+    <script th:src="@{/js/profile_write.js}" charset="UTF-8"></script>
+</head>
+<body>
+<div layout:fragment="content">
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>약력 관리</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/dashboard}">약력 관리</a></li>
+                    <li class="breadcrumb-item active">약력 등록하기</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="form_container">
+            <div class="card">
+                <div class="card-body">
+                    <div style="margin-top: 30px;">
+                        <form th:action="@{addProcess}" method="post" enctype="multipart/form-data">
+                            <!-- 약력 제목 -->
+                            <div class="row mb-3">
+                                <label for="career_name" class="col-sm-2 col-form-label fw-bold">약력 제목</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="career_name" name="careerName"
+                                           required>
+                                </div>
+                            </div>
+
+                            <!-- 약력 이미지 업로드 input -->
+                            <div class="row mb-3 align-items-center">
+                                <label for="career_image" class="col-sm-2 col-form-label fw-bold">약력 이미지</label>
+                                <div class="col-sm-10">
+                                    <!-- 드래그 앤 드롭 영역 -->
+                                    <div id="dropZone" class="drop-zone">
+                                        <p>이미지를 이곳에 드래그 앤 드롭하거나 클릭하여 업로드하세요.</p>
+                                        <img id="previewImage" src="" alt="미리보기" style="display: none;">
+                                    </div>
+                                    <!-- 실제 파일 입력 (숨김 처리) -->
+                                    <input class="form-control" type="file" id="career_image" name="careerImage"
+                                           style="display: none;">
+                                    <button type="submit" class="btn btn-danger mt-2 float-end" id="imgDeleteBtn"
+                                            style="display: none;">
+                                        삭제&nbsp;&nbsp;<i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 버튼 -->
+                            <div class="button-container">
+                                <button type="reset" class="btn btn-secondary" id="cancelBtn"
+                                        th:onclick="|location.href='@{/teacher/profile}'|">
+                                    목록&nbsp;&nbsp;<i class="bi bi-backspace"></i>
+                                </button>
+                                <button type="submit" class="btn btn-primary">등록&nbsp;&nbsp;<i class="bi bi-pencil"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main><!-- End #main -->
+    <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"
+         style="z-index: 11">
+        <div class="toast" id="validationToast" role="alert" aria-live="assertive" aria-atomic="true"
+             data-bs-delay="3000">
+            <div class="toast-header">
+                <strong class="me-auto" style="color: red;">알림</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                입력된 값이 유효하지 않습니다.
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

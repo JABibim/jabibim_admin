@@ -1,0 +1,100 @@
+
+<th:block th:fragment="qnaReply2">
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <!-- General Form Elements -->
+            <form th:action="@{/board/qna/reply}" enctype="multipart/form-data" method="post" name="qnaForm" id="save-form">
+
+                <input type="hidden" name="qnaId" th:value="${qnaData.qnaId}" id="qnaId">
+                <br>
+                <h3 class="card-title">QnA 답글</h3><br>
+                <div class="row mb-3">
+                    <label for="qnaSubject" class="col-sm-2 col-form-label fw-bold">제목</label>
+                    <div class="col-sm-10">
+
+                                <textarea name="qnaSubject" id="qnaSubject" maxlength="100"
+                                          rows="1" class="form-control"
+                                          th:text="'Re: ' + ${qnaData.qnaSubject}">
+                                </textarea>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label fw-bold">내용</label>
+                    <div class="col-sm-10 pb-5">
+                        <div id="editor2"></div>
+                        <input type="hidden" name="qnaContent" id="qnaContent">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                        <label for="upfile" class="col-sm-2 col-form-label fw-bold">파일첨부
+                            <img th:src="@{/img/attach.png}" alt="파일첨부">
+                            <input type="file" id="upfile" name="uploadfile">
+                        </label>
+                        <span id="filevalue"></span>
+                </div>
+
+                <fieldset class="row mb-3">
+                    <legend class="col-form-label col-sm-2 pt-0 fw-bold">노출</legend>
+                    <div class="col-sm-10 d-flex">
+                        <div class="form-check" style="padding-right: 16px;">
+                            <input
+                                    class="form-check-input"
+                                    name="qnaExposureStat"
+                                    type="radio"
+                                    id="exposure"
+                                    value="1"
+                                    checked>
+                            <label class="form-check-label" for="exposure">노출</label>
+                        </div>
+                        <div class="form-check" style="padding-right: 16px;">
+                            <input
+                                    class="form-check-input"
+                                    name="qnaExposureStat"
+                                    type="radio"
+                                    id="hide"
+                                    value="0">
+                            <label class="form-check-label" for="hide">숨김</label>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="row mb-3">
+                    <label for="qnaPassword" class="col-sm-2 col-form-label fw-bold">비밀번호</label>
+                    <div class="col-sm-10">
+                        <input name="qnaPassword" id="qnaPassword" type="password" maxlength="30"
+                               class="form-control" placeholder="Enter board_pass">
+                    </div>
+                </div>
+
+            </form>
+            <div style="display: flex; gap: 10px; margin-top: 20px; float: right;">
+
+                    <button type="button" id="save-button" class="btn btn-success btn-sm"
+                            onClick="submitForm('reply')"
+                            style="float: right; margin: 3px;">답변</button>
+                <button type="reset" class="btn btn-secondary btn-sm"
+                        style="float: right; margin: 3px;">취소</button>
+            </div>
+        </div>
+    </div><!-- End General Form Elements -->
+    <table class="table table-bordered">
+
+        <tr th:if="${nextData != null}">
+            <td class="col-sm-2 col-form-label">다음 글</td>
+            <td>
+                <a th:href="@{'detail?id=' + ${nextData.qnaId}}" th:text="${nextData.qnaSubject}"></a>
+            </td>
+        </tr>
+
+        <tr th:if="${preData != null}">
+            <td class="col-sm-2 col-form-label">이전 글</td>
+            <td>
+                <a th:href="@{'detail?id=' + ${preData.qnaId}}" th:text="${preData.qnaSubject}"></a>
+            </td>
+        </tr>
+
+    </table>
+</div>
+</th:block>

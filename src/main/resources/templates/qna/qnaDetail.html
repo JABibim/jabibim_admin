@@ -1,0 +1,74 @@
+<th:block th:fragment="qnaDetail">
+<div class="container">
+<div class="card">
+    <div class="card-body">
+        <h3 class="card-title">QnA 상세보기</h3>
+        <form>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">제목</label>
+                <div class="col-sm-10" th:text="${qnaData.qnaSubject}"></div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">작성자</label>
+                <div class="col-sm-10" th:text="${qnaData.studentName}"></div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">과목명</label>
+                <div class="col-sm-10" th:text="${qnaData.className }"></div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">과정명</label>
+                <div class="col-sm-10" th:text="${qnaData.courseName}"></div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">내용</label>
+                <div class="col-sm-10 pb-5">
+                    <div th:utext="${qnaData.qnaContent}"></div>
+                    <input type="hidden" name="qnaContent" id="qnaContents" readonly>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">조회수</label>
+                <div class="col-sm-10" th:text="${qnaData.qnaReadCount}"></div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">등록일</label>
+                <div class="col-sm-10" th:text="${#strings.substring(qnaData.createdAt, 0, 10)}"></div>
+            </div>
+            <div th:if="${not #strings.isEmpty(qnaData.qnaFileName)}">
+                <label class="col-sm-2 col-form-label">업로드 파일</label>
+                <span>
+                            <img th:src="@{/img/down.png}" width="10px">
+                            <a th:href="@{'down?filename=' + ${qnaData.qnaFileName}}" th:text="${qnaData.qnaFileName}"></a>
+                        </span>
+            </div>
+            <div th:text="${qnaData.qnaFileName}"></div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" style="vertical-align: middle;">답변 상태</label>
+                <div class="col-sm-10 d-flex align-items-center">
+                                <span class="badge bg-primary" style="font-size: 0.75rem;"
+                                      th:if="${qnaData.qnaAnswerStatus == 1}">답변 완료</span>
+                    <span class="badge bg-secondary" style="font-size: 0.75rem;"
+                          th:if="${qnaData.qnaAnswerStatus ==0}">답변 대기</span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label" style="vertical-align: middle;">노출</label>
+                <div class="col-sm-10 d-flex align-items-center">
+                                <span class="badge bg-primary" style="font-size: 0.75rem;"
+                                      th:if="${qnaData.qnaExposureStat == 1}">노출</span>
+                    <span class="badge bg-secondary" style="font-size: 0.75rem;"
+                          th:if="${qnaData.qnaExposureStat ==0}">숨김</span>
+                </div>
+            </div>
+        </form>
+        <div>
+            <button type="reset" class="btn btn-primary btn-sm"
+                    th:onClick="|location.href='/board/qna'|" style="float: right; margin: 5px;">목록</button>
+        </div>
+    </div>
+  </div>
+</div>
+</th:block>

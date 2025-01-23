@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.TermMapper">
+
+    <select id="getListCount" resultType="int">
+        SELECT count(*)
+        FROM service_term
+        WHERE academy_id =  #{academyId}
+    </select>
+
+    <select id="getTermList" resultType="term">
+        SELECT *
+        FROM (
+        SELECT
+        ROW_NUMBER() OVER (ORDER BY service_term_effective_date DESC) AS rnum,
+        service_term_id,
+        service_term_subject,
+        service_term_name,
+        service_term_content,
+        service_term_effective_date
+        FROM service_term
+        WHERE academy_id =  #{academyId}
+        ) AS ranked_terms
+        WHERE rnum &gt;= #{start} AND rnum &lt;= #{end}
+    </select>
+
+    <insert id="insertTerm">
+        INSERT INTO service_term
+        (service_term_id, created_at, service_term_subject, service_term_name,
+         service_term_content, service_term_expiration_date, service_term_effective_date, service_term_status, academy_id)
+        VALUES
+            (#{serviceTermId}, NOW(), #{serviceTermSubject}, #{serviceTermName},
+             #{serviceTermContent}, #{serviceTermExpirationDate}, #{serviceTermEffectiveDate}, #{serviceTermStatus}, #{academyId})
+    </insert>
+
+    <select id="getLatestTermPolicy" resultType="com.jabibim.admin.domain.Term">
+        SELECT *
+        FROM service_term
+        WHERE academy_id =  #{academyId}
+        ORDER BY service_term_effective_date DESC
+            LIMIT 1
+    </select>
+
+    <select id="getDetail" parameterType="int" resultType="term">
+        SELECT *
+        FROM (SELECT
+                  ROW_NUMBER() OVER (ORDER BY service_term_effective_date DESC) AS rnum,
+                      service_term_id, service_term_subject, service_term_name, service_term_content, service_term_expiration_date, service_term_effective_date
+              FROM service_term
+             ) AS subquery
+        WHERE rnum = #{rnum}
+    </select>
+
+    <select id="getMaxRnum" resultType="int">
+        SELECT MAX(rnum)
+        FROM (
+                 SELECT ROW_NUMBER() OVER (ORDER BY service_term_effective_date DESC) AS rnum
+                 FROM service_term
+                 WHERE academy_id =  #{academyId}
+             ) AS subquery
+    </select>
+
+</mapper>

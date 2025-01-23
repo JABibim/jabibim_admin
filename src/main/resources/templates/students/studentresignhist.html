@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+  <meta charset="utf-8">
+  <title>수강생 관리 > 탈퇴이력 관리</title>  <!--500 오류-->
+
+  <style>
+    .info-box {
+      border-left: 5px solid #FFA500; /* 왼쪽 테두리 오렌지색 */
+      padding: 15px; /* 내부 여백 */
+      background-color: #FFF; /* 흰색 배경 */
+      border-radius: 4px; /* 약간의 둥근 모서리 */
+      font-family: 'Arial', sans-serif; /* 기본 폰트 */
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* 약간의 그림자 */
+    }
+
+    .info-box h5 {
+      margin: 0 0 10px 0; /* 상단 여백 제거, 하단 여백 추가 */
+      font-size: 16px; /* 제목 폰트 크기 */
+      font-weight: bold; /* 굵은 글씨 */
+    }
+
+    .info-box p {
+      margin: 0;
+      line-height: 1.6; /* 텍스트 줄 간격 */
+      font-size: 14px; /* 본문 폰트 크기 */
+      color: #333; /* 텍스트 색상 */
+    }
+  </style>
+  <script>
+    function limitChanged(limit) {
+      $('#limit').val(limit);
+      $('form').submit();
+    }
+  </script>
+  <!--    <script th:src="@{/assets/js/Hist.js}"></script>-->
+</head>
+<body>
+<div layout:fragment="content">
+  <main id="main" class="main">
+    <div class="pagetitle">
+      <h1>탈퇴이력 관리</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">수강생 관리</li>
+          <li class="breadcrumb-item active">탈퇴이력 관리</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <div class="card">
+      <div class="card-body">
+        <div style="margin-top: 30px;">
+          <div class="info-box">
+            <h5>탈퇴회원 개인정보 처리에 관한 안내</h5>
+            <p>
+              중앙비빔은 회원탈퇴처리 및 탈퇴회원 개인정보 삭제기능을 제공하고 있습니다.<br>
+              각 사이트별 회원가입 약관에 회원탈퇴 후 보유기간이 지나면 개인정보를 삭제해주시기 바랍니다.<br>
+              장기간이 지나도 탈퇴회원의 개인정보를 삭제처리하지 않는 것으로 보이는 사이트의 경우 중앙비빔 측에서 삭제할 수 있습니다.
+            </p>
+          </div>
+          <div style="margin-top: 10px;">
+            <!-- 폼 섹션, 필요시 주석을 해제하고 구현 -->
+
+            <form th:action="@{list}" method="get">
+              <div class="form-row h-33 text-center d-flex border">
+                <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">날짜 검색</div>
+                <div class="input-group align-self-center">
+                  <div class="col-3 col-md-4">
+                    <label for='Date1' hidden></label><input type="date" id='Date1' name='Date1'
+                                                                   class="form-control start_date"
+                                                                   th:value="${Date1 != '' ? #dates.format(Date1, 'yyyy-MM-dd') : ''}">
+                  </div>
+                  <b class="col-auto my-1 mx-1 px-2 text-middle">-</b>
+                  <div class="col-3 col-md-4">
+                    <label for='Date2' hidden></label><input type="date" id='Date2' name='Date2'
+                                                                   class="form-control end_date"
+                                                                   th:value="${Date2 != '' ? #dates.format(Date2, 'yyyy-MM-dd') : ''}">
+                  </div>
+                  <div class="col-3 col-md-2">
+                    <label for="dateField1">
+                      <input id="dateField1" type="radio" name="dateField" value="withdrawal"
+                             th:checked="${dateField == 'withdrawal' ? true : false}"> 탈퇴 신청일
+                    </label>
+                    <label for="dateField2">
+                      <input id="dateField2" type="radio" name="dateField" value="deletionDue"
+                             th:checked="${dateField == 'deletionDue' ? true : false}"> 삭제 예정일
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row h-33 d-flex text-center border">
+                <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">검색</div>
+                <div class="input-group align-self-center">
+                  <div class="form-group col-3 col-md-auto mx-2">
+                    <select class="form-select" name="searchField" id="searchField" aria-label="Default select">
+                      <option value="nerd" th:selected="${searchField == 'nerd'}">전체</option>
+                      <option value="n" th:selected="${searchField == 'n'}">회원 이름</option>
+                      <option value="e" th:selected="${searchField == 'e'}">회원 이메일</option>
+                      <option value="r" th:selected="${searchField == 'r'}">탈퇴 날짜</option>
+                      <option value="d" th:selected="${searchField == 'd'}">삭제 날짜</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-4 flex-fill form-floating">
+                    <input type="text" id="search_word" name="searchWord" class="form-control" th:value="${searchWord}">
+                    <label for="search_word">검색어</label>
+                  </div>
+                </div>
+                <div class="form-group col-auto col-md-auto">
+                  <button type="submit" class="btn btn-success">검색하기</button>
+                  <input type="hidden" th:value="${limit}" name="limit" id="limit">
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div style="margin-top: 30px;">
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+              <span>Total: <span th:text="${listcount}"></span> 건 </span>
+              <select id="itemsPerPage" style="margin-left: 10px;"
+                      th:onchange="limitChanged(this.options[selectedIndex].text)" name="limit" aria-label="Default select">
+                <option value="5" th:selected="${limit == 5 ? true : false}">5</option>
+                <option value="10" th:selected="${limit == 10 ? true : false}">10</option>
+                <option value="15" th:selected="${limit == 15 ? true : false}">15</option>
+              </select>
+              <span style="margin-left: 5px;">건씩 보기</span>
+            </div>
+
+            <table class="table table-striped" id="History-table" th:if="${listcount > 0}">
+              <thead>
+              <tr>
+                <th>No.</th>
+                <th>회원 이름</th>
+                <th>회원 이메일</th>
+                <th>회원 가입일</th>
+                <th>탈퇴 신청일</th>
+                <th>삭제 예정일</th>
+              </tr>
+              </thead>
+              <tbody>
+              <th:block th:with="num=${listcount - (page - 1) * limit}">
+                <tr th:each="student, iterStat : ${studentlist}">
+                  <td th:text="${num - iterStat.index}">No.</td>
+                  <td th:text="${student.studentName}">회원 이름</td>
+                  <td th:text="${student.studentEmail}">회원 이메일</td>
+                  <td th:text="${#temporals.format(student.createdAt, 'yyyy-MM-dd HH:mm:ss')}">회원 가입일</td>
+                  <td th:text="${#temporals.format(student.deletedAt, 'yyyy-MM-dd HH:mm:ss')}">탈퇴 신청일</td>
+                  <td th:text="${#temporals.format(student.deletionDate, 'yyyy-MM-dd HH:mm:ss')}">삭제 예정일</td>
+                </tr>
+              </th:block>
+              </tbody>
+            </table>
+            <div th:if="${listcount == 0}">
+              <h1>조회 결과가 존재하지 않습니다.</h1>
+            </div>
+          </div>
+        </div>
+        <th:block th:if="${listcount > 0}">
+          <th:block th:replace="~{fragments/paging :: paging('list', |&limit=${limit}&Date1=${Date1 != '' ? #dates.format(Date1, 'yyyy-MM-dd') : ''}&Date2=${Date2 != '' ? #dates.format(Date2, 'yyyy-MM-dd') : ''}&dateField=${dateField}&searchField=${searchField}&searchWord=${searchWord}|)}"/>
+        </th:block>
+      </div>
+    </div>
+  </main><!-- End #main -->
+
+
+</div>
+
+</body>
+</html>

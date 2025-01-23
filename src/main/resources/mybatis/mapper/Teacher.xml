@@ -3,9 +3,187 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jabibim.admin.mybatis.mapper.TeacherMapper">
 
-    <select id="getTeachers" resultType="teacher">
+    <select id="getTeacherCount" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM TEACHER
+        <where>
+            <if test="state != 'option1'">
+                DELETED_AT IS
+                <choose>
+                    <when test="state == 'option2'">NULL</when>
+                    <otherwise>NOT NULL</otherwise>
+                </choose>
+            </if>
+            <if test='search_field == "0"'>
+                AND (TEACHER_NAME LIKE CONCAT('%', #{search_word}, '%')
+                OR TEACHER_EMAIL LIKE CONCAT('%', #{search_word}, '%'))
+            </if>
+            <if test='search_field == "1"'>
+                AND TEACHER_EMAIL LIKE CONCAT('%', #{search_word}, '%')
+            </if>
+            <if test='search_field == "2"'>
+                AND TEACHER_NAME LIKE CONCAT('%', #{search_word}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="getTeacherList" parameterType="map" resultType="Teacher">
+        SELECT *
+        FROM (
+        SELECT ROW_NUMBER() OVER (ORDER BY A.ACADEMY_NAME, T.TEACHER_NAME) AS rnum,
+        A.ACADEMY_NAME, T.TEACHER_NAME, T.TEACHER_ID, T.TEACHER_PHONE, T.TEACHER_EMAIL, T.DELETED_AT
+        FROM TEACHER T
+        JOIN ACADEMY A ON A.ACADEMY_ID = T.ACADEMY_ID
+        <if test="!isAdmin">
+            WHERE A.ACADEMY_ID = #{academyId}
+        </if>
+        <if test="state != 'option1'">
+            AND T.DELETED_AT IS ${state == 'option2' ? 'NULL' : 'NOT NULL'}
+        </if>
+        <if test='search_field == "0"'>
+            AND (TEACHER_NAME LIKE CONCAT('%', #{search_word}, '%')
+            OR TEACHER_EMAIL LIKE CONCAT('%', #{search_word}, '%'))
+        </if>
+        <if test='search_field == "1"'>
+            AND T.TEACHER_EMAIL LIKE CONCAT('%', #{search_word}, '%')
+        </if>
+        <if test='search_field == "2"'>
+            AND T.TEACHER_NAME LIKE CONCAT('%', #{search_word}, '%')
+        </if>
+        ) AS subquery
+        WHERE rnum BETWEEN #{start} AND #{end}
+    </select>
+
+    <select id="teacherInfo" resultType="TeacherProfileDTO">
+        select t.teacher_name,
+               a.academy_name,
+               t.teacher_job,
+               t.teacher_password,
+               t.teacher_email,
+               t.teacher_phone,
+               t.teacher_img_name
+        from teacher t,
+             academy a
+        where t.academy_id = a.academy_id
+          and teacher_id = #{id}
+    </select>
+
+    <update id="update">
+        update teacher
+        set teacher_img_origin = #{teacherImgOrigin},
+            teacher_phone      = #{teacherPhone},
+            teacher_email      = #{teacherEmail}
+        where teacher_id = #{teacherId}
+    </update>
+
+    <update id="updatePassword">
+        update teacher
+        set teacher_password = #{teacherPassword}
+        where teacher_id = #{teacherId}
+    </update>
+
+    <select id="getTeacherById">
         select *
         from teacher
+        where teacher_id = #{teacherId}
+    </select>
+
+    <update id="updateProfileImage">
+        update teacher
+        set teacher_img_name = #{teacherImgName}
+        where teacher_id = #{teacherId}
+    </update>
+
+    <select id="getTeacherByEmail" resultType="teacher">
+        select *
+        from teacher
+        where teacher_email = #{teacherEmail}
+    </select>
+
+    <select id="getTeacherListByAcademyId" resultType="teacher">
+        select teacher_id
+             , teacher_name
+             , teacher_phone
+             , teacher_email
+             , teacher_job
+             , teacher_img_name
+             , teacher_img_origin
+             , auth_role
+             , academy_id
+        from teacher
+        where academy_id like #{academyId}
+    </select>
+
+    <insert id="addTeacher">
+        insert into teacher
+        ( academy_id
+        , teacher_id
+        , created_at
+        , teacher_name
+        , teacher_phone
+        , teacher_email
+        , teacher_password
+        , auth_role)
+        values ( #{academyId}
+               , #{teacherId}
+               , current_timestamp
+               , #{teacherName}
+               , #{teacherPhone}
+               , #{teacherEmail}
+               , #{teacherPassword}
+               , #{authRole})
+    </insert>
+
+    <select id="getcareerList" parameterType="map" resultType="TeacherCareer">
+        SELECT career_id, career_name, C.created_at, display_status
+        FROM career C
+        JOIN teacher T ON C.teacher_id = T.teacher_id
+        <where>
+            <if test="!isAdmin">
+                AND T.academy_id = #{academyId} <!-- 관리자가 아닐 경우 학원 ID로 필터 -->
+            </if>
+        </where>
+    </select>
+
+    <update id="resetAllCareers">
+        UPDATE career
+        SET display_status = 0
+    </update>
+
+    <update id="updateCareerActive">
+        UPDATE career
+        SET display_status = CASE
+                                 WHEN career_id = #{asisCareerId} THEN 0
+                                 WHEN career_id = #{tobeCareerId} THEN 1
+            END
+        WHERE career_id IN (#{asisCareerId}, #{tobeCareerId});
+    </update>
+
+    <insert id="insertCareer">
+        INSERT INTO career
+        ( career_id
+        , created_at
+        , career_name
+        , career_file_origin_name
+        , career_file_path
+        , display_status
+        , teacher_id
+        , academy_id)
+        VALUES ( #{careerId}
+               , current_timestamp
+               , #{careerName}
+               , #{careerFileOriginName}
+               , #{careerFilePath}
+               , 0
+               , #{teacherId}
+               , #{academyId})
+    </insert>
+
+    <select id="getUploadPathByCareerId" resultType="String">
+        SELECT career_file_path
+        FROM career
+        WHERE deleted_at IS NULL
+          AND career_id = #{careerId}
     </select>
 
 </mapper>
