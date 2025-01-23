@@ -155,4 +155,40 @@ $(document).ready(function () {
             }
         }, 500);
     }
+
+    // 화면에서 호출해보기 위해 작성한 테스트 소스 START
+    $(document).on('click', '#getNewToken', () => {
+        getNewToken();
+    })
+    // 화면에서 호출해보기 위해 작성한 테스트 소스 END
+
+    // DB에 갖고 있던 RT로 새로운 AT를 발급하는 백엔드 API를 호출하는 함수 START
+    function getNewToken() {
+        $.ajax({
+            type: 'GET',
+            url: '/auth/google/refreshToken',
+            success: function (response) {
+                const {success, message, data} = response;
+                const {message: customMessage} = data;
+
+                console.log('==> success : ', success);
+                console.log('==> message : ', message);
+                console.log('==> customMessage : ', customMessage);
+
+                if (success) {
+                    alert('토큰이 갱신되었습니다.');
+                } else {
+                    alert('토큰 갱신 중 오류가 발생했습니다.');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log('토큰 갱신 중 오류 발생');
+                console.log('서버 오류 발생:', xhr.status);  // HTTP 상태 코드
+                console.log('응답 내용:', xhr.responseText);  // 서버에서 반환된 응답 내용
+                console.log('에러 메시지:', error);  // 에러 메시지
+                alert('토큰 갱신 중 오류가 발생했습니다.');
+            }
+        })
+    }
+    // DB에 갖고 있던 RT로 새로운 AT를 발급하는 백엔드 API를 호출하는 함수 END
 })

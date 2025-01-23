@@ -33,4 +33,23 @@
            AND academy_id = #{academyId}
     </select>
 
+    <select id="getRefreshToken" resultType="String">
+        SELECT refresh_token
+        FROM calendar
+        WHERE deleted_at IS NULL
+          AND teacher_id = #{teacherId}
+          AND academy_id = #{academyId}
+    </select>
+
+    <update id="updateReIssueTokenInfo">
+        UPDATE calendar
+        SET access_token  = #{newAccessToken}
+          , refresh_token = #{refreshToken}
+          , expires_in    = #{newExpiresIn}
+          , updated_at = current_timestamp
+        WHERE deleted_at IS NULL
+          AND academy_id = #{academyId}
+          AND teacher_id = #{teacherId}
+    </update>
+
 </mapper>
