@@ -35,7 +35,7 @@ public interface TeacherMapper {
 
     void resetAllCareers();
 
-    int updateCareerActive(String careerName, int displayStatus);
+    int updateCareerActive(String asisCareerId, String tobeCareerId);
 
     void insertCareer(HashMap<String, Object> map);
 

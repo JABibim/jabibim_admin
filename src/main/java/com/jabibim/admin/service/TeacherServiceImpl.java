@@ -118,10 +118,8 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public int updateCareerActive(String careerName, int displayStatus) {
-        System.out.println("updateCareerActive 호출됨: careerName=" + careerName + ", displayStatus=" + displayStatus);
-
-        return dao.updateCareerActive(careerName, displayStatus);
+    public int updateCareerActive(String asisCareerId, String tobeCareerId) {
+        return dao.updateCareerActive(asisCareerId, tobeCareerId);
     }
 
     @Override

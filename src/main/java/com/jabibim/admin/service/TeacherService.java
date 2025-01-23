@@ -32,7 +32,7 @@ public interface TeacherService {
 
     void resetAllCareers();
 
-    int updateCareerActive(String careerName, int displayStatus);
+    int updateCareerActive(String asisCareerId, String tobeCareerId);
 
     void insertCareer(String academyId, String teacherId, String careerName, MultipartFile careerImage);
 

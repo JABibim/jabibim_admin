@@ -56,9 +56,11 @@
 
                             <!-- 버튼 -->
                             <div class="button-container">
-                                <button type="button" class="btn btn-secondary" onclick="history.back()">리스트로 돌아가기
+                                <button type="reset" class="btn btn-secondary" id="cancelBtn"
+                                        th:onclick="|location.href='@{/teacher/profile}'|">
+                                    목록&nbsp;&nbsp;<i class="bi bi-backspace"></i>
                                 </button>
-                                <button type="submit" class="btn btn-primary">등록</button>
+                                <button type="submit" class="btn btn-primary">등록&nbsp;&nbsp;<i class="bi bi-pencil"></i></button>
                             </div>
                         </form>
                     </div>
