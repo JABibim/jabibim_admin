@@ -2,12 +2,14 @@ package com.jabibim.admin.service;
 
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.AclRule;
+import com.jabibim.admin.dto.auth.response.GoogleAuthTokenResponse;
 import com.jabibim.admin.dto.calendar.response.SelectTeacherCalInfoReqDto;
 import com.jabibim.admin.func.GoogleCalendar;
 import com.jabibim.admin.func.GoogleCalendarServiceFactory;
 import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.mybatis.mapper.CalendarMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 
@@ -57,5 +59,28 @@ public class CalendarServiceImpl implements CalendarService {
     @Override
     public SelectTeacherCalInfoReqDto getTeacherCalendarId(String academyId, String teacherId) {
         return dao.getTeacherCalendarId(academyId, teacherId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getRefreshToken(String academyId, String teacherId) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("academyId", academyId);
+        map.put("teacherId", teacherId);
+
+        return dao.getRefreshToken(map);
+    }
+
+    @Override
+    @Transactional
+    public int updateReIssueTokenInfo(String academyId, String teacherId, GoogleAuthTokenResponse newTokens) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("academyId", academyId);
+        map.put("teacherId", teacherId);
+        map.put("newAccessToken", newTokens.getAccessToken());
+        map.put("refreshToken", newTokens.getRefreshToken());
+        map.put("newExpiresIn", newTokens.getExpiresIn());
+
+        return dao.updateReIssueTokenInfo(map);
     }
 }

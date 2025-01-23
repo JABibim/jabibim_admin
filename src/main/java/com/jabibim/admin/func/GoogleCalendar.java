@@ -63,4 +63,28 @@ public class GoogleCalendar {
             throw new RuntimeException("인증 토큰을 얻어오는데 실패했습니다.", e);
         }
     }
+
+    public GoogleAuthTokenResponse getNewAccessToken(String refreshToken) {
+        try {
+            URI tokenUri = new URI(this.tokenUri);
+
+            String body = "client_id=" + this.clientId + "&client_secret=" + this.clientSecret + "&refresh_token=" + refreshToken + "&grant_type=refresh_token";
+
+            HttpRequest request = HttpRequest.newBuilder().uri(tokenUri).header("Content-Type", "application/x-www-form-urlencoded").POST(HttpRequest.BodyPublishers.ofString(body)).build();
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonResponse = objectMapper.readTree(response.body());
+            // System.out.println("jsonResponse = " + jsonResponse); // jsonResponse = {"access_token":"ya29.a0AXeO80Q3DLcGbdwShhJvHge1FbkbLMGACOpraTZJikh6wZX8YLFxPXbZy1yLWmNhjUSnufY0EGqaQVqQkW1ySSHc__WfLi1a3qgu9gmVk6BVNtbu8MkifSZNLyJ9FU5jBWqNeO0GAQuZkX78eBYd4rcykkuedfAJ6_7LZbhxbQaCgYKAT0SARASFQHGX2Mi_hX8FOJIIkTzF413UHw6kA0177","expires_in":3599,"scope":"https://www.googleapis.com/auth/calendar","token_type":"Bearer"}
+
+            String accessToken = jsonResponse.get("access_token").asText();
+            long expiresIn = jsonResponse.get("expires_in").asLong();
+
+            return new GoogleAuthTokenResponse(accessToken, refreshToken, expiresIn);
+        } catch (Exception e) {
+            throw new RuntimeException("재발급한 인증 토큰을 얻어오는데 실패했습니다.", e);
+        }
+    }
 }

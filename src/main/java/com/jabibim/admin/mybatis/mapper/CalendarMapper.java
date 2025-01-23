@@ -8,5 +8,10 @@ import java.util.HashMap;
 @Mapper
 public interface CalendarMapper {
     void insertNewCalendarInfo(HashMap<String, Object> map);
+
     SelectTeacherCalInfoReqDto getTeacherCalendarId(String academyId, String teacherId);
+
+    String getRefreshToken(HashMap<String, Object> map);
+
+    int updateReIssueTokenInfo(HashMap<String, Object> map);
 }
