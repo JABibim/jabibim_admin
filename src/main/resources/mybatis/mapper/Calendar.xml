@@ -26,6 +26,7 @@
     <select id="getTeacherCalendarId" resultType="selectTeacherCalInfoReqDto">
         SELECT calendar_id
              , google_calendar_id
+             , access_token
           FROM calendar
          WHERE deleted_at IS NULL
            AND teacher_id = #{teacherId}

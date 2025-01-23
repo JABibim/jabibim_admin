@@ -6,4 +6,5 @@ import lombok.Data;
 public class SelectTeacherCalInfoReqDto {
     private String calendarId;
     private String googleCalendarId;
+    private String accessToken;
 }
