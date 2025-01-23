@@ -1,11 +1,13 @@
 package com.jabibim.admin.front.security.custom;
 
-import com.jabibim.admin.dto.StudentUserVO;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.crypto.SecretKey;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,15 +15,18 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.time.Instant;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.jabibim.admin.dto.StudentUserVO;
+import com.jabibim.admin.front.dto.LoginRequest;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @Component
 public class JwtTokenProvider {
@@ -37,11 +42,14 @@ public class JwtTokenProvider {
   // 7일 (604,800,000)
   long refreshValidityInMilliseconds;
 
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
+  private final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 
   private JwtUserDetailService jwtUserDetailService;
 
-  public JwtTokenProvider(JwtUserDetailService jwtUserDetailService , @Value("${jwt.secret.access}") String accessSecretKey, @Value("${jwt.secret.refresh}") String refreshSecretKey ,@Value("${jwt.expiration.access}") long AccessValidityInMilliseconds, @Value("${jwt.expiration.refresh}") long RefreshValidityInMilliseconds) {
+  public JwtTokenProvider(JwtUserDetailService jwtUserDetailService,
+      @Value("${jwt.secret.access}") String accessSecretKey, @Value("${jwt.secret.refresh}") String refreshSecretKey,
+      @Value("${jwt.expiration.access}") long AccessValidityInMilliseconds,
+      @Value("${jwt.expiration.refresh}") long RefreshValidityInMilliseconds) {
     this.jwtUserDetailService = jwtUserDetailService;
     this.accessSecretKey = accessSecretKey;
     this.refreshSecretKey = refreshSecretKey;
@@ -49,46 +57,34 @@ public class JwtTokenProvider {
     this.refreshValidityInMilliseconds = RefreshValidityInMilliseconds;
   }
 
-
   // 액세스 토큰 생성
   public String createToken(StudentUserVO user, List<String> roles) {
-
-    // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
-    return Jwts.builder()
+    logger.debug("Creating access token for user: {}", user.getStudentEmail());
+    String token = Jwts.builder()
         .subject(user.getStudentEmail())
-        .issuedAt(Date.from(Instant.now())) // 현재 시간
-        .expiration(Date.from(Instant.now().plusMillis(accessValidityInMilliseconds))) // 현재 시간 + 5분
-        // 추가 정보
-        .claim("roles", roles) // 권한
+        .issuedAt(Date.from(Instant.now()))
+        .expiration(Date.from(Instant.now().plusMillis(accessValidityInMilliseconds)))
+        .claim("roles", roles)
         .claim("studentId", user.getStudentId())
         .claim("academyId", user.getAcademyId())
-        // .claim("metadata", Map.of( // 추가 정보로 map 형태를 담는데 최대 10개.
-        // // 필요없는 정보는 지우자. 많으면 서버에 부담이다.
-        // "studentId", user.getStudentId(),
-        // "createdAt", sdf.format(user.getCreatedAt()),
-        // "studentName", user.getStudentName(),
-        // "studentImgName", user.getStudentImgName(),
-        // "studentImgOrigin", user.getStudentImgOrigin(),
-        // "verification", user.getVerification(),
-        // "adsAgreed", user.getAdsAgreed(),
-        // "academyId", user.getAcademyId(),
-        // "grade", user.getGradeId(),
-        // "studentAddress", user.getStudentAddress().toString()
-        // ))
         .signWith(getAccessSigningKey())
         .compact();
+    logger.debug("Access token created successfully");
+    return token;
   }
 
   // 리프레쉬 토큰 생성
   public String createRefreshToken(StudentUserVO user) {
-    return Jwts.builder()
+    logger.debug("Creating refresh token for user: {}", user.getStudentEmail());
+    String token = Jwts.builder()
         .subject(user.getStudentEmail())
-        .issuedAt(Date.from(Instant.now())) // 현재 시간
-        .expiration(Date.from(Instant.now().plusMillis(refreshValidityInMilliseconds))) // 현재 시간 + 1시간
+        .issuedAt(Date.from(Instant.now()))
+        .expiration(Date.from(Instant.now().plusMillis(refreshValidityInMilliseconds)))
         .claim("academyId", user.getAcademyId())
         .signWith(getRefreshSigningKey())
         .compact();
+    logger.debug("Refresh token created successfully");
+    return token;
   }
 
   // 액세스 토큰 서명 키 생성
@@ -103,17 +99,44 @@ public class JwtTokenProvider {
     return Keys.hmacShaKeyFor(keyBytes);
   }
 
-  // 액세스 토큰 검증
-  public boolean validateToken(String token) {
+  // 토큰 검증 (액세스 토큰 + 리프레시 토큰 처리)
+  public TokenValidationResult validateToken(String token) {
     try {
+      // 액세스 토큰 검증 시도
       Jwts.parser()
           .verifyWith(getAccessSigningKey())
           .build()
           .parseSignedClaims(token);
-      return true;
+      logger.debug("Access token validated successfully");
+      return new TokenValidationResult(true, TokenType.ACCESS);
     } catch (JwtException | IllegalArgumentException e) {
-      return false;
+      logger.debug("Access token validation failed, trying refresh token");
+
+      try {
+        // 리프레시 토큰 검증 시도
+        Jwts.parser()
+            .verifyWith(getRefreshSigningKey())
+            .build()
+            .parseSignedClaims(token);
+        logger.debug("Refresh token validated successfully");
+        return new TokenValidationResult(true, TokenType.REFRESH);
+      } catch (JwtException | IllegalArgumentException refreshEx) {
+        logger.error("Both token validations failed: {}", refreshEx.getMessage());
+        return new TokenValidationResult(false, null);
+      }
     }
+  }
+
+  // 토큰 검증 결과를 담는 클래스
+  @Getter
+  @AllArgsConstructor
+  public static class TokenValidationResult {
+    private final boolean isValid;
+    private final TokenType tokenType;
+  }
+
+  public enum TokenType {
+    ACCESS, REFRESH
   }
 
   // 액세스 토큰에서 정보 얻기 위한 객체 반환
@@ -134,26 +157,34 @@ public class JwtTokenProvider {
         .getPayload();
   }
 
-  // 액세스 토큰 기반으로 시큐리티 객체 생성해서 반환
-  // 매 요청마다 검증하여 SecurityContextHolder 에 넘긴다.
-  // 요청 처리 후 컨텍스트는 자동으로 정리된다.
   public Authentication getAuthentication(String token) {
-    Claims claims = getClaims(token);
+    try {
+      Claims claims = getClaims(token);
+      logger.debug("Extracting authentication from token for user: {}", claims.getSubject());
 
-    // 권한 정보(roles) 추출하여 User 객체에 주입
-    @SuppressWarnings("unchecked")
-    Collection<? extends GrantedAuthority> authorities = ((List<String>) claims.get("roles")).stream()
-        .map(SimpleGrantedAuthority::new)
-        .collect(Collectors.toList());
+      String email = claims.getSubject();
+      String name = claims.get("name", String.class);
+      String id = claims.get("id", String.class);
 
-    // UserDetails 객체 만들어서 SecurityContextHolder 에 넘긴다.
-    // studentEmail, null, 권한(roles), StudentUserVO 담아서
-    // 필요한 정보를 뽑아 사용 가능하다. => AccoutDto 와 사용법 같음
-    // JwtCustomUserDetails userDetails = (JwtCustomUserDetails) auth.getPrincipal();
-    // StudentUserVO user = userDetails.getUser();
-    UserDetails principal = jwtUserDetailService.loadUserByUsername(claims.getSubject());
+      @SuppressWarnings("unchecked")
+      Collection<? extends GrantedAuthority> authorities = ((List<String>) claims.get("roles"))
+          .stream()
+          .map(SimpleGrantedAuthority::new)
+          .collect(Collectors.toList());
 
-    return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+      JwtUserDetails userDetails = JwtUserDetails.builder()
+          .id(id)
+          .email(email)
+          .name(name)
+          .authorities(authorities)
+          .build();
+
+      logger.debug("Authentication created successfully for user: {}", email);
+      return new UsernamePasswordAuthenticationToken(userDetails, token, authorities);
+    } catch (Exception e) {
+      logger.error("Failed to create authentication: {}", e.getMessage());
+      throw e;
+    }
   }
 
   // 리프레시 토큰 검증
@@ -163,32 +194,52 @@ public class JwtTokenProvider {
           .verifyWith(getRefreshSigningKey())
           .build()
           .parseSignedClaims(token);
+      logger.debug("Refresh token validated successfully");
       return true;
     } catch (JwtException | IllegalArgumentException e) {
+      logger.error("Refresh token validation failed: {}", e.getMessage());
       return false;
     }
   }
 
   // 리프레시 토큰으로 액세스 토큰 재발급
   public String recreateAccessToken(String refreshToken) {
-    Claims refreshClaims = getRefreshClaims(refreshToken);
-    String username = refreshClaims.getSubject();
-    String academyId = (String) refreshClaims.get("academyId");
+    try {
+      logger.debug("Attempting to recreate access token from refresh token");
+      Claims refreshClaims = getRefreshClaims(refreshToken);
+      String username = refreshClaims.getSubject();
+      String academyId = (String) refreshClaims.get("academyId");
 
-    // 리프레시 토큰에서 사용자 정보 추출
-    // DB에서 학생 정보 검색하여 액세스 토큰 생성에 사용
-    JwtCustomUserDetails details = (JwtCustomUserDetails) jwtUserDetailService.loadUserByUsername(username + "," + academyId);
+      JwtCustomUserDetails details = (JwtCustomUserDetails) jwtUserDetailService
+          .loadUserByLoginRequest(new LoginRequest(username, academyId));
 
-    // 권한 정보 추출
-    @SuppressWarnings("unchecked")
-    List<String> roles = details.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+      List<String> roles = details.getAuthorities().stream()
+          .map(GrantedAuthority::getAuthority)
+          .collect(Collectors.toList());
 
-    StudentUserVO user = details.getUser();
+      StudentUserVO user = details.getUser();
 
-    // 액세스 토큰 생성 및 반환
-    return createToken(user, roles);
+      logger.debug("Access token recreated successfully for user: {}", username);
+      return createToken(user, roles);
+    } catch (Exception e) {
+      logger.error("Failed to recreate access token: {}", e.getMessage());
+      throw e;
+    }
   }
 
+  // 액세스 토큰 재발급
+  public String reissueAccessToken(String refreshToken) {
+    Claims claims = getClaims(refreshToken);
+    String studentId = claims.get("studentId", String.class);
+    String academyId = claims.get("academyId", String.class);
 
+    JwtCustomUserDetails user = (JwtCustomUserDetails) jwtUserDetailService.loadUserByLoginRequest(new LoginRequest(studentId, academyId));
+
+    List<String> roles = user.getAuthorities().stream()
+        .map(GrantedAuthority::getAuthority)
+        .collect(Collectors.toList());
+
+    return createToken(user.getUser(), roles);
+  }
 
 }

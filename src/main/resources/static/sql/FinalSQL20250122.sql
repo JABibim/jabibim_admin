@@ -298,53 +298,67 @@ CREATE TABLE enrollment
 );
 
 
+
+
+# 장바구니 테이블
+# 과정 과 학생을 다대다 로 이어서 장바구니를 보여준다.
+CREATE TABLE cart (
+                        cart_id varchar(36) ,
+                        created_at datetime ,
+                        updated_at datetime ,
+                        deleted_at datetime ,
+                        student_id varchar(36) ,
+                        course_id varchar(36) ,
+                        academy_id varchar(36)
+) ;
+
+
 # 학생 주문 목록 테이블 생성
 # 다른 사례 같은거 참고하면서
 #	=> 하나의 주문에 하나의 과정만 가능한지 아니면 여러 개의 과정이 하나의 주문에 담길 수 있는지?
 # ORDER 가 예약어라 사용할 수 없으므로 적절한 단어 있으면 수정
 # 주문 정보에서 주소, 우편번호 전화번호 등 개인정보 관리 어떻게 할지
 # 쿠폰이나 프로모션 할인 정보는 주문 테이블에 담는게 맞나?
-CREATE TABLE orders
-(
-    orders_id   varchar(36),
-    created_at  datetime,
-    updated_at  datetime,
-    deleted_at  datetime,
-    student_id  varchar(36), # 주문자
-    course_id   varchar(36), # 주문 상품
-    order_price int,         # 주문 금액
-    payment_id  varchar(36), # 결제 조회 아이디 => 결제 상태, 실 결제 금액, 결제 방법, 주문 취소 여부 등
-    academy_id  varchar(36)  # 학원
+-- jab.orders definition
+
+# 장바구니에서 선택된 상품만 주문 테이블로 등록
+# 한 행당 상품은 하나
+# 주문번호로 묶는다.
+CREATE TABLE orders (
+                          orders_id varchar(36) ,
+                          created_at datetime ,
+                          updated_at datetime ,
+                          deleted_at datetime ,
+                          order_number varchar(100) ,
+                          total_price int ,                    # 주문 금액
+                          order_address varchar(300) ,
+                          order_detail_addr varchar(300) ,
+                          order_postcode varchar(20) ,
+                          order_status tinyint ,
+                          student_id varchar(36) ,              # 주문자
+                          course_id varchar(36) ,               # 주문 상품
+                          academy_id varchar(36)                # 학원
 );
 
-# 결제 테이블
-# 포트원 API 에서 넘어오는 값을 테이블로 저장해야할지?
-CREATE TABLE payment
-(
-    payment_id     varchar(36),
-    created_at     datetime,
-    updated_at     datetime,
-    deleted_at     datetime,
-    orders_id      varchar(36),
-    payment_amount int,
-    student_id     varchar(36),
-    payment_status tinyint(1) # 0 -> 대기, 1 -> 성공, 2 -> 결제 취소 (환불)
-);
+
 
 -- jab.payment definition
 
-CREATE TABLE payment
-(
-    payment_id     varchar(36),
-    created_at     datetime,
-    updated_at     datetime,
-    deleted_at     datetime,
-    orders_id      varchar(36), # 상품 이름, 가격, 등등에 대한 정보
-    payment_amount int,         # 필요 실결제 총 금액
-    payment_method varchar(30), # 결제자 정보
-    payment_status varchar(30), #'INIT' / 'PENDING' / 'PAID' / 'FAILED' / 'CANCELED'
-    student_id     varchar(36)
-);
+# 결제 이력 테이블
+# 주문의 각 상품 별로 삽입
+CREATE TABLE payment (
+                           payment_id varchar(36) ,
+                           created_at datetime ,
+                           updated_at datetime ,
+                           deleted_at datetime ,
+                           payment_amount int ,                   # 실결제 금액
+                           payment_method varchar(100) ,
+                           payment_status varchar(30) ,          #'INIT' / 'PENDING' / 'PAID' / 'FAILED' / 'CANCELED'
+                           student_id varchar(36) ,              # 결제자 정보
+                           orders_id varchar(36) ,               # 상품 이름, 가격, 등등에 대한 정보
+                           course_id varchar(100) ,
+                           academy_id varchar(100)
+) ;
 
 
 # 학습 이력 생성 => 학습 시간 기록 어떻게 할지 모르겠다

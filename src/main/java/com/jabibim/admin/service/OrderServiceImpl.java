@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Optional;
 
@@ -17,9 +16,8 @@ public class OrderServiceImpl implements OrderService {
   private final OrderMapper dao;
   private final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
-
   @Override
   public Optional<OrderApiVO> getOrderByPaymentId(String paymentId) {
-    return  dao.getOrderByPaymentId(paymentId);
+    return dao.getOrderByPaymentId(paymentId);
   }
 }
