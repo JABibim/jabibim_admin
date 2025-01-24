@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function openPopup() {
+        console.log('===> 🚀 팝업 열림!!');
         popup.innerHTML = `
             <form id="eventForm">
                 <label>제목:</label><input type="text" id="summary" required><br><br>
@@ -83,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
         popup.showModal();
 
+        console.log('===> 🚀 팝업 내의 함수 호출 열림!!');
         document.getElementById('submitBtn').onclick = submitEvent;
         document.getElementById('cancelBtn').onclick = () => popup.close();
     }
@@ -96,9 +98,6 @@ document.addEventListener('DOMContentLoaded', function () {
             timeZone: 'UTC'
         };
 
-        let token = $("meta[name='_csrf']").attr("content");
-        let header = $("meta[name='_csrf_header']").attr("content");
-
         $.ajax({
             type: 'POST',
             url: '/calendar/insert',  // 요청을 보낼 URL
@@ -109,27 +108,32 @@ document.addEventListener('DOMContentLoaded', function () {
             dataType: 'json',  // 응답 데이터 타입
             contentType: 'application/json',  // 전송할 데이터의 타입 (JSON 형식)
             success: function (response) {
-                const {success, message, data} = response;
-                const {message: customMessage} = data;
+                console.log('==> response : ', response);
 
-                console.log('==> success : ', success);
-                console.log('==> message : ', message);
-                console.log('==> customMessage : ', customMessage);
+                // if (success) {
+                //     alert('일정이 추가되었습니다..');
+                // } else {
+                //     alert('일정 추가 실패');
+                // }
 
-                if (success) {
-                    alert('일정이 추가되었습니다..');
-                } else {
-                    alert('일정 추가 실패');
-                }
+                popup.close();
             },
-            error: function (xhr, status, error) {
-                console.log('일정 추가 중 오류 발생');
-                console.log('서버 오류 발생:', xhr.status);  // HTTP 상태 코드
-                console.log('응답 내용:', xhr.responseText);  // 서버에서 반환된 응답 내용
-                console.log('에러 메시지:', error);  // 에러 메시지
-                alert('일정 추가 중 오류가 발생했습니다.');
-                popup.close();  // 팝업 닫기
+            error: function (err) {
+                console.log('error : ', err);
             }
+            // error: function (xhr, status, error) {
+            //     console.log('일정 추가 중 오류 발생');
+            //     console.log('서버 오류 발생:', xhr.status);  // HTTP 상태 코드
+            //     console.log('응답 내용:', xhr.responseText);  // 서버에서 반환된 응답 내용
+            //     console.log('에러 메시지:', error);  // 에러 메시지
+            //     alert('일정 추가 중 오류가 발생했습니다.');
+            //
+            //     if ( xhr.status === 401 ) {
+            //         window.location.href = '/dashboard';
+            //     }
+            //
+            //     popup.close();  // 팝업 닫기
+            // }
         });
     }
 })
@@ -194,5 +198,6 @@ $(document).ready(function () {
             }
         })
     }
+
     // DB에 갖고 있던 RT로 새로운 AT를 발급하는 백엔드 API를 호출하는 함수 END
 })
