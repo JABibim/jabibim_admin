@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpSession;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -22,9 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 
-import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.Map;
 
 
 @Controller
@@ -54,7 +53,7 @@ public class CalendarController {
 
     @PostMapping(value = "/insert")
     @ResponseBody
-    public ResponseEntity<ApiResponse<HashMap<String, Object>>> insertCalendar(@RequestBody String item, HttpServletRequest request, HttpSession session, PrintWriter printWriter) {
+    public ResponseEntity<ApiResponse<HashMap<String, Object>>> insertCalendar(@RequestBody String item, HttpServletRequest request, HttpSession session) {
 
         // 세션에서 academyId와 teacherId를 가져오기
         String academyId = (String) session.getAttribute("aid");
@@ -62,7 +61,7 @@ public class CalendarController {
 
          SelectTeacherCalInfoReqDto calendarInfo = calendarService.getTeacherCalendarId(academyId, teacherId);
          String accessToken = calendarInfo.getAccessToken();
-        System.out.println("========insert method 이동 =============");
+         System.out.println("========insert method 이동 =============");
 
         try {
             // JSON 파싱
@@ -98,8 +97,6 @@ public class CalendarController {
             Event confirmed = calendarService.events().insert(calendarInfo.getGoogleCalendarId(), event).execute();
             System.out.println("Event created: " + confirmed);
 
-
-//
 //            // DB에 저장할 Calendar 객체 생성
 //            Calendar calendar = new Calendar();
 //            calendar.setCalendarEventId(UUIDGenerator.getUUID()); // UUID 생성
@@ -113,6 +110,8 @@ public class CalendarController {
             HashMap<String, Object> result = new HashMap<>();
             result.put("message", "success");
             ApiResponse<HashMap<String, Object>> body = new ApiResponse<>(true, result, "새로운 일정이 추가되었습니다.");
+            System.out.println("response : " + ResponseEntity.ok(body));
+
             return ResponseEntity.ok(body);
         } catch (Exception e) {
             // 실패 응답 반환
