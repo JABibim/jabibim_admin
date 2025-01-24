@@ -4,6 +4,7 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
+import com.jabibim.admin.dto.ApiResponse;
 import com.jabibim.admin.dto.calendar.response.SelectTeacherCalInfoReqDto;
 import com.jabibim.admin.func.GoogleCalendarServiceFactory;
 import com.jabibim.admin.func.UUIDGenerator;
@@ -51,9 +52,9 @@ public class CalendarController {
         return modelAndView;
     }
 
-    @PostMapping(value = "/insert", produces = "application/json")
+    @PostMapping(value = "/insert")
     @ResponseBody
-    public ResponseEntity<Map<String, String>> insertCalendar(@RequestBody String item, HttpServletRequest request, HttpSession session, PrintWriter printWriter) {
+    public ResponseEntity<ApiResponse<HashMap<String, Object>>> insertCalendar(@RequestBody String item, HttpServletRequest request, HttpSession session, PrintWriter printWriter) {
 
         // 세션에서 academyId와 teacherId를 가져오기
         String academyId = (String) session.getAttribute("aid");
@@ -109,16 +110,16 @@ public class CalendarController {
 //            // DB에 캘린더 저장
 //            calendarService.insertCalendar(calendar);
 
-            Map<String, String> response = new HashMap<>();
-            response.put("status", "success");
-            response.put("message", "Event added successfully.");
-            return ResponseEntity.ok(response);
+            HashMap<String, Object> result = new HashMap<>();
+            result.put("message", "success");
+            ApiResponse<HashMap<String, Object>> body = new ApiResponse<>(true, result, "새로운 일정이 추가되었습니다.");
+            return ResponseEntity.ok(body);
         } catch (Exception e) {
-            e.printStackTrace();
             // 실패 응답 반환
-            Map<String, String> response = new HashMap<>();
-            response.put("status", "error");
-            response.put("message", "Error occurred while adding event.");
+            System.out.println("================" + e.getMessage());
+            System.out.println("================" + e);
+
+            ApiResponse<HashMap<String, Object>> response = new ApiResponse<>(false, null, "일정 추가 실패했습니다: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

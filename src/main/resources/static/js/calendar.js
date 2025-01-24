@@ -109,13 +109,17 @@ document.addEventListener('DOMContentLoaded', function () {
             dataType: 'json',  // 응답 데이터 타입
             contentType: 'application/json',  // 전송할 데이터의 타입 (JSON 형식)
             success: function (response) {
-                console.log("서버 응답:", response);  // 서버 응답 확인
-                if (response.status === "success") {
-                    alert('일정이 추가되었습니다.');
-                    popup.close();  // 팝업 닫기
+                const {success, message, data} = response;
+                const {message: customMessage} = data;
+
+                console.log('==> success : ', success);
+                console.log('==> message : ', message);
+                console.log('==> customMessage : ', customMessage);
+
+                if (success) {
+                    alert('일정이 추가되었습니다..');
                 } else {
-                    alert('일정 추가 중 오류가 발생했습니다.');
-                    popup.close();  // 팝업 닫기
+                    alert('일정 추가 실패');
                 }
             },
             error: function (xhr, status, error) {
