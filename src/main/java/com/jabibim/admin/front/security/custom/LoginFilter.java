@@ -94,16 +94,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
       String accessToken = jwtTokenProvider.createToken(user, roles);
       String refreshToken = jwtTokenProvider.createRefreshToken(user);
 
+      Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+      refreshTokenCookie.setPath("/");
+      refreshTokenCookie.setHttpOnly(true);
+      // refreshTokenCookie.setSecure(true);
+      refreshTokenCookie.setDomain("localhost");
+      refreshTokenCookie.setMaxAge(60 * 60 * 24 * 30); // 30일
+      response.addCookie(refreshTokenCookie);
+
       logger.debug("Tokens generated successfully");
-
-      // Set refresh token in cookie
-      Cookie cookie = new Cookie("refresh", refreshToken);
-      cookie.setHttpOnly(true);
-      cookie.setMaxAge(60 * 60 * 24 * 7);
-      cookie.setPath("/");
-      response.addCookie(cookie);
-
-      logger.debug("Refresh token set in cookie");
 
       // Set response
       response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -114,6 +113,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
       responseBody.put("accessToken", "Bearer " + accessToken);
       responseBody.put("userId", user.getStudentId());
       responseBody.put("email", user.getStudentEmail());
+      responseBody.put("academyId", user.getAcademyId());
+      responseBody.put("roles", roles);
+      responseBody.put("refreshToken", refreshToken);
 
       new ObjectMapper().writeValue(response.getWriter(), responseBody);
       logger.info("Authentication response sent successfully");

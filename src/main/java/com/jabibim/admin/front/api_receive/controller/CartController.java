@@ -8,13 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import com.jabibim.admin.dto.CartItemVO;
-import com.jabibim.admin.front.security.custom.JwtTokenProvider;
 import com.jabibim.admin.service.CartService;
+import com.jabibim.admin.dto.StudentUserVO;
+import com.jabibim.admin.front.security.custom.JwtCustomUserDetails;
 
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
@@ -23,38 +25,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CartController {
 
-  private final JwtTokenProvider tokenProvider;
   private final CartService cartService;
   private final Logger logger = LoggerFactory.getLogger(CartController.class);
 
-  @GetMapping("/items")
-  public ResponseEntity<Map<String, Object>> getCartList(HttpServletRequest request) {
-    logger.info("=== 장바구니 목록 조회 요청 시작 ===");
-
+  @GetMapping("/list")
+  public ResponseEntity<?> getCartList(HttpServletRequest request) {
     try {
-      // 토큰 검증
-      String bearerToken = request.getHeader("Authorization");
-      logger.debug("Authorization header present: {}", bearerToken != null);
+      logger.info("=== 장바구니 목록 조회 요청 시작 ===");
 
-      if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
-        logger.error("Invalid token format or missing token");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-            .body(Map.of(
-                "error", "유효하지 않은 인증 토큰입니다."));
+      // SecurityContext에서 인증 정보 가져오기
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      if (authentication == null || !authentication.isAuthenticated()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증되지 않은 사용자입니다.");
       }
 
-      // 토큰에서 정보 추출
-      String token = bearerToken.substring(7);
-      Claims claims = tokenProvider.getClaims(token);
-      String studentId = claims.get("studentId", String.class);
-      String academyId = claims.get("academyId", String.class);
-
-      if (studentId != null && academyId != null) {
-        logger.info("Token claims extracted successfully studentId: {}, academyId: {}", studentId, academyId);
-      }
+      JwtCustomUserDetails userDetails = (JwtCustomUserDetails) authentication.getPrincipal();
+      StudentUserVO student = userDetails.getUser();
 
       // 장바구니 조회
-      List<CartItemVO> cartItems = cartService.getCartList(studentId, academyId);
+      List<CartItemVO> cartItems = cartService.getCartList(student.getStudentId(), student.getAcademyId());
 
       if (cartItems != null) {
         logger.debug("Retrieved cart items count: {}", cartItems.size());
@@ -65,8 +54,6 @@ public class CartController {
           .sum();
       int totalCount = cartItems.size();
 
-      
-
       // Axios 형식에 맞게 응답 데이터 구성
       Map<String, Object> response = new HashMap<>();
       response.put("items", cartItems);
@@ -76,11 +63,9 @@ public class CartController {
 
       logger.info("=== 장바구니 목록 조회 요청 완료 ===");
       return ResponseEntity.ok(response);
-
     } catch (Exception e) {
       logger.error("장바구니 목록 조회 실패", e);
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("error", e.getMessage()));
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("장바구니 목록 조회 실패");
     }
   }
 
@@ -91,17 +76,17 @@ public class CartController {
     logger.info("=== 장바구니 상품 추가 요청 시작 ===");
 
     try {
-      String bearerToken = request.getHeader("Authorization");
-      if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
+      // SecurityContext에서 인증 정보 가져오기
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      if (authentication == null || !authentication.isAuthenticated()) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(Map.of(
-                "error", "유효하지 않은 인증 토큰입니다."));
+                "error", "인증되지 않은 사용자입니다."));
       }
 
-      String token = bearerToken.substring(7);
-      Claims claims = tokenProvider.getClaims(token);
-      String studentId = claims.get("studentId", String.class);
-      cartItem.setStudentId(studentId);
+      JwtCustomUserDetails userDetails = (JwtCustomUserDetails) authentication.getPrincipal();
+      StudentUserVO student = userDetails.getUser();
+      cartItem.setStudentId(student.getStudentId());
 
       // 장바구니 추가 로직
       cartService.addCartItem(cartItem);

@@ -13,7 +13,6 @@ public class JwtUserDetails implements UserDetails {
 
   private final String id;
   private final String email;
-  private final String name;
   private final Collection<? extends GrantedAuthority> authorities;
 
   @Override
@@ -51,4 +50,3 @@ public class JwtUserDetails implements UserDetails {
     return true;
   }
 }
-
