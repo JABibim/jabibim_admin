@@ -1,11 +1,8 @@
 package com.jabibim.admin.front.security;
 
-import com.jabibim.admin.front.properties.AcademyProperties;
-import com.jabibim.admin.front.security.custom.JwtAuthenticationFilter;
-import com.jabibim.admin.front.security.custom.JwtAuthenticationProvider;
-import com.jabibim.admin.front.security.custom.JwtTokenProvider;
-import com.jabibim.admin.front.security.custom.LoginFilter;
-import lombok.RequiredArgsConstructor;
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +19,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.*;
+import com.jabibim.admin.front.security.custom.JwtAuthenticationFilter;
+import com.jabibim.admin.front.security.custom.JwtAuthenticationProvider;
+import com.jabibim.admin.front.security.custom.JwtTokenProvider;
+import com.jabibim.admin.front.security.custom.LoginFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @Order(1)
@@ -54,44 +56,33 @@ public class JwtSecurityConfig {
 
                 http
                                 .securityMatcher("/api/**") // "/api/**" 경로만 처리
-
-                                .formLogin((AbstractHttpConfigurer::disable)) // formLogin 필터 무효화
-
-                                .httpBasic((AbstractHttpConfigurer::disable)) // http 기본 인증 방식인 username, password 무효화
-
-                                .csrf(AbstractHttpConfigurer::disable) // csrf 무효화
-
+                                .formLogin((AbstractHttpConfigurer::disable))
+                                .httpBasic((AbstractHttpConfigurer::disable))
+                                .csrf(AbstractHttpConfigurer::disable)
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-                                .authenticationProvider(jwtAuthenticationProvider) // 커스텀 인증 클래스 설정
-
-                                // 회원 가입, 로그인 요청 url, 외부 api 엔드포인트에 대해 보안 필터 해제
+                                .authenticationProvider(jwtAuthenticationProvider)
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/login", "/api/auth/join", "/api/public/**")
                                                 .permitAll()
-                                                // 이후 더 추가 가능하다.
                                                 .anyRequest().authenticated())
-                                // 기본 UsernamePasswordFilter 자리에 커스텀 UsernamePassword 필터 대신 주입
                                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
-                                // 로그인 처리를 할 UsernamePassword 필터 뒤에 jwt 검사를 할 필터 추가
                                 .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider),
                                                 UsernamePasswordAuthenticationFilter.class)
-
-                                // 세션 로그인 방식을 사용하지 않으므로 요청 처리가 끝날 때 마다 session 삭제하는 STATELESS 설정
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
                 return http.build();
         }
 
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // React 개발 서버
-                configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
-                configuration.setExposedHeaders(Arrays.asList("Authorization")); // 프론트에서 헤더 접근 허용
-                configuration.setAllowCredentials(true); // credentials 허용
-                configuration.setMaxAge(3600L); // preflight 캐시
+                configuration.addAllowedOrigin("http://localhost:3000"); // 프론트엔드 도메인
+                configuration.addAllowedMethod("*");
+                configuration.addAllowedHeader("*");
+                configuration.setAllowCredentials(true); // 인증 정보 허용
+                configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie")); // 프론트엔드에서 접근 가능한 헤더
+                configuration.setMaxAge(3600L);
 
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                 source.registerCorsConfiguration("/**", configuration);
