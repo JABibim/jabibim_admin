@@ -191,13 +191,18 @@
 
 
 
-        <!-- 포트원 웹훅 검증을 위한 sdk -->
-        <!-- 사용법을 몰라서 일단 보류 -->
-<!--        <dependency>-->
-<!--            <groupId>io.portone</groupId>-->
-<!--            <artifactId>server-sdk</artifactId>-->
-<!--            <version>0.11.0</version>-->
-<!--        </dependency>-->
+        <!-- 웹훅 재시도 관련 라이브러리 -->
+
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+        <artifactId>spring-retry</artifactId>
+            <version>2.0.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.9.20.1</version>
+        </dependency>
 
     </dependencies>
 
