@@ -31,62 +31,63 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtSecurityConfig {
 
-        private final Logger logger = LoggerFactory.getLogger(JwtSecurityConfig.class);
-        // jwt 토큰 발급 클래스
-        private final JwtTokenProvider jwtTokenProvider;
-        // AuthenticationManager가 사용할 커스텀 Provider 클래스
-        private final JwtAuthenticationProvider jwtAuthenticationProvider;
+  private final Logger logger = LoggerFactory.getLogger(JwtSecurityConfig.class);
+  // jwt 토큰 발급 클래스
+  private final JwtTokenProvider jwtTokenProvider;
+  // AuthenticationManager가 사용할 커스텀 Provider 클래스
+  private final JwtAuthenticationProvider jwtAuthenticationProvider;
 
-        @Bean
-        public AuthenticationManager authenticationManager() {
-                // 로그인 처리 과정에서
-                // 세션 로그인에 사용되는 default AuthenticationManager 를 호출하여
-                // teacher 테이블을 조회하여 인증하는 세션 로그인용 Provider 객체가 사용되므로
-                // 수동으로 AuthenticationManager 객체를 생성하여
-                // student 테이블을 조회하여 인증하는 학생 로그인용 Provider 객체를 주입한다.
-                return new ProviderManager(Collections.singletonList(jwtAuthenticationProvider));
-        }
+  @Bean
+  public AuthenticationManager authenticationManager() {
+    // 로그인 처리 과정에서
+    // 세션 로그인에 사용되는 default AuthenticationManager 를 호출하여
+    // teacher 테이블을 조회하여 인증하는 세션 로그인용 Provider 객체가 사용되므로
+    // 수동으로 AuthenticationManager 객체를 생성하여
+    // student 테이블을 조회하여 인증하는 학생 로그인용 Provider 객체를 주입한다.
+    return new ProviderManager(Collections.singletonList(jwtAuthenticationProvider));
+  }
 
-        @Bean
-        public SecurityFilterChain jwtSecurityFilterChain(HttpSecurity http) throws Exception {
-                logger.info("jwtSecurityFilterChain =====>");
+  @Bean
+  public SecurityFilterChain jwtSecurityFilterChain(HttpSecurity http) throws Exception {
+    logger.info("jwtSecurityFilterChain =====>");
 
-                LoginFilter loginFilter = new LoginFilter(authenticationManager(), jwtTokenProvider);
-                loginFilter.setFilterProcessesUrl("/api/auth/login");
+    LoginFilter loginFilter = new LoginFilter(authenticationManager(), jwtTokenProvider);
+    loginFilter.setFilterProcessesUrl("/api/auth/login");
 
-                http
-                                .securityMatcher("/api/**") // "/api/**" 경로만 처리
-                                .formLogin((AbstractHttpConfigurer::disable))
-                                .httpBasic((AbstractHttpConfigurer::disable))
-                                .csrf(AbstractHttpConfigurer::disable)
-                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                                .authenticationProvider(jwtAuthenticationProvider)
-                                .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/login", "/api/auth/join", "/api/public/**")
-                                                .permitAll()
-                                                .anyRequest().authenticated())
-                                .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
-                                .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider),
-                                                UsernamePasswordAuthenticationFilter.class)
-                                .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    http
+        .securityMatcher("/api/**") // "/api/**" 경로만 처리
+        .formLogin((AbstractHttpConfigurer::disable))
+        .httpBasic((AbstractHttpConfigurer::disable))
+        .csrf(AbstractHttpConfigurer::disable)
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/auth/login", "/api/auth/join", "/api/public/**", "/api/webhook/**", "/webhook/**")
+            .permitAll()
+            .anyRequest().authenticated())
+        .authenticationProvider(jwtAuthenticationProvider)
 
-                return http.build();
-        }
+        .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider),
+            UsernamePasswordAuthenticationFilter.class)
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-                CorsConfiguration configuration = new CorsConfiguration();
-                configuration.addAllowedOrigin("http://localhost:3000"); // 프론트엔드 도메인
-                configuration.addAllowedMethod("*");
-                configuration.addAllowedHeader("*");
-                configuration.setAllowCredentials(true); // 인증 정보 허용
-                configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie")); // 프론트엔드에서 접근 가능한 헤더
-                configuration.setMaxAge(3600L);
+    return http.build();
+  }
 
-                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-                source.registerCorsConfiguration("/**", configuration);
-                return source;
-        }
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.addAllowedOrigin("http://localhost:3000"); // 프론트엔드 도메인
+    configuration.addAllowedMethod("*");
+    configuration.addAllowedHeader("*");
+    configuration.setAllowCredentials(true); // 인증 정보 허용
+    configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie")); // 프론트엔드에서 접근 가능한 헤더
+    configuration.setMaxAge(3600L);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
 
 }

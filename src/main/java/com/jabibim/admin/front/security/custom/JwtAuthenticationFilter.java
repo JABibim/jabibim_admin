@@ -39,7 +39,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String path = request.getServletPath();
     return path.equals("/api/auth/login") ||
         path.equals("/api/auth/join") ||
-        path.startsWith("/api/public/");
+        path.startsWith("/api/public/") ||
+        path.startsWith("/api/webhook/") ||
+        path.startsWith("/webhook/");
+
   }
 
   @Override
@@ -48,6 +51,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
 
     logger.info("▶▶▶ JWT Authentication Filter START - URI: {}", request.getRequestURI());
+
+    if (request.getRequestURI().startsWith("api/webhook/") || request.getRequestURI().startsWith("webhook/")) {
+      filterChain.doFilter(request, response);
+    }
 
     try {
       // 1. 토큰 추출 단계

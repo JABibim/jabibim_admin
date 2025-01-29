@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.OrdersMapper">
+
+  <select id="getOrderByPaymentId" resultType="orders">
+    SELECT * FROM orders WHERE payment_id = #{paymentId} AND academy_id = #{academyId}
+  </select>
+
+  <insert id="insertOrders" parameterType="orders">
+    INSERT INTO orders
+    (orders_id, created_at, order_number, total_price, order_status, student_id, course_id, payment_id, academy_id)
+    VALUES (#{ordersId}, CURRENT_TIMESTAMP, #{orderNumber}, #{totalPrice}, #{orderStatus}, #{studentId}, #{courseId}, #{paymentId}, #{academyId})
+  </insert>
+
+
+  <update id="updateOrderStatus" parameterType="orders">
+    UPDATE orders SET order_status = #{orderStatus} WHERE orders_id = #{ordersId}
+  </update>
+</mapper>
