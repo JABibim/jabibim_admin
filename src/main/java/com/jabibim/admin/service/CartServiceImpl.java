@@ -59,4 +59,9 @@ public class CartServiceImpl implements CartService {
       throw new RuntimeException("장바구니 상품 추가 실패", e);
     }
   }
+
+  @Override
+  public void deleteCartItem(String cartId, String studentId, String academyId) {
+    dao.deleteCartItem(cartId, studentId, academyId);
+  }
 }

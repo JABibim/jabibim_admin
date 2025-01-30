@@ -22,6 +22,7 @@ public class AuthController {
   private final Logger logger = LoggerFactory.getLogger(AuthController.class);
   private final StudentService studentService;
 
+
   @PostMapping("/logout")
   public ResponseEntity<?> logout(
       @RequestHeader("Authorization") String token, HttpServletResponse response) {

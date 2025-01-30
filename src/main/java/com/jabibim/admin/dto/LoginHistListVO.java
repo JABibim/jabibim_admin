@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class SignInHistListVO {
+public class LoginHistListVO {
 
   private String loginHistoryId;
   private LocalDateTime createdAt;

@@ -23,6 +23,8 @@ import com.jabibim.admin.front.security.custom.JwtAuthenticationFilter;
 import com.jabibim.admin.front.security.custom.JwtAuthenticationProvider;
 import com.jabibim.admin.front.security.custom.JwtTokenProvider;
 import com.jabibim.admin.front.security.custom.LoginFilter;
+import com.jabibim.admin.service.LoginHistoryService;
+import com.jabibim.admin.service.StudentService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +38,10 @@ public class JwtSecurityConfig {
   private final JwtTokenProvider jwtTokenProvider;
   // AuthenticationManager가 사용할 커스텀 Provider 클래스
   private final JwtAuthenticationProvider jwtAuthenticationProvider;
+
+  private final LoginHistoryService loginHistoryService;
+
+  private final StudentService studentService;
 
   @Bean
   public AuthenticationManager authenticationManager() {
@@ -51,7 +57,7 @@ public class JwtSecurityConfig {
   public SecurityFilterChain jwtSecurityFilterChain(HttpSecurity http) throws Exception {
     logger.info("jwtSecurityFilterChain =====>");
 
-    LoginFilter loginFilter = new LoginFilter(authenticationManager(), jwtTokenProvider);
+    LoginFilter loginFilter = new LoginFilter(authenticationManager(), jwtTokenProvider, loginHistoryService, studentService);
     loginFilter.setFilterProcessesUrl("/api/auth/login");
 
     http

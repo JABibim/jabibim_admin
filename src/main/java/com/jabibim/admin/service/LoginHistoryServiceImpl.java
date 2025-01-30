@@ -1,32 +1,35 @@
 package com.jabibim.admin.service;
 
-import com.jabibim.admin.dto.SignInHistListVO;
-import com.jabibim.admin.mybatis.mapper.LoginHistoryMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+import com.jabibim.admin.domain.LoginHistory;
+import com.jabibim.admin.dto.LoginHistListVO;
+import com.jabibim.admin.mybatis.mapper.LoginHistoryMapper;
+
+import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
-public class SignInHistServiceImpl implements SignInHistService {
+public class LoginHistoryServiceImpl implements LoginHistoryService {
 
   private final LoginHistoryMapper dao;
 
   @Override
-  public int getSignInHistCount(HashMap<String, String> hm) {
+  public int getLoginHistCount(HashMap<String, String> hm) {
     HashMap<String, Object> map = searchMap(hm);
 
 //    String teacherEmail = securityUtil.getCurrentUsername();
 //    String academyId = dao.getAcademyId(teacherEmail);
     map.put("academyId", "f236923c-4746-4b5a-8377-e7c5b53799c2");
 
-    return dao.getSignInHistCount(map);
+    return dao.getLoginHistCount(map);
   }
 
   @Override
-  public List<SignInHistListVO> getSignInHistList(HashMap<String, String> hm, int page, int limit) {
+  public List<LoginHistListVO> getLoginHistList(HashMap<String, String> hm, int page, int limit) {
     HashMap<String, Object> map = searchMap(hm);
 
 //    String teacherEmail = securityUtil.getCurrentUsername();
@@ -36,7 +39,7 @@ public class SignInHistServiceImpl implements SignInHistService {
     map.put("limit", limit);
     map.put("offset", (page - 1) * limit);
 
-    return dao.getSignInHistList(map);
+    return dao.getLoginHistList(map);
   }
 
 
@@ -63,4 +66,8 @@ public class SignInHistServiceImpl implements SignInHistService {
     return map;
   }
 
+  @Override
+  public void insertLoginHistory(LoginHistory loginHistory) {
+    dao.insertLoginHistory(loginHistory);
+  }
 }

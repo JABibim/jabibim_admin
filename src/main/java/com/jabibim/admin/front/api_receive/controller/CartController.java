@@ -101,4 +101,30 @@ public class CartController {
           .body(Map.of("error", e.getMessage()));
     }
   }
+
+  @DeleteMapping("/{cartId}")
+  public ResponseEntity<Map<String, Object>> deleteCartItem(
+      @PathVariable String cartId,
+      HttpServletRequest request) {
+    logger.info("=== 장바구니 상품 삭제 요청 시작 ===");
+
+    // SecurityContext에서 인증 정보 가져오기
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || !authentication.isAuthenticated()) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(Map.of("error", "인증되지 않은 사용자입니다."));
+    }
+
+    JwtCustomUserDetails userDetails = (JwtCustomUserDetails) authentication.getPrincipal();
+    StudentUserVO student = userDetails.getUser();
+
+    cartService.deleteCartItem(cartId, student.getStudentId(), student.getAcademyId());
+
+    HashMap<String, Object> response = new HashMap<>();
+    response.put("data", null);
+    response.put("message", "장바구니 상품이 삭제되었습니다.");
+
+    return ResponseEntity.ok(response);
+
+  }
 }
