@@ -8,7 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface LoginHistoryMapper {
-  int getSignInHistCount(HashMap<String, Object> map);
+  int getLoginHistCount(HashMap<String, Object> map);
 
-  List<SignInHistListVO> getSignInHistList(HashMap<String, Object> map);
+  List<SignInHistListVO> getLoginHistList(HashMap<String, Object> map);
+
+  void insertLoginHistory(HashMap<String, Object> map);
 }

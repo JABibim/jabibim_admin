@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jabibim.admin.dto.StudentUserVO;
 import com.jabibim.admin.front.dto.LoginRequest;
+import com.jabibim.admin.service.LoginHistoryService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
@@ -37,12 +38,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
   private final ObjectMapper objectMapper;
   private final Logger logger = LoggerFactory.getLogger(LoginFilter.class);
 
-  public LoginFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+  private final LoginHistoryService loginHistoryService;
+
+  public LoginFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, LoginHistoryService loginHistoryService  ) {
     logger.info("LoginFilter constructor called");
     super.setAuthenticationManager(authenticationManager);
     this.jwtTokenProvider = jwtTokenProvider;
     this.objectMapper = new ObjectMapper();
     setFilterProcessesUrl("/api/auth/login");
+    this.loginHistoryService = loginHistoryService;
   }
 
   @Override
