@@ -93,6 +93,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
       FilterChain chain,
       Authentication auth) throws IOException {
 
+    tempRequest.remove();
     String clientIp = getClientIp(request);
     String userAgent = request.getHeader("User-Agent");
     Map<String, String> clientInfo = parseUserAgent(userAgent);

@@ -102,12 +102,11 @@ public class CartController {
     }
   }
 
-  @DeleteMapping("/delete")
-  public ResponseEntity<Map<String, Object>> deleteCartItem(  
-      @RequestBody String cartId,
+  @DeleteMapping("/{cartId}")
+  public ResponseEntity<Map<String, Object>> deleteCartItem(
+      @PathVariable String cartId,
       HttpServletRequest request) {
     logger.info("=== 장바구니 상품 삭제 요청 시작 ===");
-
 
     // SecurityContext에서 인증 정보 가져오기
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -121,8 +120,11 @@ public class CartController {
 
     cartService.deleteCartItem(cartId, student.getStudentId(), student.getAcademyId());
 
-    return ResponseEntity.ok(Map.of(
-        "data", null,
-        "message", "장바구니 상품이 삭제되었습니다."));
+    HashMap<String, Object> response = new HashMap<>();
+    response.put("data", null);
+    response.put("message", "장바구니 상품이 삭제되었습니다.");
+
+    return ResponseEntity.ok(response);
+
   }
 }
