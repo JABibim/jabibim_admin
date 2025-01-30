@@ -1,5 +1,7 @@
 package com.jabibim.admin.front.security.custom;
 
+import static com.jabibim.admin.func.IpInfo.getClientIp;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -21,10 +23,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jabibim.admin.domain.LoginHistory;
 import com.jabibim.admin.dto.StudentUserVO;
 import com.jabibim.admin.front.dto.LoginRequest;
 import com.jabibim.admin.service.LoginHistoryService;
+import com.jabibim.admin.service.StudentService;
 
+import eu.bitwalker.useragentutils.Browser;
+import eu.bitwalker.useragentutils.OperatingSystem;
+import eu.bitwalker.useragentutils.UserAgent;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,14 +46,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
   private final Logger logger = LoggerFactory.getLogger(LoginFilter.class);
 
   private final LoginHistoryService loginHistoryService;
+  private final StudentService studentService;
 
-  public LoginFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, LoginHistoryService loginHistoryService  ) {
+  private static final ThreadLocal<LoginRequest> tempRequest = new ThreadLocal<>();
+
+  public LoginFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider,
+      LoginHistoryService loginHistoryService, StudentService studentService) {
     logger.info("LoginFilter constructor called");
     super.setAuthenticationManager(authenticationManager);
     this.jwtTokenProvider = jwtTokenProvider;
     this.objectMapper = new ObjectMapper();
     setFilterProcessesUrl("/api/auth/login");
     this.loginHistoryService = loginHistoryService;
+    this.studentService = studentService;
   }
 
   @Override
@@ -58,6 +70,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     try {
       LoginRequest loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
+      tempRequest.set(loginRequest);
 
       logger.debug("Parsed login request for email: {}", loginRequest.getEmail());
       logger.debug("Academy ID from request: {}", loginRequest.getAcademyId());
@@ -79,10 +92,27 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
       HttpServletResponse response,
       FilterChain chain,
       Authentication auth) throws IOException {
-    logger.info("Authentication successful, generating tokens");
+
+    String clientIp = getClientIp(request);
+    String userAgent = request.getHeader("User-Agent");
+    Map<String, String> clientInfo = parseUserAgent(userAgent);
 
     JwtCustomUserDetails userDetails = (JwtCustomUserDetails) auth.getPrincipal();
     StudentUserVO user = userDetails.getUser();
+
+    LoginHistory loginHistory = new LoginHistory();
+    loginHistory.setIpInfo(clientIp);
+    loginHistory.setOsInfo(clientInfo.get("os").toString().toUpperCase());
+    loginHistory.setBrowserInfo(clientInfo.get("browser").toString().toUpperCase() + " "
+        + clientInfo.get("browserVersion").toString().toUpperCase());
+    loginHistory.setLoginSuccess(1);
+    loginHistory.setAcademyId(user.getAcademyId());
+    loginHistory.setStudentId(user.getStudentId());
+
+    logger.debug("Inserting login history for user: {}", user.getStudentEmail());
+    loginHistoryService.insertLoginHistory(loginHistory);
+
+    logger.info("Authentication successful, generating tokens");
 
     logger.debug("Generating tokens for user: {}", user.getStudentEmail());
 
@@ -137,6 +167,29 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
       AuthenticationException failed) throws IOException {
     logger.error("Authentication failed: {}", failed.getMessage());
 
+    String clientIp = getClientIp(request);
+    String userAgent = request.getHeader("User-Agent");
+    Map<String, String> clientInfo = parseUserAgent(userAgent);
+
+    LoginRequest loginRequest = tempRequest.get();
+
+    StudentUserVO user = studentService.getStudentByEmail(loginRequest.getEmail(), loginRequest.getAcademyId());
+
+    tempRequest.remove();
+    LoginHistory loginHistory = new LoginHistory();
+    loginHistory.setIpInfo(clientIp);
+    loginHistory.setOsInfo(clientInfo.get("os").toString().toUpperCase());
+    loginHistory.setBrowserInfo(clientInfo.get("browser").toString().toUpperCase() + " "
+        + clientInfo.get("browserVersion").toString().toUpperCase());
+    loginHistory.setLoginSuccess(0);
+    loginHistory.setAcademyId(loginRequest.getAcademyId());
+    if (user != null) {
+      loginHistory.setStudentId(user.getStudentId());
+    } else {
+      loginHistory.setStudentId("UNKNOWN");
+    }
+    loginHistoryService.insertLoginHistory(loginHistory);
+
     response.setStatus(HttpStatus.UNAUTHORIZED.value()); // 401 번 인증 실패 코드 반환
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     response.setCharacterEncoding(StandardCharsets.UTF_8.name());
@@ -147,6 +200,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     new ObjectMapper().writeValue(response.getWriter(), errorResponse);
     logger.debug("Error response sent to client");
+  }
+
+  private Map<String, String> parseUserAgent(String userAgent) {
+    UserAgent agent = UserAgent.parseUserAgentString(userAgent);
+    OperatingSystem os = agent.getOperatingSystem();
+    Browser browser = agent.getBrowser();
+
+    return Map.of(
+        "os", os.getName(),
+        "browser", browser.getName(),
+        "browserVersion", browser.getVersion(userAgent).toString(),
+        "deviceType", os.getDeviceType().getName());
   }
 
 }

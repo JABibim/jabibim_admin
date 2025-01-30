@@ -1,6 +1,6 @@
 package com.jabibim.admin.controller;
 
-import com.jabibim.admin.dto.SignInHistListVO;
+import com.jabibim.admin.dto.LoginHistListVO;
 import com.jabibim.admin.func.PaginationResult;
 import com.jabibim.admin.service.LoginHistoryService;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +46,7 @@ public class LoginHistoryController {
 
     int listcount = loginHistoryService.getLoginHistCount(hm);
 
-    List<SignInHistListVO> list = loginHistoryService.getLoginHistList(hm, page, limit);
+    List<LoginHistListVO> list = loginHistoryService.getLoginHistList(hm, page, limit);
 
 
     // 날짜 전환을 위한 SimpleDateFormat

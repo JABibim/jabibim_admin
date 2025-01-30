@@ -1,12 +1,15 @@
 package com.jabibim.admin.service;
 
-import com.jabibim.admin.dto.SignInHistListVO;
-import com.jabibim.admin.mybatis.mapper.LoginHistoryMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.HashMap;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.jabibim.admin.domain.LoginHistory;
+import com.jabibim.admin.dto.LoginHistListVO;
+import com.jabibim.admin.mybatis.mapper.LoginHistoryMapper;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +29,7 @@ public class LoginHistoryServiceImpl implements LoginHistoryService {
   }
 
   @Override
-  public List<SignInHistListVO> getLoginHistList(HashMap<String, String> hm, int page, int limit) {
+  public List<LoginHistListVO> getLoginHistList(HashMap<String, String> hm, int page, int limit) {
     HashMap<String, Object> map = searchMap(hm);
 
 //    String teacherEmail = securityUtil.getCurrentUsername();
@@ -63,4 +66,8 @@ public class LoginHistoryServiceImpl implements LoginHistoryService {
     return map;
   }
 
+  @Override
+  public void insertLoginHistory(LoginHistory loginHistory) {
+    dao.insertLoginHistory(loginHistory);
+  }
 }
