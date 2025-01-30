@@ -204,6 +204,15 @@
             <version>1.9.20.1</version>
         </dependency>
 
+
+        <!-- 로그인 요청에 대한 정보 확인 위한 라이브러리 -->
+        <dependency>
+            <groupId>eu.bitwalker</groupId>
+            <artifactId>UserAgentUtils</artifactId>
+            <version>1.21</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
