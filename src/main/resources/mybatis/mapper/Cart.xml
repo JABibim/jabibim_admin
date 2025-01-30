@@ -31,5 +31,11 @@
     VALUES (#{cartId}, CURRENT_TIMESTAMP, NULL, NULL, #{studentId}, #{courseId}, #{academyId})
   </insert>
 
+  <delete id="deleteCartItem">
+    DELETE FROM cart
+    WHERE cart_id = #{cartId}
+    AND student_id = #{studentId}
+    AND academy_id = #{academyId}
+  </delete>
 
 </mapper>
