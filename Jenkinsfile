@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Git Pull') {
             steps {
-                 // Get some code from a GitHub repository 테스트2차
+                 // Get some code from a GitHub repository 테스트 3차
                  git branch: 'prod', credentialsId: 'github', url: 'https://github.com/JABibim/jabibim_admin.git'
             }
             post {
