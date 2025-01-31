@@ -9,19 +9,21 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class SignInHistListVO {
+public class CartItemVO {
 
-  private String loginHistoryId;
+  private String cartId;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
   private LocalDateTime deletedAt;
-  private String ipInfo;
-  private String osInfo;
-  private String browserInfo;
-  private int loginSuccess;
-  private String academyId;
   private String studentId;
   private String studentName;
-  private String studentEmail;
+  private String courseId;
+  private String courseName;
+  private String courseSubject;
+  private String courseDiff;
+  private int coursePrice;
+  private String courseImgName;
+  private String academyId;
+  private String teacherName;
 
 }

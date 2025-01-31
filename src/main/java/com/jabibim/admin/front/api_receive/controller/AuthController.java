@@ -22,11 +22,10 @@ public class AuthController {
   private final Logger logger = LoggerFactory.getLogger(AuthController.class);
   private final StudentService studentService;
 
+
   @PostMapping("/logout")
   public ResponseEntity<?> logout(
-      @RequestHeader("Authorization") String token
-      , HttpServletResponse response
-  ) {
+      @RequestHeader("Authorization") String token, HttpServletResponse response) {
 
     // Authorization 헤더에서 토큰 추출
     // 향후 해당 토큰의 유효시간까지 블랙리스트에 올려서 사용 불가하도록 처리
@@ -38,6 +37,7 @@ public class AuthController {
     cookie.setHttpOnly(true);
     cookie.setMaxAge(0);
     cookie.setPath("/");
+    cookie.setAttribute("SameSite", "None"); // CORS 요청에서 쿠키 전송 허용
     response.addCookie(cookie);
 
     return ResponseEntity.ok()
@@ -46,26 +46,47 @@ public class AuthController {
   }
 
   @PostMapping("/join")
-  public ResponseEntity<?> join(
-      @RequestBody(required = true) Student student) {
+  public ResponseEntity<Map<String, Object>> join(@RequestBody(required = true) Student student) {
+    logger.info("=== 회원가입 요청 시작 ===");
+    logger.debug("Received student data: {}", student);
 
-    logger.info(student.toString());
+    try {
+      // 필수 필드 검증
+      if (student.getStudentPassword() == null || student.getStudentPassword().trim().isEmpty()) {
+        logger.warn("Password is missing or empty");
+        return ResponseEntity.badRequest()
+            .body(Map.of(
+                "status", "error",
+                "message", "비밀번호는 필수 입력값입니다."));
+      }
 
-    if (studentService.insertStudent(student)) {
-      return ResponseEntity.ok()
-          .body(Map.of("message", "Signup successful"));
-    } else {
+      boolean isSuccess = studentService.insertStudent(student);
 
+      if (isSuccess) {
+        logger.info("=== 회원가입 성공 ===");
+        return ResponseEntity.ok()
+            .body(Map.of(
+                "status", "success",
+                "message", "회원가입이 완료되었습니다."));
+      } else {
+        logger.error("Failed to insert student");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(Map.of(
+                "status", "error",
+                "message", "회원가입 처리 중 오류가 발생했습니다."));
+      }
+    } catch (Exception e) {
+      logger.error("회원가입 처리 중 예외 발생", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("message", "Signup failed"));
+          .body(Map.of(
+              "status", "error",
+              "message", e.getMessage()));
     }
   }
 
-
-//  @PostMapping("/signup")
-//  public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request) {
-//    // 회원가입 처리
-//  }
-
+  // @PostMapping("/signup")
+  // public ResponseEntity<?> signup(@RequestBody @Valid SignupRequest request) {
+  // // 회원가입 처리
+  // }
 
 }

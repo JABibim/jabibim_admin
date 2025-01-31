@@ -1,8 +1,8 @@
 package com.jabibim.admin.controller;
 
-import com.jabibim.admin.dto.SignInHistListVO;
+import com.jabibim.admin.dto.LoginHistListVO;
 import com.jabibim.admin.func.PaginationResult;
-import com.jabibim.admin.service.SignInHistService;
+import com.jabibim.admin.service.LoginHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.*;
 import org.springframework.stereotype.Controller;
@@ -20,11 +20,11 @@ import java.util.List;
 @Controller
 @RequestMapping("/student/signhist")
 @RequiredArgsConstructor
-public class SignInHistController {
+public class LoginHistoryController {
 
-  private final Logger logger = LoggerFactory.getLogger(SignInHistController.class);
+  private final Logger logger = LoggerFactory.getLogger(LoginHistoryController.class);
 
-  private final SignInHistService signInHistService;
+  private final LoginHistoryService loginHistoryService;
 
   @GetMapping("/list")
   public ModelAndView signInHistList(ModelAndView mv
@@ -44,9 +44,9 @@ public class SignInHistController {
     hm.put("searchWord", searchWord);
 
 
-    int listcount = signInHistService.getSignInHistCount(hm);
+    int listcount = loginHistoryService.getLoginHistCount(hm);
 
-    List<SignInHistListVO> list = signInHistService.getSignInHistList(hm, page, limit);
+    List<LoginHistListVO> list = loginHistoryService.getLoginHistList(hm, page, limit);
 
 
     // 날짜 전환을 위한 SimpleDateFormat

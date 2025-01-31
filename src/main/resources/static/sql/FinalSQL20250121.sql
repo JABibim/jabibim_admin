@@ -313,23 +313,12 @@ CREATE TABLE orders
     student_id  varchar(36), # 주문자
     course_id   varchar(36), # 주문 상품
     order_price int,         # 주문 금액
-    payment_id  varchar(36), # 결제 조회 아이디 => 결제 상태, 실 결제 금액, 결제 방법, 주문 취소 여부 등
     academy_id  varchar(36)  # 학원
 );
 
-# 결제 테이블
-# 포트원 API 에서 넘어오는 값을 테이블로 저장해야할지?
-CREATE TABLE payment
-(
-    payment_id     varchar(36),
-    created_at     datetime,
-    updated_at     datetime,
-    deleted_at     datetime,
-    orders_id      varchar(36),
-    payment_amount int,
-    student_id     varchar(36),
-    payment_status tinyint(1) # 0 -> 대기, 1 -> 성공, 2 -> 결제 취소 (환불)
-);
+
+
+
 
 -- jab.payment definition
 
