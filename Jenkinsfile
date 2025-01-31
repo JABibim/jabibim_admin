@@ -1,6 +1,7 @@
 pipeline {
     environment {        
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // dockerhub : jenkins에 등록해 놓은 docker hub credentials 이름             
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // dockerhub : jenkins에 등록해 놓은 docker hub credentials 이름
+        TARGET_HOST = "ubuntu@13.125.217.202" // @ 뒤에는 web-server public ip
     }
 
     agent any
@@ -105,7 +106,7 @@ pipeline {
             }
         }    
 
-     stage('Cleaning up'){
+        stage('Cleaning up'){
             steps{
                 sh 'echo " docker image rmi"'
                 sh "docker rmi $DOCKERHUB_CREDENTIALS_USR/jabibim_admin:$BUILD_NUMBER" // docker image 제거
@@ -119,6 +120,19 @@ pipeline {
                 failure {
                     sh 'echo " image rmi Fail"'
                     exit 1
+                }
+            }
+        }
+
+        stage('multiline ssh') {
+            steps {
+                sshagent (credentials: ['deploy-ec2']) {
+                sh """
+                    ssh -o StrictHostKeyChecking=no ${TARGET_HOST} '
+                    sudo docker-compose down --rmi all
+                    sudo docker-compose up -d
+                    '
+                """
                 }
             }
         }
