@@ -14,8 +14,8 @@ public class Teacher {
     private String teacherEmail;
     private String teacherPassword;
     private String teacherJob;
-    private String teacherImgName;
-    private String teacherImgOrigin;
+    private String teacherProfileOriginName;
+    private String teacherProfilePath;
     private String authRole;
     private String academyId;
 }

@@ -5,6 +5,7 @@
     <script th:inline="javascript">
         let token = $("meta[name='_csrf']").attr("content");
         let header = $("meta[name='_csrf_header']").attr("content");
+        let profileImgPath = '';
 
         $(document).ready(function () {
             // 관리자 비밀번호 확인 버튼
@@ -13,7 +14,7 @@
                 $.ajax({
                     url: "/setting/checkAdminPass",
                     method: "POST",
-                    data: { password: enteredPassword },
+                    data: {password: enteredPassword},
                     success: function (response) {
                         if (response) {
                             $('#passwordConfirmModal').modal('hide');
@@ -61,12 +62,37 @@
                     }
                 });
             });
+
+            getProfileImgPath();
         });
 
         // 채팅 시작 함수
         function startChat(teacherId) {
             // AJAX로 채팅 메시지 로드 후 모달 표시 (추후 추가 가능)
             console.log("채팅 시작: ", teacherId); // 디버깅용
+        }
+
+        function getProfileImgPath() {
+            $.ajax({
+                url: "/teacher/getProfileImgInfo",
+                method: "GET",
+                success: (res) => {
+                    profileImgPath = res.profileImgPath;  // 프로필 이미지 경로 저장
+
+                    // 프로필 이미지 경로에 따라 HTML의 이미지 태그를 업데이트
+                    if (profileImgPath && profileImgPath !== '') {
+                        // 프로필 이미지가 있으면 해당 이미지 표시
+                        $('.nav-profile img').attr('src', profileImgPath);
+                    } else {
+                        // 프로필 이미지가 없으면 기본 이미지 표시
+                        $('.nav-profile img').attr('src', '/img/default_profile.jpg');
+                    }
+                },
+                error: (err) => {
+                    console.log("프로필 이미지 정보를 가져오는 데 실패했습니다:", err);
+                    $('.nav-profile img').attr('src', '/img/default_profile.jpg'); // 실패 시 기본 이미지
+                }
+            });
         }
     </script>
 
@@ -127,15 +153,8 @@
                     </th:block>
 
                     <!-- 프로필 이미지 -->
-                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#"
-                       data-bs-toggle="dropdown">
-                        <th:block th:if="${#strings.isEmpty(teacherImgName)}">
-                            <img th:src="@{/img/default_profile.jpg}" alt="Profile" class="rounded-circle">
-                        </th:block>
-                        <th:block th:if="${not #strings.isEmpty(teacherImgName)}">
-                            <img th:src="@{|/resources/static/uploadFiles/profileImageUpload/${teacherImgName}|}"
-                                 alt="Profile" class="rounded-circle">
-                        </th:block>
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                        <img class="rounded-circle" th:src="@{/img/default_profile.jpg}" alt="Profile">  <!-- 기본 이미지 설정 -->
                         <span class="d-none d-md-block dropdown-toggle ps-2"></span>
                     </a>
 
@@ -169,7 +188,8 @@
     </header>
 
     <!-- 채팅 선생님 리스트 모달 -->
-    <div class="modal fade" id="chatTeacherListModal" tabindex="-1" aria-labelledby="chatTeacherListModalLabel" aria-hidden="true">
+    <div class="modal fade" id="chatTeacherListModal" tabindex="-1" aria-labelledby="chatTeacherListModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -187,7 +207,8 @@
     </div>
 
     <!-- 관리자 비밀번호 확인 모달 -->
-    <div class="modal fade" id="passwordConfirmModal" tabindex="-1" aria-labelledby="passwordConfirmModalLabel" aria-hidden="true">
+    <div class="modal fade" id="passwordConfirmModal" tabindex="-1" aria-labelledby="passwordConfirmModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

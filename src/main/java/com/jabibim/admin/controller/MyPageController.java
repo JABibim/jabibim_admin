@@ -73,8 +73,10 @@ public class MyPageController {
                 throw new IllegalArgumentException("파일 이름을 확인해 주세요.");
             }
             String fileName = "profile." + Files.getExtension(teacherProfileImage.getOriginalFilename());
-            String dirName = academyId + "/teacher/" + teacherId + "/profile/" +  fileName;
-            s3FileService.uploadFile(teacherProfileImage, dirName);
+            String dirName = academyId + "/teacher/" + teacherId + "/profile/" + fileName;
+            String uploadedPath = s3FileService.uploadFile(teacherProfileImage, dirName);
+            teacher.setTeacherProfileOriginName(teacherProfileImage.getOriginalFilename());
+            teacher.setTeacherProfilePath(uploadedPath);
         }
 
         int result = teacherService.update(teacher);

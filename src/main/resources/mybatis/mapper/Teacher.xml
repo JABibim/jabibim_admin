@@ -61,7 +61,8 @@
                t.teacher_password,
                t.teacher_email,
                t.teacher_phone,
-               t.teacher_img_name
+               t.teacher_profile_origin_name,
+               t.teacher_profile_path
         from teacher t,
              academy a
         where t.academy_id = a.academy_id
@@ -70,9 +71,10 @@
 
     <update id="update">
         update teacher
-        set teacher_img_origin = #{teacherImgOrigin},
-            teacher_phone      = #{teacherPhone},
-            teacher_email      = #{teacherEmail}
+        set teacher_profile_origin_name = #{teacherProfileOriginName},
+            teacher_profile_path        = #{teacherProfilePath},
+            teacher_phone               = #{teacherPhone},
+            teacher_email               = #{teacherEmail}
         where teacher_id = #{teacherId}
     </update>
 
@@ -88,12 +90,6 @@
         where teacher_id = #{teacherId}
     </select>
 
-    <update id="updateProfileImage">
-        update teacher
-        set teacher_img_name = #{teacherImgName}
-        where teacher_id = #{teacherId}
-    </update>
-
     <select id="getTeacherByEmail" resultType="teacher">
         select *
         from teacher
@@ -106,8 +102,8 @@
              , teacher_phone
              , teacher_email
              , teacher_job
-             , teacher_img_name
-             , teacher_img_origin
+             , teacher_profile_origin_name
+             , teacher_profile_path
              , auth_role
              , academy_id
         from teacher
