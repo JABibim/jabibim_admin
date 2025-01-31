@@ -1,6 +1,6 @@
 pipeline {
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // dockerhub : jenkins에 등록해 놓은 docker hub credentials 이름
+    environment {        
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub') // dockerhub : jenkins에 등록해 놓은 docker hub credentials 이름             
     }
 
     agent any
@@ -17,22 +17,22 @@ pipeline {
                  git branch: 'prod', credentialsId: 'github', url: 'https://github.com/JABibim/jabibim_admin.git'
             }
             post {
-                success {
+                success { 
                     sh 'echo "Successfully Cloned Repository"'
                 }
                 failure {
                     sh 'echo "Fail Cloned Repository"'
                     exit 1
                 }
-            }
+            }    
         }
 
-         // clone 받은 프로젝트 안의 Spring10_Security_Thymeleaf_Jenkins 디렉토리에서 stage 실행
+         //clone 받은 프로젝트 안의 Spring10_Security_Thymeleaf_Jenkins 디렉토리에서 stage 실행
         stage('Build') {
-            steps {
+            steps {    
                 // dir("Spring10_Security_Thymeleaf_Jenkins"){   //var/jenkins_home/workspace/pipeline_item/Spring10_Security_Thymeleaf_Jenkins
                     sh "mvn -DskipTests clean compile package"
-                // }
+                // }  
             }
             post {
                 success {
@@ -43,7 +43,7 @@ pipeline {
                     echo 'maven build failed'
                     exit 1
                 }
-            }
+            } 
         }
 
         stage('Dockerizing'){
@@ -69,12 +69,12 @@ pipeline {
                     }
                 }
         }
-
+    
         stage('Login'){
             steps{
-                 sh 'docker login -u $DOCKERHUB_CREDENTIALS_USR -p $DOCKERHUB_CREDENTIALS_PSW'
+                 sh 'docker login -u $DOCKERHUB_CREDENTIALS_USR -p $DOCKERHUB_CREDENTIALS_PSW'  
             }
-
+            
             post {
                 success {
                     sh 'echo "Docker Login Success"'
@@ -103,7 +103,7 @@ pipeline {
                     exit 1
                 }
             }
-        }
+        }    
 
      stage('Cleaning up'){
             steps{
