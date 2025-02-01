@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jabibim.admin.dto.StudentUserVO;
+import com.jabibim.admin.service.RedisService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -33,6 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtTokenProvider jwtTokenProvider;
   private final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+  private final RedisService redisService;
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -68,7 +71,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       }
 
       // 2. 액세스 토큰 검증 단계
-      logger.info("2. Access token validation: {}", jwtTokenProvider.validateToken(token).isValid() ? "VALID" : "INVALID");
+      logger.info("2. Access token validation: {}",
+          jwtTokenProvider.validateToken(token).isValid() ? "VALID" : "INVALID");
+
+      if (redisService.isBlackListed(token)) {
+        logger.warn("2.1 Token is blacklisted");
+        handleInvalidToken(response);
+        return;
+      }
 
       if (jwtTokenProvider.validateToken(token).isValid()) {
         logger.debug("2.1 Processing valid access token");
@@ -118,6 +128,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     } catch (JwtException ex) {
       logger.error("!! Authentication Error: {}", ex.getMessage(), ex);
       handleAuthenticationError(response, ex);
+    } catch (RedisConnectionFailureException ex) {
+      logger.error("!! Redis Connection Error: {}", ex.getMessage(), ex);
+      handleAuthenticationError(response, ex);
+      filterChain.doFilter(request, response); // 예외 발생시 예외 처리 후 필터 체인 계속 진행
+      return;
     } catch (Exception ex) {
       logger.error("!! Unexpected Error: {}", ex.getMessage(), ex);
       handleAuthenticationError(response, ex);
