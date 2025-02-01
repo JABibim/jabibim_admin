@@ -24,6 +24,7 @@ import com.jabibim.admin.front.security.custom.JwtAuthenticationProvider;
 import com.jabibim.admin.front.security.custom.JwtTokenProvider;
 import com.jabibim.admin.front.security.custom.LoginFilter;
 import com.jabibim.admin.service.LoginHistoryService;
+import com.jabibim.admin.service.RedisService;
 import com.jabibim.admin.service.StudentService;
 
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,7 @@ public class JwtSecurityConfig {
   private final LoginHistoryService loginHistoryService;
 
   private final StudentService studentService;
+  private final RedisService redisService;
 
   @Bean
   public AuthenticationManager authenticationManager() {
@@ -57,7 +59,8 @@ public class JwtSecurityConfig {
   public SecurityFilterChain jwtSecurityFilterChain(HttpSecurity http) throws Exception {
     logger.info("jwtSecurityFilterChain =====>");
 
-    LoginFilter loginFilter = new LoginFilter(authenticationManager(), jwtTokenProvider, loginHistoryService, studentService);
+    LoginFilter loginFilter = new LoginFilter(authenticationManager(), jwtTokenProvider, loginHistoryService,
+        studentService);
     loginFilter.setFilterProcessesUrl("/api/auth/login");
 
     http
@@ -73,7 +76,7 @@ public class JwtSecurityConfig {
         .authenticationProvider(jwtAuthenticationProvider)
 
         .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
-        .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider),
+        .addFilterAfter(new JwtAuthenticationFilter(jwtTokenProvider, redisService),
             UsernamePasswordAuthenticationFilter.class)
         .sessionManagement(session -> session
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS));

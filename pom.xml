@@ -191,6 +191,31 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         <!-- 웹훅 재시도 관련 라이브러리 -->
 
         <dependency>
@@ -203,15 +228,17 @@
             <artifactId>aspectjweaver</artifactId>
             <version>1.9.20.1</version>
         </dependency>
-
-
         <!-- 로그인 요청에 대한 정보 확인 위한 라이브러리 -->
         <dependency>
             <groupId>eu.bitwalker</groupId>
             <artifactId>UserAgentUtils</artifactId>
             <version>1.21</version>
         </dependency>
-
+        <!-- Redis 의존성 추가-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
 
     </dependencies>
 
