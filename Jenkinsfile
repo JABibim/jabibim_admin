@@ -79,6 +79,8 @@ pipeline {
 
         stage('Run Docker Container and Modify Config') {
                     steps {
+                        sh 'echo "${env.PROJECT_NAME} Docker Container 실행!!!!!!!!!!!!!!!!!!!!!!!!!(스크립트 시작 전)"'
+
                         script {
                             // Docker 컨테이너 내에서 실행될 명령어
                             docker.image('jabibim_admin').inside {
@@ -92,6 +94,8 @@ pipeline {
                                 """
                             }
                         }
+
+                        sh 'echo "${env.PROJECT_NAME} Docker Container 실행!!!!!!!!!!!!!!!!!!!!!!!!!(스크립트 시작 후)"'
                     }
         }
 
