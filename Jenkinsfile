@@ -2,7 +2,7 @@ pipeline {
     environment {        
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') // dockerhub : jenkins에 등록해 놓은 docker hub credentials 이름
         TARGET_HOST = "ubuntu@43.203.226.104" // @ 뒤에는 web-server public ip
-        PROJECT_NAME = "jabibim_admin" // 프로젝트 이름
+        WORKSPACE_PATH = "/var/jenkins_home/workspace/jabibim_admin_pipeline"
         AWS_ACCESS_KEY_ID = "${env.AWS_ACCESS_KEY_ID}"
         AWS_S3_SECRET_KEY = "${env.AWS_S3_SECRET_KEY}"
     }
@@ -35,8 +35,8 @@ pipeline {
         stage('Build') {
             steps {
                 // dir("Spring10_Security_Thymeleaf_Jenkins"){   //var/jenkins_home/workspace/pipeline_item/Spring10_Security_Thymeleaf_Jenkins
-                    sh 'sed -i "s#<AWS_ACCESS_KEY_ID>#${AWS_ACCESS_KEY_ID}#" src/main/resources/application.properties'
-                    sh 'sed -i "s#<AWS_S3_SECRET_KEY>#${AWS_S3_SECRET_KEY}#" src/main/resources/application.properties'
+                    sh 'sed -i "s#<AWS_ACCESS_KEY_ID>#${AWS_ACCESS_KEY_ID}#" ${WORKSPACE_PATH}/src/main/resources/application.properties'
+                    sh 'sed -i "s#<AWS_S3_SECRET_KEY>#${AWS_S3_SECRET_KEY}#" ${WORKSPACE_PATH}/src/main/resources/application.properties'
 
                     sh "mvn -DskipTests clean compile package"
                 // }
