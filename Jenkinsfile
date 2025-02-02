@@ -81,7 +81,7 @@ pipeline {
                     steps {
                         script {
                             // Docker 컨테이너 내에서 실행될 명령어
-                            docker.image('kimchan0765/jabibim_admin').inside {
+                            docker.image('jabibim_admin').inside {
                                 sh """
                                     echo "> application.properties 파일 위치로 이동"
                                     cd /var/lib/jenkins/workspace/${env.PROJECT_NAME}/src/main/resources
