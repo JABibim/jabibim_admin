@@ -19,12 +19,12 @@ public class Orders {
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
   private LocalDateTime deletedAt;
-  private String orderNumber;
+  private String ordersNumber;
   private int totalPrice;
-  private String orderAddress;
-  private String orderDetailAddr;
-  private String orderPostcode;
-  private int orderStatus;
+  private String ordersAddress;
+  private String ordersDetailAddr;
+  private String ordersPostcode;
+  private int ordersStatus;
   private String studentId;
   private String courseId;
   private String academyId;
