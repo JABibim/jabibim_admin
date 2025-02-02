@@ -84,7 +84,7 @@ pipeline {
                         script {
                             sh 'echo $PROJECT_NAME'
                             // Docker 컨테이너 내에서 실행될 명령어
-                            docker.image('jabibim_admin').inside {
+                            docker.image('kimchan0765/jabibim_admin').inside {
                                 sh 'echo $PROJECT_NAME'
                                 sh """
                                     echo "> application.properties 파일 위치로 이동"
