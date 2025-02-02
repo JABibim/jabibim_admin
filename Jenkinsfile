@@ -35,8 +35,9 @@ pipeline {
         stage('Build') {
             steps {
                 // dir("Spring10_Security_Thymeleaf_Jenkins"){   //var/jenkins_home/workspace/pipeline_item/Spring10_Security_Thymeleaf_Jenkins
-                    sh 'sed -i "s#<AWS_ACCESS_KEY_ID>#${AWS_ACCESS_KEY_ID}#" ${WORKSPACE_PATH}/src/main/resources/application.properties'
-                    sh 'sed -i "s#<AWS_S3_SECRET_KEY>#${AWS_S3_SECRET_KEY}#" ${WORKSPACE_PATH}/src/main/resources/application.properties'
+                    sh 'echo ${WORKSPACE_PATH}'
+                    sh 'sed -i "s/\${AWS_ACCESS_KEY_ID}/${AWS_ACCESS_KEY_ID}/" "${WORKSPACE_PATH}/src/main/resources/application.yml"'
+                    sh 'sed -i "s/\${AWS_S3_SECRET_KEY}/${AWS_S3_SECRET_KEY}/" "${WORKSPACE_PATH}/src/main/resources/application.yml"'
 
                     sh "mvn -DskipTests clean compile package"
                 // }
