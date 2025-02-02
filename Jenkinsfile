@@ -79,7 +79,7 @@ pipeline {
 
         stage('Run Docker Container and Modify Config') {
                     steps {
-                        sh 'echo "${env.PROJECT_NAME} Docker Container 실행!!!!!!!!!!!!!!!!!!!!!!!!!(스크립트 시작 전)"'
+                        sh 'echo $PROJECT_NAME'
 
                         script {
                             // Docker 컨테이너 내에서 실행될 명령어
@@ -95,7 +95,7 @@ pipeline {
                             }
                         }
 
-                        sh 'echo "${env.PROJECT_NAME} Docker Container 실행!!!!!!!!!!!!!!!!!!!!!!!!!(스크립트 시작 후)"'
+                        sh 'echo $PROJECT_NAME'
                     }
         }
 
