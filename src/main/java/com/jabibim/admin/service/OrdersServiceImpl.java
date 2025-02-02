@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 
 import com.jabibim.admin.domain.Orders;
 import com.jabibim.admin.dto.CartItemVO;
+import com.jabibim.admin.dto.OrdersDetailVO;
 import com.jabibim.admin.dto.OrdersListVO;
 import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.mybatis.mapper.OrdersMapper;
-import com.jabibim.admin.security.dto.AccountContext;
 import com.jabibim.admin.security.dto.AccountDto;
 
 @Service
@@ -85,6 +85,13 @@ public class OrdersServiceImpl implements OrdersService {
     hm.put("limit", limit);
 
     return dao.getOrdersList(hm);
+  }
+
+  @Override
+  public OrdersDetailVO getOrdersDetail(String ordersId, Authentication auth) {
+    AccountDto account = (AccountDto) auth.getPrincipal();
+    String academyId = account.getAcademyId();
+    return dao.getOrdersDetail(ordersId, academyId);
   }
 
   private static HashMap<String, Object> getOrderDate(HashMap<String, String> searchMap) {

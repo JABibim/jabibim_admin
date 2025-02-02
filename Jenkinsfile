@@ -2,6 +2,9 @@ pipeline {
     environment {        
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') // dockerhub : jenkins에 등록해 놓은 docker hub credentials 이름
         TARGET_HOST = "ubuntu@43.203.226.104" // @ 뒤에는 web-server public ip
+        PROJECT_NAME = "jabibim_admin" // 프로젝트 이름
+        AWS_ACCESS_KEY_ID = "${env.AWS_ACCESS_KEY_ID}"
+        AWS_S3_SECRET_KEY = "${env.AWS_S3_SECRET_KEY}"
     }
 
     agent any
@@ -33,6 +36,9 @@ pipeline {
             steps {    
                 // dir("Spring10_Security_Thymeleaf_Jenkins"){   //var/jenkins_home/workspace/pipeline_item/Spring10_Security_Thymeleaf_Jenkins
                     sh "mvn -DskipTests clean compile package"
+                    echo ">>>>> s3 키값 확인용..."
+                    echo ${AWS_ACCESS_KEY_ID}
+                    echo ${AWS_S3_SECRET_KEY}
                 // }  
             }
             post {
@@ -70,6 +76,25 @@ pipeline {
                     }
                 }
         }
+
+        stage('Run Docker Container and Modify Config') {
+                    steps {
+                        script {
+                            // Docker 컨테이너 내에서 실행될 명령어
+                            docker.image('$DOCKERHUB_CREDENTIALS_USR/jabibim_admin').inside {
+                                sh """
+                                    echo "> application.properties 파일 위치로 이동"
+                                    cd /var/lib/jenkins/workspace/${env.PROJECT_NAME}/src/main/resources
+
+                                    echo "> application.properties 서버 전용 값으로 변경"
+                                    sed -i "s#\${AWS_ACCESS_KEY_ID}#${env.AWS_ACCESS_KEY_ID}#" application.properties
+                                    sed -i "s#\${AWS_S3_SECRET_KEY}#${env.AWS_S3_SECRET_KEY}#" application.properties
+                                """
+                            }
+                        }
+                    }
+        }
+
     
         stage('Login'){
             steps{

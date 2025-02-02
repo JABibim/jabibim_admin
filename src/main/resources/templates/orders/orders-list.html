@@ -270,10 +270,12 @@
                         <td th:text="${#temporals.format(orders.createdAt, 'yyyy-MM-dd')}"></td>
                         <td th:text="${orders.paidAt.substring(0, 10)}"></td>
                         <td>
+                          <a th:href="@{/orders/detail(id=${orders.ordersId})}">
                           <button type="button" class="btn btn-secondary btn-sm rounded-pill payment-detail"
                             th:data-orders-id="${orders.ordersId}">
                             상세 보기
                           </button>
+                          </a>
                         </td>
                     </tr>
                 </tbody>
