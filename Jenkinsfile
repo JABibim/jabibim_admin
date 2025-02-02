@@ -37,8 +37,8 @@ pipeline {
                 // dir("Spring10_Security_Thymeleaf_Jenkins"){   //var/jenkins_home/workspace/pipeline_item/Spring10_Security_Thymeleaf_Jenkins
                     sh "mvn -DskipTests clean compile package"
                     echo ">>>>> s3 키값 확인용..."
-                    echo ${AWS_ACCESS_KEY_ID}
-                    echo ${AWS_S3_SECRET_KEY}
+                    echo "${AWS_ACCESS_KEY_ID}"
+                    echo "${AWS_S3_SECRET_KEY}"
                 // }  
             }
             post {
