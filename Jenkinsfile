@@ -34,10 +34,12 @@ pipeline {
          //clone 받은 프로젝트 안의 Spring10_Security_Thymeleaf_Jenkins 디렉토리에서 stage 실행
         stage('Build') {
             steps {
-                sed -i "s/\${AWS_ACCESS_KEY_ID}/${AWS_ACCESS_KEY_ID}/" "application.properties"
-                sed -i "s/\${AWS_S3_SECRET_KEY}/${AWS_S3_SECRET_KEY}/" "application.properties"
+                // dir("Spring10_Security_Thymeleaf_Jenkins"){   //var/jenkins_home/workspace/pipeline_item/Spring10_Security_Thymeleaf_Jenkins
+                    sed -i "s#<AWS_ACCESS_KEY_ID>#${AWS_ACCESS_KEY_ID}#" src/main/resources/application.properties
+                    sed -i "s#<AWS_S3_SECRET_KEY>#${AWS_S3_SECRET_KEY}#" src/main/resources/application.properties
 
-                sh "mvn -DskipTests clean compile package"
+                    sh "mvn -DskipTests clean compile package"
+                // }
             }
             post {
                 success {
