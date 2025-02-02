@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.jabibim.admin.dto.OrdersDetailVO;
 import com.jabibim.admin.dto.OrdersListVO;
 import com.jabibim.admin.func.PaginationResult;
 import com.jabibim.admin.service.OrdersService;
@@ -105,4 +106,12 @@ public class OdersController {
     return mv;
   }
 
+  @GetMapping("/detail")
+  public ModelAndView detail(ModelAndView mv, @RequestParam String id, Authentication auth) {
+    OrdersDetailVO ordersDetail = ordersService.getOrdersDetail(id, auth);
+
+    mv.setViewName("orders/orders-detail");
+    mv.addObject("orders", ordersDetail);
+    return mv;
+  }
 }

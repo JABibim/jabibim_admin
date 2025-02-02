@@ -111,4 +111,18 @@
       
     </if>
   </sql>
+
+
+
+  <select id="getOrdersDetail" resultType="ordersDetailVO">
+    SELECT distinct o.*, c.course_name, c.course_price, s.student_name, s.student_email, s.student_phone, s.grade_name, s.discount_rate, p.payment_amount, p.paid_at, p.payment_method, p.payment_status
+    FROM (SELECT * FROM orders WHERE academy_id = #{academyId}) o 
+    INNER JOIN (SELECT course_id, course_name, course_price FROM course WHERE academy_id = #{academyId}) c
+    ON o.course_id = c.course_id
+    INNER JOIN (SELECT student_id, student_name, student_email, student_phone, grade_name ,discount_rate, student.academy_id FROM student INNER JOIN grade ON student.grade_id = grade.grade_id AND student.academy_id = grade.academy_id WHERE student.academy_id=#{academyId}) s
+    ON o.student_id = s.student_id
+    LEFT OUTER JOIN (SELECT payment_id, payment_amount, payment_method, payment_status, paid_at, orders_id, course_id FROM payment WHERE academy_id=#{academyId}) p
+    ON o.payment_id = p.payment_id AND o.orders_id = p.orders_id AND o.course_id = p.course_id
+    WHERE o.orders_id = #{ordersId}
+  </select>
 </mapper>

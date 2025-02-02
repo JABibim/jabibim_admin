@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.jabibim.admin.domain.Orders;
+import com.jabibim.admin.dto.OrdersDetailVO;
 import com.jabibim.admin.dto.OrdersListVO;
 
 @Mapper
@@ -19,4 +20,6 @@ public interface OrdersMapper {
   int getOrdersListCount(HashMap<String, Object> map);
 
   List<OrdersListVO> getOrdersList(HashMap<String, Object> map);
+
+  OrdersDetailVO getOrdersDetail(String ordersId, String academyId);
 }
