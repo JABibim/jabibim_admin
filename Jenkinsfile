@@ -33,13 +33,11 @@ pipeline {
 
          //clone 받은 프로젝트 안의 Spring10_Security_Thymeleaf_Jenkins 디렉토리에서 stage 실행
         stage('Build') {
-            steps {    
-                // dir("Spring10_Security_Thymeleaf_Jenkins"){   //var/jenkins_home/workspace/pipeline_item/Spring10_Security_Thymeleaf_Jenkins
-                    sh "mvn -DskipTests clean compile package"
-                    echo ">>>>> s3 키값 확인용..."
-                    echo "${AWS_ACCESS_KEY_ID}"
-                    echo "${AWS_S3_SECRET_KEY}"
-                // }  
+            steps {
+                sed -i "s/\${AWS_ACCESS_KEY_ID}/${AWS_ACCESS_KEY_ID}/" "application.properties"
+                sed -i "s/\${AWS_S3_SECRET_KEY}/${AWS_S3_SECRET_KEY}/" "application.properties"
+
+                sh "mvn -DskipTests clean compile package"
             }
             post {
                 success {
@@ -77,29 +75,39 @@ pipeline {
                 }
         }
 
-        stage('Run Docker Container and Modify Config') {
-                    steps {
-                        sh 'echo $PROJECT_NAME'
-
-                        script {
-                            sh 'echo $PROJECT_NAME'
-                            // Docker 컨테이너 내에서 실행될 명령어
-                            docker.image('kimchan0765/jabibim_admin').inside {
-                                sh 'echo $PROJECT_NAME'
-                                sh """
-                                    echo "> application.properties 파일 위치로 이동"
-                                    cd /var/lib/jenkins/workspace/${env.PROJECT_NAME}/src/main/resources
-
-                                    echo "> application.properties 서버 전용 값으로 변경"
-                                    sed -i "s#\${AWS_ACCESS_KEY_ID}#${env.AWS_ACCESS_KEY_ID}#" application.properties
-                                    sed -i "s#\${AWS_S3_SECRET_KEY}#${env.AWS_S3_SECRET_KEY}#" application.properties
-                                """
-                            }
-                        }
-
-                        sh 'echo $PROJECT_NAME'
-                    }
-        }
+//         stage('Run Docker Container and Modify Config') {
+//                     steps {
+//                         sh 'echo $PROJECT_NAME'
+//
+//                         script {
+//                             sh 'echo $PROJECT_NAME'
+//                             // Docker 컨테이너 내에서 실행될 명령어
+//                             docker.image('kimchan0765/jabibim_admin').inside {
+//                                 sh 'echo $PROJECT_NAME'
+//                                 sh """
+//                                     echo "> application.properties 파일 위치로 이동"
+//                                     cd /var/lib/jenkins/workspace/${env.PROJECT_NAME}/src/main/resources
+//
+//                                     echo "> application.properties 서버 전용 값으로 변경"
+//                                     sed -i "s#\${AWS_ACCESS_KEY_ID}#${env.AWS_ACCESS_KEY_ID}#" application.properties
+//                                     sed -i "s#\${AWS_S3_SECRET_KEY}#${env.AWS_S3_SECRET_KEY}#" application.properties
+//                                 """
+//                             }
+//                         }
+//
+//                         sh 'echo $PROJECT_NAME'
+//                     }
+//                 post {
+//                     success {
+//                         sh 'echo "Run Docker Container and Modify Config Success"'
+//                     }
+//
+//                     failure {
+//                         sh 'echo "Run Docker Container and Modify Config Fail"'
+//                         exit 1
+//                     }
+//                 }
+//         }
 
     
         stage('Login'){
