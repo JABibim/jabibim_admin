@@ -40,8 +40,12 @@ public class S3Uploader {
     }
 
     private String putS3(File uploadFile, String filePath) {
-        amazonS3Client.putObject(new PutObjectRequest(bucket, filePath, uploadFile)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
+        try {
+            amazonS3Client.putObject(new PutObjectRequest(bucket, filePath, uploadFile)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (Exception e) {
+            throw new IllegalArgumentException("S3 업로드 중 오류가 발생했습니다.", e);
+        }
 
         return amazonS3Client.getUrl(bucket, filePath).toString();
     }
