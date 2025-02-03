@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.PaymentMapper">
+
+  <insert id="insertPayment" parameterType="payment">
+    INSERT INTO payment
+    (payment_id, created_at, payment_amount, payment_method, payment_status, paid_at, receipt_url, student_id, orders_id, course_id, academy_id)
+    VALUES (#{paymentId}, CURRENT_TIMESTAMP, #{paymentAmount}, #{paymentMethod}, #{paymentStatus}, #{paidAt}, #{receiptUrl}, #{studentId}, #{ordersId}, #{courseId}, #{academyId})
+  </insert>
+
+  <select id="getPaymentByPaymentId" parameterType="string" resultType="payment">
+    SELECT * FROM payment WHERE payment_id = #{paymentId}
+  </select>
+
+
+  <update id="updatePaymentStatus" parameterType="payment">
+    UPDATE payment SET payment_status = #{paymentStatus} WHERE payment_id = #{paymentId}
+  </update>
+  
+</mapper>

@@ -1,8 +1,13 @@
 package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Course;
+import com.jabibim.admin.dto.content.classes.response.SelectCourseClassDetailListResDto;
+import com.jabibim.admin.dto.content.classes.response.SelectCourseClassListResDto;
 import com.jabibim.admin.dto.content.course.request.InsertCourseReqDto;
+import com.jabibim.admin.dto.content.course.request.SelectCourseClassFileReqDto;
+import com.jabibim.admin.dto.content.course.request.SelectCourseClassReqDto;
 import com.jabibim.admin.dto.content.course.request.SelectCourseListReqDto;
+import com.jabibim.admin.dto.content.course.response.SelectClassFileDownResDto;
 import com.jabibim.admin.dto.content.course.response.SelectCourseListResDto;
 import com.jabibim.admin.func.S3Deleter;
 import com.jabibim.admin.func.S3Uploader;
@@ -120,6 +125,109 @@ public class ContentServiceImpl implements ContentService {
 
         // s3에서 파일 삭제 ( 해당 과정에 속한 모든 파일 (프로필 이미지, 강의 영상 및 강의 자료 ), 배치로 처리 할지 고려
         s3Deleter.deleteFiles(fileList);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SelectCourseClassListResDto> getCourseClassList(boolean isAdmin, String academyId) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("isAdmin", isAdmin);
+        map.put("academyId", academyId);
+
+        return contentDao.getCourseClassList(map);
+    }
+
+    @Override
+    public List<SelectCourseClassDetailListResDto> getCourseClassDetailList(int page, int limit, boolean isAdmin, String academyId, String courseId, String searchKeyword) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("isAdmin", isAdmin);
+        map.put("academyId", academyId);
+        map.put("limit", limit);
+        map.put("offset", (page - 1) * limit);
+        map.put("courseId", courseId);
+        map.put("searchKeyword", searchKeyword.equals("") ? "" : '%' + searchKeyword + '%');
+
+        return contentDao.getCourseClassDetailList(map);
+    }
+
+    @Override
+    public int getCourseClassDetailCount(boolean isAdmin, String academyId, String courseId, String searchKeyword) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("isAdmin", isAdmin);
+        map.put("academyId", academyId);
+        map.put("courseId", courseId);
+        map.put("searchKeyword", searchKeyword.equals("") ? "" : '%' + searchKeyword + '%');
+
+        return contentDao.getCourseClassDetailListCount(map);
+    }
+
+    @Override
+    @Transactional
+    public String addNewClassInfo(String academyId, String teacherId, String courseId, String classSubject, String classContent, String classType) {
+        String newClassId = UUIDGenerator.getUUID();
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("classId", newClassId);
+        map.put("courseId", courseId);
+        map.put("className", classSubject);
+        map.put("classContent", classContent);
+        map.put("classType", classType);
+        map.put("academyId", academyId);
+        map.put("teacherId", teacherId);
+        map.put("classSeq", contentDao.getMaxClassSeq(courseId));
+
+        contentDao.addNewClassInfo(map);
+
+        return newClassId;
+    }
+
+    @Override
+    public void addNewClassFileInfo(String academyId, String teacherId, String courseId, String classId, String classType, MultipartFile file) {
+        String newClassFileUUID = UUIDGenerator.getUUID();
+        if (file.getOriginalFilename() == null) {
+            throw new IllegalArgumentException("file 또는 파일 이름이 null입니다.");
+        }
+        String fileName = classType + "." + getExtension(file.getOriginalFilename());
+        String uploadPath = "course/" + courseId + "/class/" + classId + "/classFile/" + newClassFileUUID + "/" + fileName;
+
+        String uploadedPath = s3Uploader.uploadFileToS3(file, uploadPath);
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("classFileId", newClassFileUUID);
+        map.put("classFileOriginName", file.getOriginalFilename()); // 파일 원본 이름
+        map.put("classFilePath", uploadedPath); // 파일 경로
+        map.put("classFileType", file.getContentType()); // 파일 유형
+        map.put("classFileSize", file.getSize()); // 파일 크기(바이트)
+        map.put("academyId", academyId);
+        map.put("teacherId", teacherId);
+        map.put("courseId", courseId);
+        map.put("classId", classId);
+
+        contentDao.addNewClassFileInfo(map);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SelectCourseClassReqDto> getClassList(String courseId) {
+        return contentDao.getClassList(courseId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SelectCourseClassReqDto getClassInfoById(String classId) {
+        return contentDao.getClassInfoById(classId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SelectCourseClassFileReqDto getFileInfoByClassId(String classId) {
+        return contentDao.getFileInfoByClassId(classId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SelectClassFileDownResDto getClassFilePath(String classFileId) {
+        return contentDao.getClassFilePath(classFileId);
     }
 
     private String uploadNewCourseProfile(String courseId, MultipartFile courseImage) {

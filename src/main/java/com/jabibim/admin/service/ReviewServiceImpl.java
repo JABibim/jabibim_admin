@@ -6,7 +6,6 @@ import com.jabibim.admin.dto.ReviewListVO;
 import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.mybatis.mapper.ReviewMapper;
 import com.jabibim.admin.security.dto.AccountDto;
-import com.jabibim.admin.security.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;

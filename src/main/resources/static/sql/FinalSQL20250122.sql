@@ -313,7 +313,7 @@ CREATE TABLE cart (
                         deleted_at datetime ,
                         student_id varchar(36) ,
                         course_id varchar(36) ,
-                        academy_id varchar(36) 
+                        academy_id varchar(36)
 ) ;
 
 
@@ -361,7 +361,7 @@ CREATE TABLE payment (
                            student_id varchar(36) ,              # 결제자 정보
                            orders_id varchar(36) ,               # 상품 이름, 가격, 등등에 대한 정보
                            course_id varchar(100) ,
-                           academy_id varchar(100) 
+                           academy_id varchar(100)
 ) ;
 
 

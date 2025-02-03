@@ -34,43 +34,45 @@ const deleteClass = (courseId, classId) => {
 }
 const loadClassDetails = (classId, targetElement) => {
     $.ajax({
-        url: 'getClassDetail',
+        url: '/content/getClassDetail',
         type: 'GET',
         data: {classId},
         dataType: 'json',
         success: function (data) {
-            const {class_content} = data.classDetailInfo;
-            const fileList = data.classFileDetailList;
+            const {classDetailInfo, classFileDetailList} = data.data;
+
+            const {classId, className, classSeq, classType, classContent} = classDetailInfo;
+            const {classFileId, classFileName, classFileOriginName, classFilePath, classFileSize, classFileType} = classFileDetailList;
 
             const html = `
                 <div class="d-flex">
                     <div style="width: 50%; padding-right: 20px; border-right: 1px solid #ddd;">
                         <h5><strong>과정 설명</strong></h5>
-                        <p>${class_content}</p>
+                        <p>${classContent}</p>
                     </div>
                     
                     <div style="width: 50%; padding-left: 20px;">
                         <h5><strong>강의 자료</strong></h5>
-                        ${fileList && fileList.length > 0 ? `
+                        ${classFileDetailList ? `
                             <div class="file-list">
-                                ${fileList.map(file => `
                                     <div class="file-card" style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);">
                                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                                             <!-- 파일 이름 -->
-                                            <h6 style="margin: 0; flex: 1;">${file.class_file_origin}</h6>
+                                            <h6 style="margin: 0; flex: 1;">${classFileOriginName}</h6>
                                             <!-- 다운로드 버튼 -->
-                                            <a href="downloadClassFile?filePath=${encodeURIComponent(file.class_file_path)}&fileOriginName=${encodeURIComponent(file.class_file_origin)}" 
-                                               style="color: #007bff; text-decoration: none;" title="파일 다운로드" download>
+                                            <a href="/content/download/${classFileId}"  
+                                               style="color: #007bff; text-decoration: none;" 
+                                               title="파일 다운로드"
+                                               download="${classFileOriginName}"
+                                               >
                                                 <i class="bi bi-download" style="font-size: 1.5rem;"></i>
                                             </a>
                                         </div>
                                         <p style="margin: 0;">
-                                            <small><strong>파일 유형:</strong> ${file.class_file_type}</small><br>
-                                            <small><strong>파일 크기:</strong> ${formatFileSize(file.class_file_size)}</small><br>
-                                            <!-- <small><strong>경로:</strong> ${file.class_file_path}</small> TODO [chan] 경로가 필요 없을듯 해서 일단 주석처리합니다. -->
+                                            <small><strong>파일 유형:</strong> ${classFileType}</small><br>
+                                            <small><strong>파일 크기:</strong> ${formatFileSize(classFileSize)}</small><br>
                                         </p>
                                     </div>
-                                `).join('')}
                             </div>
                         ` : `<p>등록된 파일이 없습니다.</p>`}
                     </div>
@@ -96,6 +98,8 @@ const formatFileSize = (sizeInBytes) => {
 };
 const displayClassList = (data) => {
     const {classCount, classList} = data;
+    console.log('🚀 classCount : ', classCount);
+    console.log('🚀 classList : ', classList);
 
     if (!classList || classList.length === 0) {
         $('#classInfoContainer').html('<p>등록된 강의가 없습니다.</p>');
@@ -105,26 +109,26 @@ const displayClassList = (data) => {
     let html = `<p>총 <b>${classCount}</b>개의 강의가 등록되어 있습니다.</p>`;
     html += '<div class="accordion" id="accordionExample">';
     classList.forEach(item => {
-        const {class_id, class_name, class_seq} = item;
+        const {classId, className, classSeq} = item;
 
         // 각 아코디언에 고유 id 설정
-        const headerId = `heading${class_seq}`;
-        const collapseId = `collapse${class_seq}`;
+        const headerId = `heading${classSeq}`;
+        const collapseId = `collapse${classSeq}`;
 
         html += `
             <div class="accordion-item">
                 <h2 class="accordion-header" id="${headerId}" style="display: flex; align-items: center;">
                     <!-- 아코디언 버튼 -->
-                    <button class="accordion-button collapsed" type="button" data-class-id="${class_id}" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
-                        #${class_seq}&nbsp;&nbsp;${class_name}
+                    <button class="accordion-button collapsed" type="button" data-class-id="${classId}" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
+                        #${classSeq}&nbsp;&nbsp;${className}
                     </button>
                     <!-- 삭제 버튼 -->
-                    <button type="button" class="btn btn-danger btn-sm me-2 deleteClassBtn" data-class-id="${class_id}" title="강의 삭제">
+                    <button type="button" class="btn btn-danger btn-sm me-2 deleteClassBtn" data-class-id="${classId}" title="강의 삭제">
                         <i class="bi bi-trash"></i>
                     </button>
                 </h2>
                 <div id="${collapseId}" class="accordion-collapse collapse" aria-labelledby="${headerId}" data-bs-parent="#accordionExample">
-                    <div class="accordion-body" id="classBody${class_id}">
+                    <div class="accordion-body" id="classBody${classId}">
                         <p>로딩 중...</p>
                     </div>
                 </div>
@@ -136,15 +140,17 @@ const displayClassList = (data) => {
     $('#classInfoContainer').html(html);
 };
 const getCourseClassList = (courseId) => {
+    console.log('======> courseId : ', courseId);
     $.ajax({
-        url: 'getCourseClassList',
+        url: '/content/getCourseClassList',
         data: {
             courseId
         },
         dataType: 'json',
         cache: false,
         success: function (data) {
-            displayClassList(data);
+            console.log('====================================================> data : ', data);
+            displayClassList(data.data);
         }, error: function () {
             console.log('과정에 속한 강의 목록 Ajax 호출 도중 에러가 발생했습니다.');
         }
