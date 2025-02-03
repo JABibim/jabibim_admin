@@ -54,6 +54,7 @@ public class PaymentsController {
     HashMap<String, Object> result = portOneService.getPaymentById(payment.getPaymentId());
 
     switch ((String) result.get("status")) {
+      
       case "PAID" -> {
         logger.info("Payment status is PAID");
         HashMap<String, Integer> amount = (HashMap<String, Integer>) result.get("amount");

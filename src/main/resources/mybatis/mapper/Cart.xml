@@ -4,7 +4,7 @@
 <mapper namespace="com.jabibim.admin.mybatis.mapper.CartMapper">
 
   <select id="getCartList" resultType="cartItemVO">
-    SELECT c.*, s.student_name, i.course_name, i.course_subject, i.course_diff, i.course_price, i.course_img_name, i.teacher_name
+    SELECT c.*, s.student_name, i.course_name, i.course_subject, i.course_diff, i.course_price, i.course_profile_origin_name, i.course_profile_path, i.teacher_name
     FROM    (SELECT *
                 FROM cart
                 WHERE academy_id = #{academyId}) c
@@ -12,7 +12,7 @@
                     FROM student
                     WHERE academy_id=#{academyId} ) s
     ON c.student_id = s.student_id
-    INNER JOIN (SELECT course_id, course_name, course_subject, course_diff, course_price, course_img_name, teacher_name
+    INNER JOIN (SELECT course_id, course_name, course_subject, course_diff, course_price, course_profile_origin_name, course_profile_path, teacher_name
                     FROM course
                     INNER JOIN (SELECT teacher_id, teacher_name
                                     FROM teacher
