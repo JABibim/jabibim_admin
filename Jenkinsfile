@@ -20,7 +20,7 @@ pipeline {
         stage('Git Pull') {
             steps {
                 // Get some code from a GitHub repository
-                git branch: 'prod', credentialsId: 'github', url: 'https://github.com/JABibim/jabibim_admin.gitttt'
+                git branch: 'prod', credentialsId: 'github', url: 'https://github.com/JABibim/jabibim_admin.git'
             }
             post {
                 success {
@@ -156,12 +156,11 @@ pipeline {
             post {
                 success {
                     sh 'echo "multiline ssh 성공"'
+                    slackSend(color: '#36a64f', message: "✅ Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' has completed successfully! (${env.BUILD_URL})")
                 }
                 failure {
                     sh 'echo "multiline ssh 실패"'
-
-                    slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
-
+                    slackSend(color: '#FF0000', message: "❌ FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
                     exit 1
                 }
             }
