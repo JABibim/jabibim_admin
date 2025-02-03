@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>중앙비빔 Admin</title>
+    <style>
+        dialog {
+            width: 300px;
+            z-index: 100;
+            padding: 30px;
+            margin: 0;
+            background: white;
+            left: 50%;
+            top: 40%;
+            transform: translate(-50%, -50%);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, .5);
+            border: none;
+            border-radius: 10px;
+        }
+
+        /* 요일 헤더 색상 */
+        .fc-day-sun .fc-col-header-cell-cushion {
+            color: red;
+        }
+
+        .fc-day-sat .fc-col-header-cell-cushion {
+            color: blue;
+        }
+
+        /* 날짜 숫자 색상 */
+        .fc-daygrid-day.fc-day-sun .fc-daygrid-day-number {
+            color: red;
+        }
+
+        .fc-daygrid-day.fc-day-sat .fc-daygrid-day-number {
+            color: blue;
+        }
+
+        .fc-daygrid-day.fc-day-weekday .fc-daygrid-day-number {
+            color: black;
+        }
+    </style>
+
+</head>
+<body>
+<div layout:fragment="content">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.15/index.global.min.js"></script>
+    <script th:src="@{/js/calendar.js}"></script>
+    <script>
+
+    </script>
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>개인일정 관리</h1>
+            <nav>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <ol class="breadcrumb" style="margin: 0; padding: 0;">
+                        <li class="breadcrumb-item"><a th:href="@{dashboard}">개인일정</a></li>
+                        <li class="breadcrumb-item active">개인일정 목록</li>
+                    </ol>
+                    <th:block th:if="${#strings.isEmpty(calendarInfo)}">
+                        <button id="joinGCalBtn"
+                                type="button" class="btn btn-primary" style="margin-left: auto;"
+                                onclick="openPopup()">
+                            구글 캘린더 연동하기
+                        </button>
+                    </th:block>
+                </div>
+            </nav>
+        </div><!-- End Page Title -->
+        <div class="card">
+            <div class="card-body">
+                <div id='calendar'></div>
+                <dialog>
+                    <div>제목 테스트</div>
+                    <button>닫기</button>
+                </dialog>
+            </div>
+        </div>
+    </main><!-- End #main -->
+</div>
+
+<!-- 위로가기 버튼입니다 -->
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+    <i class="bi bi-arrow-up-short"></i>
+</a>
+
+</body>
+</html>
