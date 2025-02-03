@@ -16,12 +16,10 @@ import java.util.List;
 @Service
 public class TeacherServiceImpl implements TeacherService {
 
-    private final TeacherMapper teacherMapper;
-    private TeacherMapper dao;
+    private final TeacherMapper dao;
 
-    public TeacherServiceImpl(TeacherMapper dao, TeacherMapper teacherMapper) {
+    public TeacherServiceImpl(TeacherMapper dao) {
         this.dao = dao;
-        this.teacherMapper = teacherMapper;
     }
 
 
@@ -93,7 +91,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     public int updateProfileImage(String teacherId, String teacherImgName)  {
-        return teacherMapper.updateProfileImage(teacherId, teacherImgName);
+        return dao.updateProfileImage(teacherId, teacherImgName);
     }
 
     @Override

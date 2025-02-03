@@ -35,4 +35,5 @@ public interface TeacherService {
     int updateCareerActive(String careerName, int displayStatus);
 
     void insertCareer(TeacherCareer career);
+
 }

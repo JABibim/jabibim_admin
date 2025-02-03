@@ -39,4 +39,9 @@ public interface TeacherMapper {
 
     void insertCareer(TeacherCareer career);
 
+    void insertOauthTeacher(Teacher teacher);
+
+    void updateOauthTeacher(Teacher existData);
+
+    Teacher getTeacherByProviderId(String provider);
 }
