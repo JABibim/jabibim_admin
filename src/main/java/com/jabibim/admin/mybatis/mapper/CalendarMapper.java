@@ -17,4 +17,10 @@ public interface CalendarMapper {
     int updateReIssueTokenInfo(HashMap<String, Object> map);
 
     void insertCalendar(CalendarEvent calendar);
+
+    SelectTeacherCalInfoReqDto getCalendarInfo(String eventId);
+
+    void updateCalendar(CalendarEvent calendar);
+
+    int deleteEvent(SelectTeacherCalInfoReqDto calendarInfo);
 }

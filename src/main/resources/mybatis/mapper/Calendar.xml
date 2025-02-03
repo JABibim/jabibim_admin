@@ -63,4 +63,32 @@
              #{academyId}, #{teacherId});
     </insert>
 
+    <select id="getCalendarInfo" resultType="selectTeacherCalInfoReqDto">
+        SELECT ce.calendar_event_id
+             , ce.google_event_id
+             , ce.calendar_id
+             , c.access_token
+        FROM calendar_event ce
+                 JOIN calendar c ON ce.calendar_id = c.google_calendar_id
+        WHERE ce.deleted_at IS NULL
+          AND ce.google_event_id = #{eventId}
+    </select>
+
+    <update id="updateCalendar">
+        UPDATE calendar_event
+        SET updated_at = now(),
+            event_title = #{eventTitle},
+            event_description = #{eventDescription},
+            event_start = #{eventStart},
+            event_end = #{eventEnd},
+            event_location = #{eventLocation}
+        WHERE google_event_id = #{googleEventId}
+    </update>
+
+    <update id="deleteEvent">
+        UPDATE calendar_event
+        SET deleted_at = NOW()
+        WHERE google_event_id = #{googleEventId}
+    </update>
+
 </mapper>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
@@ -9,7 +10,7 @@
     <title>중앙비빔 Admin</title>
     <style>
         dialog {
-            width: 300px;
+            width: 500px;
             z-index: 100;
             padding: 30px;
             margin: 0;
@@ -50,7 +51,7 @@
 <div layout:fragment="content">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/google-calendar@6.1.15/index.global.min.js"></script>
-    <script th:src="@{/js/calendar.js}"></script>
+    <script th:src="@{/js/calendar2.js}"></script>
     <main id="main" class="main">
         <div class="pagetitle">
             <h1>개인일정 관리</h1>
@@ -59,9 +60,9 @@
                     <li class="breadcrumb-item"><a th:href="@{dashboard}">개인일정</a></li>
                     <li class="breadcrumb-item active">개인일정 목록</li>
                 </ol>
-<!--                <button class="btn btn-primary" style="float: right" id="getNewToken">-->
-<!--                    새로운 토큰 발급받기-->
-<!--                </button>-->
+                <!--                <button class="btn btn-primary" style="float: right" id="getNewToken">-->
+                <!--                    새로운 토큰 발급받기-->
+                <!--                </button>-->
             </nav>
         </div><!-- End Page Title -->
         <div class="card">
@@ -80,7 +81,6 @@
                 <div id='calendar'></div>
                 <dialog>
                     <div>제목 테스트</div>
-                    <button>닫기</button>
                 </dialog>
                 <dialog></dialog>
             </div>
@@ -95,3 +95,4 @@
 
 </body>
 </html>
+

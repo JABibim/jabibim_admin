@@ -17,4 +17,9 @@ public interface CalendarService {
 
     public void insertCalendar(CalendarEvent calendar);
 
+    public SelectTeacherCalInfoReqDto getCalendarInfo(String eventId);
+
+    public void updateCalendar(CalendarEvent calendar);
+
+    public int deleteEvent(String eventId);
 }

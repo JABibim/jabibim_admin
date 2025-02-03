@@ -90,4 +90,24 @@ public class CalendarServiceImpl implements CalendarService {
         dao.insertCalendar(calendar);
 
     }
+
+    @Override
+    public SelectTeacherCalInfoReqDto getCalendarInfo(String eventId) {
+        return dao.getCalendarInfo(eventId);
+    }
+
+    @Override
+    public void updateCalendar(CalendarEvent calendar) {
+        dao.updateCalendar(calendar);
+    }
+
+    @Override
+    public int deleteEvent(String eventId) {
+        int result =0;
+        SelectTeacherCalInfoReqDto calendarInfo = dao.getCalendarInfo(eventId);
+        if (calendarInfo != null) {
+            result = dao.deleteEvent(calendarInfo);
+        }
+        return result;
+    }
 }
