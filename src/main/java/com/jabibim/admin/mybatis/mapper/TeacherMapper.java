@@ -40,4 +40,10 @@ public interface TeacherMapper {
     void insertCareer(HashMap<String, Object> map);
 
     String getUploadPathByCareerId(String careerId);
+
+    void insertOauthTeacher(Teacher teacher);
+
+    void updateOauthTeacher(Teacher existData);
+
+    Teacher getTeacherByProviderId(String provider);
 }

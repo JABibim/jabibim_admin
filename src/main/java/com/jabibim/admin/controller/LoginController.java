@@ -1,6 +1,7 @@
 package com.jabibim.admin.controller;
 
 import com.jabibim.admin.security.dto.AccountDto;
+import com.jabibim.admin.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -15,12 +16,22 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+
 @Controller
 public class LoginController {
     private final RequestCache requestCache = new HttpSessionRequestCache();
+    private final CustomOAuth2UserService customOAuth2UserService;
+
+    public LoginController(CustomOAuth2UserService customOAuth2UserService) {
+        this.customOAuth2UserService = customOAuth2UserService;
+    }
+
+
 
     @GetMapping(value = "/login")
-    public String loginForm(Authentication authentication, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public String loginForm(
+            Authentication authentication, HttpServletRequest request, HttpServletResponse response) throws Exception {
+
         if (authentication != null && authentication.isAuthenticated()) {
             // 이전 경로 가져오기
             SavedRequest savedRequest = requestCache.getRequest(request, response);
@@ -61,4 +72,6 @@ public class LoginController {
 
         return "error/403";
     }
+
+
 }

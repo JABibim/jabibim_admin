@@ -10,12 +10,18 @@ public class Teacher {
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
     private String teacherName;
+    private String teacherGivenName;
+    private String teacherFamilyName;
     private String teacherPhone;
     private String teacherEmail;
+    private int teacherEmailVerified;
     private String teacherPassword;
     private String teacherJob;
     private String teacherImgName;
     private String teacherImgOrigin;
+    private String oauthPicture;
     private String authRole;
+    private String provider;
+    private String providerId;
     private String academyId;
 }

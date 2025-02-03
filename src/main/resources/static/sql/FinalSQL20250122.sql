@@ -72,17 +72,21 @@ VALUES ('d8b6602c-fcbb-437f-8874-3f4648f8d22d', '2025-01-03 16:49:07', NULL, NUL
 
 CREATE TABLE teacher
 (
-    teacher_id         varchar(36),
+    teacher_id         varchar(36),   #google에서 id를 sub라고함
     created_at         datetime,
     updated_at         datetime,
     deleted_at         datetime,
     teacher_name       varchar(20),  # 강사 본명
+    teacher_given_name  varchar(20),   #google 이름(ex: 지원)
+    teacher_family_name  varchar(20),  #google 성(ex: 유)
     teacher_phone      varchar(20),  # 연락처
     teacher_email      varchar(50),  # 이메일
+    teacher_email_verified   tinyint(1),    #google 이메일 인증 (true=1, false=0)
     teacher_password   varchar(100), # 비밀번호
     teacher_job        varchar(36),  # 선임강사, 평강사 등 직원 관리 탭에서 학원이 알아서 등록할 수 있다.
     teacher_img_name   varchar(500), # DB에 들어갈 강사 프로필 이미지 이름
     teacher_img_origin varchar(500), # 웹에서 표시될 강사 프로필 이미지 이름
+    oauth_picture    varchar(500),   #google OAuth에서 주는 이미지경로
     auth_role          varchar(20),  # 권한 ADMIN OR MANAGER OR LECTURER
     academy_id         varchar(36)
 );
@@ -99,17 +103,17 @@ VALUES ('be37dd3d-b1c6-4aad-a378-abf2ed133423', '2025-01-03 16:25:14', NULL, NUL
 # S3 또는 DB에 저장 고민
 CREATE TABLE career
 (
-    career_id               varchar(36),
-    created_at              datetime,
-    updated_at              datetime,
-    deleted_at              datetime,
-    career_name             varchar(500), # 목록에 표시될 소개 이미지 이름
-    career_info             varchar(500), # 소개 파일에 대한 간단한 설명(일단 냅둘게요)
-    career_file_origin_name varchar(500), # 파일 실제 이름
-    career_file_path        varchar(500), # 파일의 s3 경로
-    display_status          tinyint(1),   # 해당 이미지 공개 여부
-    teacher_id              varchar(36),  # 해당 선생 구분 위해
-    academy_id              varchar(36)   # 학원별 구분 위해
+    career_id          varchar(36),
+    created_at         datetime,
+    updated_at         datetime,
+    deleted_at         datetime,
+    career_name        varchar(500), # 목록에 표시될 소개 이미지 이름
+    career_info        varchar(500), # 소개 파일에 대한 간단한 설명?
+    career_file_name   varchar(500), # DB에 저장될 소개 파일 이름
+    career_file_origin varchar(500), # 웹에 표시될 소개 파일 이름
+    display_status     tinyint(1),   # 해당 이미지 공개 여부
+    teacher_id         varchar(36),  # 해당 선생 구분 위해
+    academy_id         varchar(36)   # 학원별 구분 위해
 );
 
 

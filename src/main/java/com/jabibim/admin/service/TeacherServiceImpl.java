@@ -17,17 +17,15 @@ import java.util.UUID;
 import java.util.HashMap;
 import java.util.List;
 
-
+  
 @Service
 public class TeacherServiceImpl implements TeacherService {
 
-    private final TeacherMapper teacherMapper;
     private final S3Uploader s3Uploader;
     private TeacherMapper dao;
 
     public TeacherServiceImpl(TeacherMapper dao, TeacherMapper teacherMapper, S3Uploader s3Uploader) {
         this.dao = dao;
-        this.teacherMapper = teacherMapper;
         this.s3Uploader = s3Uploader;
     }
 
@@ -99,8 +97,8 @@ public class TeacherServiceImpl implements TeacherService {
         return newFileName;
     }
 
-    public int updateProfileImage(String teacherId, String teacherImgName) {
-        return teacherMapper.updateProfileImage(teacherId, teacherImgName);
+    public int updateProfileImage(String teacherId, String teacherImgName)  {
+        return dao.updateProfileImage(teacherId, teacherImgName);
     }
 
     @Override
