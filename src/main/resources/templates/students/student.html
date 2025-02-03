@@ -146,8 +146,7 @@
                         <td th:text="${student.studentEmail}"></td>
 <!--                        <td th:text="${student.enrollmentCount} + '건'"></td>-->
                         <td>3건</td>
-<!--                        <td th:text="${student.paymentAmountSum} + '원'"></td>-->
-                        <td>10원</td>
+                        <td th:text="${#numbers.formatInteger(student.paymentAmountSum, 0, 'COMMA')} + '원'"></td>
                         <td th:text="${#dates.format(student.createdAt, 'yyyy-MM-dd')}"></td>
                         <td th:text="${#dates.format(student.createdAt, 'yyyy-MM-dd')}"></td>
                         <td th:text="${student.deletedAt == null ? '정상' : '탈퇴'}"></td>

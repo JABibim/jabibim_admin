@@ -24,7 +24,8 @@ public class FormAuthenticationProvider implements AuthenticationProvider {
     private final PasswordEncoder passwordEncoder;
     @Value("${admin.password}")
     private String adminPassword;
-    private static final String[] ADMIN_EMAILS = {"imsgchang97@gmail.com", "rhdms085@gmail.com", "0402gewon@gmail.com", "salbul.mo91@gmail.com", "bitnalchan92@gmail.com"};
+    private static final String[] ADMIN_EMAILS = { "imsgchang97@gmail.com", "rhdms085@gmail.com", "0402gewon@gmail.com",
+            "salbul.mo91@gmail.com", "bitnalchan92@gmail.com" };
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -63,12 +64,14 @@ public class FormAuthenticationProvider implements AuthenticationProvider {
         }
 
         // 비밀번호는 보안상 넘기지 않습니다.
-        return new UsernamePasswordAuthenticationToken(accountContext.getAccountDto(), null, accountContext.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(accountContext.getAccountDto(), null,
+                accountContext.getAuthorities());
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
-        // 전달된 authentication 객체가 UsernamePasswordAuthenticationToken 타입인지 확인 => 맞으면! authenticate() 메소드 호출하겠다는 의미!
+        // 전달된 authentication 객체가 UsernamePasswordAuthenticationToken 타입인지 확인 => 맞으면!
+        // authenticate() 메소드 호출하겠다는 의미!
         return authentication.isAssignableFrom(UsernamePasswordAuthenticationToken.class);
     }
 }

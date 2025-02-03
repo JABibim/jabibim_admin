@@ -1,8 +1,11 @@
 package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Student;
-import com.jabibim.admin.dto.GetStudentGradesDTO;
+import com.jabibim.admin.dto.DeleteGradeDTO;
+import com.jabibim.admin.dto.StudentUserVO;
+import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.mybatis.mapper.StudentMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
@@ -10,10 +13,12 @@ import java.util.List;
 @Service
 public class StudentServiceImpl implements StudentService {
 
-    private StudentMapper dao;
+    private final StudentMapper dao;
+    private final PasswordEncoder passwordEncoder;
 
-    public StudentServiceImpl(StudentMapper dao) {
+    public StudentServiceImpl(StudentMapper dao, PasswordEncoder passwordEncoder) {
         this.dao = dao;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -53,9 +58,6 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<GetStudentGradesDTO> getStudentGrades(String academyId) {
-        return dao.getStudentGrades(academyId);
-    }
     public int getStudentAdCount(String academyId, boolean isAdmin, String search_field, String search_word) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("academyId", academyId);
@@ -81,5 +83,27 @@ public class StudentServiceImpl implements StudentService {
         return dao.getStudentAdList(params);
     }
 
+    @Override
+    public int replaceGrade(DeleteGradeDTO deleteGradeDTO) {
+        return dao.replaceGrade(deleteGradeDTO);
+    }
 
+
+    @Override
+    public boolean insertStudent(Student student) {
+        StudentUserVO studentUserVO = getStudentByEmail(student.getStudentEmail(), student.getAcademyId());
+        if (studentUserVO == null) {
+            String id = UUIDGenerator.getUUID();
+            student.setStudentId(id);
+            student.setStudentPassword(passwordEncoder.encode(student.getStudentPassword()));
+            dao.insertStudent(student);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public StudentUserVO getStudentByEmail(String studentEmail, String academyId) {
+        return dao.getStudentByEmail(studentEmail, academyId);
+    }
 }

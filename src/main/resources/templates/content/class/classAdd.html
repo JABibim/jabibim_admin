@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>강의 추가</title>
+    <th:block th:replace="~{fragments/headerImport :: HeaderImportFragment}"></th:block>
+    <script th:src="@{/js/classAdd.js}" charset="UTF-8"></script>
+    <link rel="stylesheet" th:href="@{/css/classAdd.css}">
+</head>
+<body>
+<th:block th:replace="~{fragments/header :: Header}"></th:block>
+<th:block th:replace="~{fragments/sidebar :: SideBar}"></th:block>
+
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>콘텐츠 관리</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/content/class}">강의 관리</a>
+                <li class="breadcrumb-item active">신규 강의 등록</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <div class="card">
+        <div class="card-body p-4">
+            <form th:action="@{addClassProcess}" method="post" name="classForm" enctype="multipart/form-data">
+                <!-- 과정명 -->
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label pt-4 fw-bold">과정명</label>
+                    <div class="col-sm-10 pt-4">
+                        <select class="form-select" aria-label="Default select example" id="courseId" name="courseId">
+                            <option value="none" selected disabled>과정을 선택해주세요.</option>
+                            <th:block th:each="c : ${courseClassList}">
+                                <option th:value="${c.courseId}" th:text="${c.courseName}"></option>
+                            </th:block>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 강의명 -->
+                <div class="row mb-3">
+                    <label for="classSubject" class="col-sm-2 col-form-label fw-bold">강의명</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" placeholder="강의명을 입력해주세요." id="classSubject"
+                               name="classSubject">
+                    </div>
+                </div>
+
+                <!-- 강의 상세 설명(CLASS_CONTENT) -->
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label fw-bold">상세 설명</label>
+                    <div class="col-sm-10 pb-5">
+                        <div id="editor"></div>
+                        <input type="hidden" name="classContent" id="classContent">
+                    </div>
+                </div>
+
+                <!-- 강의 타입 -->
+                <div class="row mb-3 d-flex">
+                    <legend class="col-form-label col-sm-2 pt-4 fw-bold">강의 상세 타입</legend>
+                    <div class="col-sm-10 d-flex align-items-center pt-4">
+                        <div class="form-check me-4">
+                            <input class="form-check-input" type="radio" name="type" id="video" value="video">
+                            <label class="form-check-label" for="video">동영상(강의영상)</label>
+                        </div>
+                        <div class="form-check me-4">
+                            <input class="form-check-input" type="radio" name="type" id="file" value="file">
+                            <label class="form-check-label" for="file">강의자료</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 업로드 파일 -->
+                <div class="row mb-3 align-items-center">
+                    <label for="uploadFile" class="col-sm-2 col-form-label fw-bold">업로드 파일</label>
+                    <div class="col-sm-10">
+                        <!-- 드래그 앤 드롭 영역 -->
+                        <div id="dropZone" class="drop-zone" style="display: flex; justify-content: center;">
+                            <p id="defaultText">파일을 이곳에 드래그 앤 드롭하거나 클릭하여 업로드하세요. </p>
+                            &nbsp;&nbsp;<i class="bi bi-trash" id="resetUploadFile" style="color: red; display: none"></i>
+                        </div>
+                        <!-- 실제 파일 입력 (숨김 처리) -->
+                        <input class="form-control" type="file" id="uploadFile" name="uploadFile"
+                               style="display: none;">
+                    </div>
+                </div>
+
+                <div style="float: right;">
+                    <button type="reset" class="btn btn-secondary" id="cancelBtn"
+                            th:onClick="|location.href='/content/class'|">
+                        목록&nbsp;&nbsp;<i class="bi bi-backspace"></i>
+                    </button>
+                    <button class="btn btn-primary" id="submitBtn">
+                        등록&nbsp;&nbsp;<i class="bi bi-pencil"></i>
+                    </button>
+                </div>
+            </form><!-- End General Form Elements -->
+        </div>
+    </div>
+    <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"
+         style="z-index: 11">
+        <!-- 토스트 예시 -->
+        <div class="toast" id="validationToast" role="alert" aria-live="assertive" aria-atomic="true"
+             data-bs-delay="3000">
+            <div class="toast-header">
+                <strong class="me-auto" style="color: red;">알림</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                입력된 값이 유효하지 않습니다.
+            </div>
+        </div>
+    </div>
+    <div id="progressContainer" style="position: fixed; bottom: 20px; right: 20px; width: 320px; display: none; z-index: 1000;">
+        <div style="background-color: #dbeafe; border-radius: 10px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); overflow: hidden;">
+            <div id="progressBar" style="width: 0%; height: 25px; background: linear-gradient(90deg, #a5d8f3 0%, #89c2d9 100%); display: flex; align-items: center; transition: width 0.4s ease;">
+                <span id="progressText" style="color: #004b5e; font-size: 14px; font-weight: bold; margin-left: 10px;">0%</span>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/footerImport :: FooterImportFragment}"></th:block>
+</body>
+</html>

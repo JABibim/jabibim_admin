@@ -8,47 +8,57 @@ const select = (el, all = false) => {
 }
 
 function listajax() {
+    const limit = $('#itemsPerPage').val();
+    
     $.ajax({
         type: "post",
         url: "orders/orderlist",
+        data: { limit: limit },
         dataType: "json",
         cache: false,
         success: function(data) {
-            console.log(data);
             printOrderList(data);
-        }
-        ,error: function(){
+        },
+        error: function(){
             console.log("주문 페이지 출력 에러");
         }
     });
-
 }
-function printOrderList (data) {
-    const $table = $('#order-list-table');
-    data.orderList.forEach(function(item) {
-        let output = `<tr>
-                             <td> ${item.student_name} </td>
-                             <td> ${item.course_name} </td>
-                             <td> ${item.course_price.toLocaleString()}</td>
-                             <td> ${item.payment_amount.toLocaleString()} </td>
-                             <td> ${item.payment_method} </td>
-                             <td> ${item.payment_status} </td>
-                             <td> ${item.order_date} </td>
-                             <td> ${item.payment_approved_at} </td>
-                             // payment_id 와 enrollment_id 암호화 전달 예정
-                             <td><input type="hidden" name="id" value="${item.payment_id},${item.enrollment_id}"><button type="button" class="btn btn-secondary rounded-pill payment-detail">상세 보기</button></td>
-                            </tr>`;
 
-        $table.find('tbody').append(output);
+function printOrderList(data) {
+    const $tbody = $('#order-list-table tbody');
+    $tbody.empty();
+    
+    if (!data.orderList || data.orderList.length === 0) {
+        $tbody.append('<tr><td colspan="9" class="text-center">주문 내역이 없습니다.</td></tr>');
+        return;
+    }
+    
+    data.orderList.forEach(function(item) {
+        const statusClass = item.payment_status === 'SUCCESS' ? 'bg-success' : 
+                          item.payment_status === 'FAILED' ? 'bg-danger' : 'bg-secondary';
+                          
+        let output = `<tr>
+            <td>${item.student_name}</td>
+            <td>${item.course_name}</td>
+            <td>${item.course_price.toLocaleString()}원</td>
+            <td>${item.payment_amount.toLocaleString()}원</td>
+            <td>${item.payment_method}</td>
+            <td><span class="badge ${statusClass}">${item.payment_status}</span></td>
+            <td>${item.order_date}</td>
+            <td>${item.payment_approved_at}</td>
+            <td>
+                <button type="button" class="btn btn-secondary btn-sm rounded-pill payment-detail"
+                        data-payment-id="${item.payment_id}"
+                        data-enrollment-id="${item.enrollment_id}">
+                    상세 보기
+                </button>
+            </td>
+        </tr>`;
+        
+        $tbody.append(output);
     });
 }
-
-function printOrderDetail(data) {
-    $('#order-list-container > div > div > div').hide();
-
-    $('#order-list-container > div > div').append(data);
-}
-
 
 function orderDetail(id) {
     $.ajax({
@@ -58,8 +68,7 @@ function orderDetail(id) {
         dataType: "html",
         cache: false,
         success: function(data) {
-            console.log(data);
-            printOrderDetail(data);
+            $('#orderDetailModal .modal-body').html(data);
         },
         error: function(){
             console.log("주문 상세 페이지 출력 에러");
@@ -68,70 +77,20 @@ function orderDetail(id) {
 }
 
 $(function(){
-    $(document).ready(listajax())
-    $(document).on( "ajaxComplete", function() {
-        $('#order-list-table').addClass('datatable');
-        const datatables = select('.datatable', true)
-        datatables.forEach(datatable => {
-            new simpleDatatables.DataTable(datatable, {
-                perPageSelect: [5, 10, 15, ["All", -1]],
-                columns: [{
-                    select: 0,
-                    sortSequence: ["desc", "asc"]
-                },{
-                    select: 1,
-                    sortSequence: ["desc", "asc"]
-                },
-                  {
-                    select: 2,
-                    sortSequence: ["desc", "asc"],
-                    className: "text-right"
-                },
-                {
-                    select: 3,
-                    sortSequence: ["desc","asc"],
-                    className: "text-right"
-                    },
-                    {
-                        select: 4,
-                        sortSequence: ["desc","asc"]
-                    },
-                    {
-                        select: 5,
-                        sortSequence: ["desc","asc"]
-                    },
-                    {
-                        select: 6,
-                        type: "date",
-                        format: "YYYY/MM/DD",
-                        sortSequence: ["desc","asc"]
-                    },
-                    {
-                        select: 7,
-                        type: "date",
-                        format: "YYYY/MM/DD",
-                        sortSequence: ["desc","asc"]
-                    },
-                    {
-                        select: 8,
-                        sortable: false,
-                        searchable: false
-                    }
-                ]
-            });
-        })
-        $('#order-list-container > div > div > div > div > div > div.datatable-container').css('border', '0');
+    // 페이지 로드 시 주문 목록 조회
+    listajax();
+    
+    // 페이지당 항목 수 변경 이벤트
+    $('#itemsPerPage').change(function() {
+        listajax();
     });
-    $(document).on("click", ".payment-detail", function(e){
-        const val = $(this).parent().find('input').val();
-        console.log(window.location.hash);
-        window.location.hash="#orderDetail";
-        orderDetail(val);
-    });
-
-    $(document).on('click', '#order-list-container > div > div > div.row > div.col-12 > button', function() {
-        $('#order-list-container > div > div > div').show();
-        $('#order-list-container > div > div > div.row').remove();
+    
+    // 상세보기 버튼 클릭 이벤트
+    $(document).on('click', '.payment-detail', function() {
+        const paymentId = $(this).data('payment-id');
+        const enrollmentId = $(this).data('enrollment-id');
+        orderDetail(paymentId + ',' + enrollmentId);
+        $('#orderDetailModal').modal('show');
     });
 });
 

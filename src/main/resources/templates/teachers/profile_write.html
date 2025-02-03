@@ -6,108 +6,81 @@
 <head>
     <meta charset="utf-8">
     <title>약력 관리 > 약력 등록하기</title>
-
-    <style>
-        .preview-container {
-            display: flex;
-            align-items: center; /* 세로 중앙 정렬 */
-        }
-
-        .preview-container img {
-            max-width: 150px; /* 이미지 크기 조절 */
-            height: auto;
-            margin-left: 10px; /* 텍스트와 이미지 간의 간격 */
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: flex-end; /* 오른쪽 정렬 */
-            gap: 10px; /* 버튼 간 간격 */
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/profile_write.css}">
+    <script th:src="@{/js/profile_write.js}" charset="UTF-8"></script>
 </head>
 <body>
 <div layout:fragment="content">
     <main id="main" class="main">
         <div class="pagetitle">
-            <h1>약력관리</h1>
+            <h1>약력 관리</h1>
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a th:href="@{/dashboard}">약력 관리</a></li>
                     <li class="breadcrumb-item active">약력 등록하기</li>
                 </ol>
             </nav>
-        </div><!-- End Page Title -->
+        </div>
+        <div class="form_container">
+            <div class="card">
+                <div class="card-body">
+                    <div style="margin-top: 30px;">
+                        <form th:action="@{addProcess}" method="post" enctype="multipart/form-data">
+                            <!-- 약력 제목 -->
+                            <div class="row mb-3">
+                                <label for="career_name" class="col-sm-2 col-form-label fw-bold">약력 제목</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="career_name" name="careerName"
+                                           required>
+                                </div>
+                            </div>
 
-        <div class="container">
-            <div class="form_container container">
-                <div class="card">
-                    <div class="card-body">
-                        <div style="margin-top: 30px;">
-                            <form th:action="@{/profile/add}" method="post" enctype="multipart/form-data">
-                                <!-- 파일명 입력 -->
-                                <div class="row mb-3">
-                                    <label for="career_name" class="col-sm-2 col-form-label">약력 제목</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="career_name" name="career_name" required>
+                            <!-- 약력 이미지 업로드 input -->
+                            <div class="row mb-3 align-items-center">
+                                <label for="career_image" class="col-sm-2 col-form-label fw-bold">약력 이미지</label>
+                                <div class="col-sm-10">
+                                    <!-- 드래그 앤 드롭 영역 -->
+                                    <div id="dropZone" class="drop-zone">
+                                        <p>이미지를 이곳에 드래그 앤 드롭하거나 클릭하여 업로드하세요.</p>
+                                        <img id="previewImage" src="" alt="미리보기" style="display: none;">
                                     </div>
+                                    <!-- 실제 파일 입력 (숨김 처리) -->
+                                    <input class="form-control" type="file" id="career_image" name="careerImage"
+                                           style="display: none;">
+                                    <button type="submit" class="btn btn-danger mt-2 float-end" id="imgDeleteBtn"
+                                            style="display: none;">
+                                        삭제&nbsp;&nbsp;<i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
+                            </div>
 
-                                <!-- 파일 선택 -->
-                                <div class="row mb-3">
-                                    <label for="board_file_name" class="col-sm-2 col-form-label">파일 업로드</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-control" type="file" id="board_file_name" name="board_file" accept="image/*" required>
-                                    </div>
-                                </div>
-
-                                <!-- 약력 미리보기 -->
-                                <div class="row mb-3">
-                                    <label class="col-sm-2 col-form-label">약력 미리보기</label>
-                                    <div class="col-sm-10 preview-container">
-                                        <img id="preview-image" th:src="@{#}" alt="미리보기" style="display: none;">
-                                    </div>
-                                </div>
-
-                                <!-- 버튼 -->
-                                <div class="button-container">
-                                    <button type="button" class="btn btn-secondary" onclick="history.back()">리스트로 돌아가기</button>
-                                    <button type="submit" class="btn btn-primary">등록</button>
-                                </div>
-                            </form>
-                        </div>
+                            <!-- 버튼 -->
+                            <div class="button-container">
+                                <button type="reset" class="btn btn-secondary" id="cancelBtn"
+                                        th:onclick="|location.href='@{/teacher/profile}'|">
+                                    목록&nbsp;&nbsp;<i class="bi bi-backspace"></i>
+                                </button>
+                                <button type="submit" class="btn btn-primary">등록&nbsp;&nbsp;<i class="bi bi-pencil"></i></button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-
     </main><!-- End #main -->
+    <div id="toastContainer" aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3"
+         style="z-index: 11">
+        <div class="toast" id="validationToast" role="alert" aria-live="assertive" aria-atomic="true"
+             data-bs-delay="3000">
+            <div class="toast-header">
+                <strong class="me-auto" style="color: red;">알림</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                입력된 값이 유효하지 않습니다.
+            </div>
+        </div>
+    </div>
 </div>
-
-<script th:inline="javascript">
-    // 이미지 미리보기 스크립트
-    document.getElementById('board_file_name').addEventListener('change', function (event) {
-        const fileInput = event.target;
-        const previewImage = document.getElementById('preview-image');
-
-        if (fileInput.files && fileInput.files[0]) {
-            const file = fileInput.files[0];
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    previewImage.src = e.target.result;
-                    previewImage.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                alert('이미지 파일만 업로드할 수 있습니다.');
-                fileInput.value = '';
-                previewImage.style.display = 'none';
-            }
-        } else {
-            previewImage.style.display = 'none';
-        }
-    });
-</script>
 </body>
 </html>
