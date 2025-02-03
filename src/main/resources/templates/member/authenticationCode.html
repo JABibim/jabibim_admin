@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<meta charset="UTF-8">
+<head>
+    <meta charset="UTF-8">
+    <title>인증코드 확인</title>
+    <th:block th:replace="~{fragments/headerImport :: HeaderImportFragment}"></th:block>
+    <!-- Font Awesome CDN 추가 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<main>
+    <div class="container">
+        <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+                        <div class="card mb-3">
+
+                            <div class="card-body">
+                                <div class="pt-4 pb-2">
+
+                                    <h5 class="card-title text-center pb-0 fs-4">2단계 인증코드를 입력해주세요.</h5>
+                                    <p class="text-center small">관계자에게 발급받은 코드를 입력하세요.</p>
+                                </div>
+
+                                <form class="row g-3 needs-validation" th:action="@{/authenticationCode}"
+                                      method="post" novalidate>
+                                    <input type="hidden" name="uri" value="${param.uri}">
+
+                                    <div class="col-12">
+                                        <img th:src="@{/img/secure_icon.png}" alt="Code">
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label for="password" class="form-label">Code</label>
+                                        <input type="password" name="password" class="form-control" id="password"
+                                               required>
+                                        <div class="invalid-feedback">코드 6자리를 입력해주세요.</div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <button class="btn btn-primary w-100" type="submit">확인</button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+
+<th:block th:replace="~{fragments/footerImport :: FooterImportFragment}"></th:block>
+</body>
+</html>

@@ -185,5 +185,25 @@
         WHERE deleted_at IS NULL
           AND career_id = #{careerId}
     </select>
+    <insert id="insertOauthTeacher">
+        INSERT INTO teacher
+        (teacher_id, created_at, teacher_name, teacher_email,oauth_picture, provider, provider_id, auth_role, academy_id)
+        VALUES
+            (#{teacherId}, current_timestamp, #{teacherName}, #{teacherEmail},
+             #{oauthPicture}, #{provider}, #{providerId} ,#{authRole}, #{academyId})
+    </insert>
+
+    <update id="updateOauthTeacher">
+        UPDATE teacher
+        SET updated_at = current_timestamp, teacher_name = #{teacherName},
+            oauth_picture = #{oauthPicture}
+        WHERE teacher_id = #{teacherId}
+    </update>
+
+    <select id="getTeacherByProviderId">
+        select *
+        from teacher
+        where provider_id = #{providerId}
+    </select>
 
 </mapper>
