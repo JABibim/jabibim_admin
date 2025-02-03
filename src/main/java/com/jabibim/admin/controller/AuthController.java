@@ -1,6 +1,6 @@
 package com.jabibim.admin.controller;
 
-import com.jabibim.admin.dto.ApiResponse;
+import com.jabibim.admin.dto.common.ApiResponse;
 import com.jabibim.admin.dto.auth.response.GoogleAuthTokenResponse;
 import com.jabibim.admin.func.GoogleCalendar;
 import com.jabibim.admin.security.dto.AccountDto;
