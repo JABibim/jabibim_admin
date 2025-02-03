@@ -223,9 +223,9 @@
         FROM
             course co
                 LEFT OUTER JOIN class c ON co.course_id = c.course_id
-        WHERE co.deleted_at IS NULL
-          AND co.teacher_id IN (SELECT teacher_id FROM teacher
         <where>
+            co.deleted_at IS NULL
+            AND co.teacher_id IN (SELECT teacher_id FROM teacher
             <if test="isAdmin == true">
                 )
             </if>
