@@ -22,7 +22,8 @@ public class CartItemVO {
   private String courseSubject;
   private String courseDiff;
   private int coursePrice;
-  private String courseImgName;
+  private String courseProfileOriginName;
+  private String courseProfilePath;
   private String academyId;
   private String teacherName;
 
