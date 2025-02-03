@@ -1,5 +1,6 @@
 package com.jabibim.admin.service;
 
+import com.jabibim.admin.domain.CalendarEvent;
 import com.jabibim.admin.dto.auth.response.GoogleAuthTokenResponse;
 import com.jabibim.admin.dto.calendar.response.SelectTeacherCalInfoReqDto;
 
@@ -13,4 +14,7 @@ public interface CalendarService {
     String getRefreshToken(String academyId, String teacherId);
 
     int updateReIssueTokenInfo(String academyId, String teacherId, GoogleAuthTokenResponse newTokens);
+
+    public void insertCalendar(CalendarEvent calendar);
+
 }

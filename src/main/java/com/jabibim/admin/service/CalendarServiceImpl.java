@@ -2,6 +2,7 @@ package com.jabibim.admin.service;
 
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.AclRule;
+import com.jabibim.admin.domain.CalendarEvent;
 import com.jabibim.admin.dto.auth.response.GoogleAuthTokenResponse;
 import com.jabibim.admin.dto.calendar.response.SelectTeacherCalInfoReqDto;
 import com.jabibim.admin.func.GoogleCalendar;
@@ -82,5 +83,11 @@ public class CalendarServiceImpl implements CalendarService {
         map.put("newExpiresIn", newTokens.getExpiresIn());
 
         return dao.updateReIssueTokenInfo(map);
+    }
+
+    @Override
+    public void insertCalendar(CalendarEvent calendar) {
+        dao.insertCalendar(calendar);
+
     }
 }

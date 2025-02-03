@@ -52,4 +52,15 @@
           AND teacher_id = #{teacherId}
     </update>
 
+    <insert id="insertCalendar">
+        INSERT INTO calendar_event
+        (calendar_event_id, created_at, google_event_id, event_creator_email, event_title,
+         event_description, event_start, event_end, event_location, calendar_id,
+         academy_id, teacher_id)
+        VALUES
+            (#{calendarEventId}, NOW(), #{googleEventId}, #{eventCreatorEmail}, #{eventTitle},
+             #{eventDescription}, #{eventStart}, #{eventEnd}, #{eventLocation}, #{calendarId},
+             #{academyId}, #{teacherId});
+    </insert>
+
 </mapper>

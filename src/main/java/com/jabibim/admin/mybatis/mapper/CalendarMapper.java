@@ -1,5 +1,6 @@
 package com.jabibim.admin.mybatis.mapper;
 
+import com.jabibim.admin.domain.CalendarEvent;
 import com.jabibim.admin.dto.calendar.response.SelectTeacherCalInfoReqDto;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -14,4 +15,6 @@ public interface CalendarMapper {
     String getRefreshToken(HashMap<String, Object> map);
 
     int updateReIssueTokenInfo(HashMap<String, Object> map);
+
+    void insertCalendar(CalendarEvent calendar);
 }

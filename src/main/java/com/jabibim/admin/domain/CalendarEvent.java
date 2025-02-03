@@ -2,12 +2,13 @@ package com.jabibim.admin.domain;
 
 import java.time.LocalDateTime;
 
-public class Calendar {
+public class CalendarEvent {
     private String calendarEventId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
     private String googleEventId;
+    private String eventCreatorEmail;
     private String eventTitle;
     private String eventDescription;
     private LocalDateTime eventStart;
@@ -16,6 +17,14 @@ public class Calendar {
     private String calendarId;
     private String academyId;
     private String teacherId;
+
+    public String getEventCreatorEmail() {
+        return eventCreatorEmail;
+    }
+
+    public void setEventCreatorEmail(String eventCreatorEmail) {
+        this.eventCreatorEmail = eventCreatorEmail;
+    }
 
     public String getCalendarEventId() {
         return calendarEventId;
