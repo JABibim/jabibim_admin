@@ -20,7 +20,7 @@ pipeline {
         stage('Git Pull') {
             steps {
                 // Get some code from a GitHub repository
-                git branch: 'prod', credentialsId: 'github', url: 'https://github.com/JABibim/jabibim_admin.git'
+                git branch: 'prod', credentialsId: 'github', url: 'https://github.com/JABibim/jabibim_admin.gitttt'
             }
             post {
                 success {
@@ -28,6 +28,9 @@ pipeline {
                 }
                 failure {
                     sh 'echo "레포지토리 클론 실패"'
+
+                    slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+
                     exit 1
                 }
             }
@@ -51,6 +54,9 @@ pipeline {
                 }
                 failure {
                     echo 'Maven 빌드 실패'
+
+                    slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+
                     exit 1
                 }
             }
@@ -70,6 +76,9 @@ pipeline {
                 }
                 failure {
                     sh 'echo "Docker 이미지 빌드 실패"'
+
+                    slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+
                     exit 1
                 }
             }
@@ -85,6 +94,9 @@ pipeline {
                 }
                 failure {
                     sh 'echo "Docker 로그인 실패"'
+
+                    slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+
                     exit 1
                 }
             }
@@ -102,6 +114,9 @@ pipeline {
                 }
                 failure {
                     sh 'echo "Docker Hub 푸시 실패"'
+
+                    slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+
                     exit 1
                 }
             }
@@ -119,6 +134,9 @@ pipeline {
                 }
                 failure {
                     sh 'echo "Docker 이미지 제거 실패"'
+
+                    slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+
                     exit 1
                 }
             }
@@ -133,6 +151,18 @@ pipeline {
                     sudo docker-compose up -d
                     '
                     """
+                }
+            }
+            post {
+                success {
+                    sh 'echo "multiline ssh 성공"'
+                }
+                failure {
+                    sh 'echo "multiline ssh 실패"'
+
+                    slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+
+                    exit 1
                 }
             }
         }

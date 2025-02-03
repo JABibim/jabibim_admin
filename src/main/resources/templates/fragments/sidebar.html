@@ -147,6 +147,23 @@
             </li>
             <!-- END SITES -->
 
+            <!-- START Calendar -->
+            <li class="nav-heading mt-4">CALENDAR</li>
+            <li class="nav-item">
+            <li class="nav-link collapsed" data-bs-target="#calendar-nav" data-bs-toggle="collapse"
+                style="cursor: pointer;">
+                <i class="bi bi-calendar"></i><span>개인 일정</span><i
+                    class="bi bi-chevron-down ms-auto"></i>
+            </li>
+            <ul id="calendar-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                <li>
+                    <a th:href="@{/calendar}">
+                        <i class="bi bi-circle"></i><span>개인일정 관리</span>
+                    </a>
+                </li>
+            </ul>
+            </li>
+
         </ul>
 
     </aside>
