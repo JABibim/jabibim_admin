@@ -1,13 +1,11 @@
 package com.jabibim.admin.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.jabibim.admin.domain.CalendarEvent;
-import com.jabibim.admin.dto.common.ApiResponse;
 import com.jabibim.admin.dto.common.ApiResponse;
 import com.jabibim.admin.dto.calendar.response.SelectTeacherCalInfoReqDto;
 import com.jabibim.admin.func.GoogleCalendarServiceFactory;
@@ -25,10 +23,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import java.time.LocalDateTime;

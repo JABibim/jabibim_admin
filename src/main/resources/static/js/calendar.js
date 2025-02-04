@@ -46,29 +46,15 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         },
         eventClick: function (info) {
-            info.jsEvent.preventDefault(); // 브라우저 기본 동작 방지
-            const eventDescription = info.event.extendedProps.description || '설명 없음';
-            const eventStart = info.event.start.toLocaleString(); // 시작 시간
-            const eventEnd = info.event.end ? info.event.end.toLocaleString() : '없음'; // 종료 시간
-            const eventLocation = info.event.extendedProps.location || '위치 정보 없음'; // 위치
-            console.log(info.event.extendedProps);
-            popup.querySelector('div').innerHTML = `
-                    <h3>${info.event.title}</h3>
-                    <div><strong>설명:</strong> ${eventDescription}</div>
-                    <div><strong>시작 시간:</strong> ${eventStart}</div>
-                    <div><strong>종료 시간:</strong> ${eventEnd}</div>
-                    <div><strong>위치:</strong> ${eventLocation}</div>
-                `;
+            info.jsEvent.preventDefault();
+            currentEvent = info.event;
+            console.log(info.event);
+            renderEventDetail(info.event);
             popup.setAttribute('open', 'open');
-        },
+        }
     });
 
     calendar.render();
-
-    // 팝업 닫기 버튼 이벤트
-    popup.querySelector('button').addEventListener('click', () => {
-        popup.removeAttribute('open');
-    });
 
     function openPopup() {
         console.log('===> 🚀 팝업 열림!!');
@@ -78,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <label>시작 날짜:</label><input type="datetime-local" id="startDate" required><br><br>
                 <label>종료 날짜:</label><input type="datetime-local" id="endDate" required><br><br>
                 <label>설명:</label><textarea id="description"></textarea><br><br>
-                <label>장소:</label><textarea id="location"></textarea><br><br>
+                <div><strong>위치:</strong> <input id="location" type="text"></div>
                 <button type="button" id="submitBtn">전송</button>
                 <button type="button" id="cancelBtn">취소</button>
             </form>
@@ -86,8 +72,14 @@ document.addEventListener('DOMContentLoaded', function () {
         popup.showModal();
 
         console.log('===> 🚀 팝업 내의 함수 호출 열림!!');
-        document.getElementById('submitBtn').onclick = submitEvent;
-        document.getElementById('cancelBtn').onclick = () => popup.close();
+
+        popup.addEventListener('click', function (event) {
+            if (event.target.id === 'submitBtn') {
+                submitEvent();
+            } else if (event.target.id === 'cancelBtn') {
+                popup.close();
+            }
+        });
     }
 
     function submitEvent() {
@@ -96,8 +88,8 @@ document.addEventListener('DOMContentLoaded', function () {
             startDate: new Date(document.getElementById('startDate').value).toISOString(),
             endDate: new Date(document.getElementById('endDate').value).toISOString(),
             description: document.getElementById('description').value,
-            location: document.getElementById('location').value,
-            timeZone: 'UTC'
+            location: document.getElementById('location') ? document.getElementById('location').value : '',
+            timeZone: "Asia/Seoul"
         };
 
         $.ajax({
@@ -124,11 +116,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log('서버 오류 발생:', xhr.status);  // HTTP 상태 코드
                 console.log('에러 메시지:', error);  // 에러 메시지
                 alert('일정 추가 중 오류가 발생했습니다.');
-
-                if (xhr.status === 500) {
+                return;
+                if (xhr.status === 401) {
                     console.log('401 Unauthorized 오류 발생. 토큰 갱신 시도.');
-                        getNewToken();
-                        submitEvent();
+                    getNewToken();
+                    submitEvent();
 
                 } else {
                     console.error('다른 오류 발생:', xhr.responseText);
@@ -137,12 +129,141 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-})
 
-$(document).ready(function () {
+    function renderEventDetail(event) {
+        const eventDescription = event.extendedProps.description || '설명 없음';
+        const eventStart = event.start.toISOString().slice(0, 16);
+        const eventEnd = event.end ? event.end.toISOString().slice(0, 16) : '';
+        const eventLocation = event.extendedProps.location || '위치 정보 없음';
+
+        // 팝업에 숨겨진 input 추가
+        popup.querySelector('div').innerHTML = `
+        <h3 style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 100%;">${event.title}</h3>
+        
+        <div><strong>설명:</strong> ${eventDescription}</div>
+        <div><strong>시작 시간:</strong> ${eventStart}</div>
+        <div><strong>종료 시간:</strong> ${eventEnd}</div>
+        <div><strong>위치:</strong> ${eventLocation}</div>
+        <button id="editEvent">수정</button>
+        <button id="deleteEvent">삭제</button>
+        <button id="closePopup">닫기</button>
+    `;
+
+        document.getElementById('editEvent').addEventListener('click', () => enableEditing(event));
+        document.getElementById('deleteEvent').addEventListener('click', deleteEvent);
+        document.getElementById('closePopup').addEventListener('click', closePopup);
+    }
+
+    function enableEditing(event) {
+        const eventDescription = event.extendedProps.description || '설명 없음';
+        const eventStart = event.start.toISOString().slice(0, 16);
+        const eventEnd = event.end ? event.end.toISOString().slice(0, 16) : '';
+        const eventLocation = event.extendedProps.location || '위치 정보 없음';
+        const googleEventId = event.id; // event.id를 calendar_event_id로 사용
+
+        console.log(event.extendedProps);
+        console.log(googleEventId);
+
+        popup.querySelector('div').innerHTML = `
+        <h3><input id="eventTitle" type="text" value="${event.title}" /></h3>
+        <input type="hidden" id="googleEventId" value="${googleEventId}">
+        <div><strong>설명:</strong> <input id="eventDescription" type="text" value="${eventDescription}" /></div>
+        <div><strong>시작 시간:</strong> <input id="eventStart" type="datetime-local" value="${eventStart}" /></div>
+        <div><strong>종료 시간:</strong> <input id="eventEnd" type="datetime-local" value="${eventEnd}" /></div>
+        <div><strong>위치:</strong> <input id="eventLocation" type="text" value="${eventLocation}" /></div>
+        <button id="saveEvent">저장</button>
+        <button id="cancelEdit">취소</button>
+    `;
+
+        document.getElementById('saveEvent').addEventListener('click', () => saveEvent(event));
+        document.getElementById('cancelEdit').addEventListener('click', () => renderEventDetail(event));
+    }
+
+
+    function saveEvent() {
+        const updatedEvent = {
+            googleEventId: document.getElementById('googleEventId').value,
+            eventTitle: document.getElementById('eventTitle').value,
+            eventDescription: document.getElementById('eventDescription').value,
+            eventLocation: document.getElementById('eventLocation').value,
+            eventStart: document.getElementById('eventStart').value,
+            eventEnd: document.getElementById('eventEnd').value,
+            timeZone: "Asia/Seoul"
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/calendar/update',  // 서버의 일정 수정 API URL
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(header, token); // CSRF 토큰 설정
+            },
+            data: JSON.stringify(updatedEvent),
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function (response) {
+                if (response && response.message) {
+                    alert('일정이 수정되었습니다.');
+                } else {
+                    alert('일정 수정 실패: ' + (response.error || '알 수 없는 오류'));
+                }
+                popup.close();
+            },
+            error: function (xhr, status, error) {
+                console.log('서버 오류 발생:', xhr.status);
+                console.log('에러 메시지:', error);
+                alert('일정 수정 중 오류가 발생했습니다.');
+                return;
+                if (xhr.status === 401) {
+                    console.log('401 Unauthorized 오류 발생. 토큰 갱신 시도.');
+                    getNewToken();
+                    saveEvent();  // 토큰 갱신 후 재요청
+                } else {
+                    console.error('다른 오류 발생:', xhr.responseText);
+                }
+                popup.close();
+            }
+        });
+    }
+
+    function deleteEvent() {
+        if (confirm('이 이벤트를 삭제하시겠습니까?')) {
+            $.ajax({
+                url: '/calendar/delete',  // URL은 그대로 두고
+                type: 'POST',  // 요청 방식을 POST로 변경
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(header, token); // CSRF 토큰 설정
+                },
+                data: { eventId: currentEvent.id },  // eventId를 데이터로 전송
+                success: function(data) {
+                    if (data.success) {  // 서버에서 success가 true일 때
+                        alert('이벤트 삭제 성공');
+                        currentEvent.remove();
+                        closePopup();
+                    } else {
+                        alert('이벤트 삭제 실패: ' + data.message);  // 실패 메시지 표시
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('서버와의 통신 오류');
+                    if (xhr.status === 401) {
+                        console.log('401 Unauthorized 오류 발생. 토큰 갱신 시도.');
+                        getNewToken();
+                        deleteEvent();  // 토큰 갱신 후 재요청
+                    } else {
+                        console.error('다른 오류 발생:', xhr.responseText);
+                    }
+                    popup.close();
+                }
+            });
+        }
+    }
+
+    function closePopup() {
+        popup.removeAttribute('open');
+    }
+
     $(document).on('click', '#joinGCalBtn', () => {
         openPopup();
-
     })
 
     function openPopup() {
@@ -166,10 +287,10 @@ $(document).ready(function () {
         }, 500);
     }
 
-    // // 화면에서 호출해보기 위해 작성한 테스트 소스 START
-    // $(document).on('click', '#getNewToken', () => {
-    //     getNewToken();
-    // })
+    // 화면에서 호출해보기 위해 작성한 테스트 소스 START
+    $(document).on('click', '#getNewToken', () => {
+        getNewToken();
+    })
     // 화면에서 호출해보기 위해 작성한 테스트 소스 END
 
     // DB에 갖고 있던 RT로 새로운 AT를 발급하는 백엔드 API를 호출하는 함수 START
@@ -200,6 +321,10 @@ $(document).ready(function () {
             }
         })
     }
+
+})
+
+$(document).ready(function () {
 
     // DB에 갖고 있던 RT로 새로운 AT를 발급하는 백엔드 API를 호출하는 함수 END
 })
