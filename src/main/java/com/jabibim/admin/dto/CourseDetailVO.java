@@ -1,5 +1,6 @@
 package com.jabibim.admin.dto;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class CourseDetailVO {
+public class CourseDetailVO implements Serializable {
   private String courseId;
   private LocalDateTime createdAt;
   private String courseName;

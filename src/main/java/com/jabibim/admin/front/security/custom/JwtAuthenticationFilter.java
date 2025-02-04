@@ -101,19 +101,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       }
 
       // 4. 리프레시 토큰 검증 및 새 토큰 발급
-      logger.debug("4. Validating refresh token");
+      logger.info("4. Validating refresh token");
       if (jwtTokenProvider.validateRefreshToken(refreshToken)) {
         logger.info("4.1 Refresh token validation SUCCESS");
 
         String newAccessToken = jwtTokenProvider.recreateAccessToken(refreshToken);
-        logger.debug("4.2 New access token generated: [REDACTED]");
+        logger.info("4.2 New access token generated: {}", newAccessToken);
 
         processValidToken(newAccessToken);
         logger.info("4.3 Security context updated with new token for user: {}",
             SecurityContextHolder.getContext().getAuthentication().getName());
 
+        response.setHeader("Access-Control-Expose-Headers", "Authorization");
         response.setHeader("Authorization", "Bearer " + newAccessToken);
-        logger.debug("4.4 New access token added to response headers");
+        logger.info("4.4 New access token added to response headers");
 
         checkAndRenewRefreshToken(response, refreshToken,
             SecurityContextHolder.getContext().getAuthentication());
@@ -167,7 +168,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.setContext(context);
       }
 
-      logger.debug("Authentication set successfully for user: {}", auth.getName());
+      logger.info("Authentication set successfully for user: {}", auth.getName());
 
     } catch (Exception e) {
       if (context != null) {

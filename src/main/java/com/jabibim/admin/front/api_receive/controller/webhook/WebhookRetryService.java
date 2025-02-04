@@ -33,7 +33,7 @@ public class WebhookRetryService {
   private final PortOneComponent portOneService;
 
   @Retryable(retryFor = { WebhookProcessingException.class,
-      DataAccessException.class }, maxAttempts = 5, backoff = @Backoff(delay = 3000, multiplier = 2))
+      DataAccessException.class }, maxAttempts = 5, backoff = @Backoff(delay = 1000, multiplier = 2))
   public boolean processWebhook(Map<String, Object> body) throws WebhookProcessingException {
     logger.info("웹훅 처리 시작");
 

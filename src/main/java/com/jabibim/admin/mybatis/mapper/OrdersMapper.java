@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.jabibim.admin.domain.Orders;
 import com.jabibim.admin.dto.OrdersDetailVO;
 import com.jabibim.admin.dto.OrdersListVO;
+import com.jabibim.admin.dto.PurchasedCourseVO;
 
 @Mapper
 public interface OrdersMapper {
@@ -22,4 +23,6 @@ public interface OrdersMapper {
   List<OrdersListVO> getOrdersList(HashMap<String, Object> map);
 
   OrdersDetailVO getOrdersDetail(String ordersId, String academyId);
+
+  List<PurchasedCourseVO> getPurchasedCourseList(String studentId, String academyId);
 }
