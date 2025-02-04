@@ -49,15 +49,9 @@ public class CourseServiceImpl implements CourseService {
   }
 
   @Override
-  public PurchaseAndStudyHistVO getPurchasedCourseList(String studentId, String academyId) {
+  public List<PurchasedCourseVO> getPurchasedCourseList(String studentId, String academyId) {
     List<PurchasedCourseVO> purchasedCourseList = ordersDao.getPurchasedCourseList(studentId, academyId);
 
-    LastStudyHistoryVO lastStudyHistory = studyHistoryDao.getLastStudyHistory(studentId, academyId);
-
-    PurchaseAndStudyHistVO purchaseAndStudyHist = new PurchaseAndStudyHistVO();
-    purchaseAndStudyHist.setPurchasedCourses(purchasedCourseList);
-    purchaseAndStudyHist.setStudyHistory(lastStudyHistory);
-
-    return purchaseAndStudyHist;
+    return purchasedCourseList;
   }
 }

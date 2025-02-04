@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jabibim.admin.dto.CourseDetailVO;
 import com.jabibim.admin.dto.CourseInfoVO;
-import com.jabibim.admin.dto.PurchaseAndStudyHistVO;
+import com.jabibim.admin.dto.PurchasedCourseVO;
 import com.jabibim.admin.dto.StudentUserVO;
 import com.jabibim.admin.front.security.custom.JwtCustomUserDetails;
 import com.jabibim.admin.service.CourseService;
@@ -53,8 +53,6 @@ public class CourseController {
     response.put("courseList", courseInfoList);
     response.put("message", "강의 목록을 성공적으로 조회했습니다.");
 
-    logger.info("courseInfoList: {}", courseInfoList);
-
     return ResponseEntity.ok(response);
   }
 
@@ -74,8 +72,6 @@ public class CourseController {
     String academyId = user.getAcademyId();
 
     CourseDetailVO courseDetail = courseService.getCourseDetail(id, academyId);
-
-    logger.info("courseDetail: {}", courseDetail);
 
     Map<String, Object> response = new HashMap<>();
     response.put("courseDetail", courseDetail);
@@ -98,10 +94,10 @@ public class CourseController {
     String academyId = user.getAcademyId();
     String studentId = user.getStudentId();
 
-    PurchaseAndStudyHistVO purchaseAndStudyHistory = courseService.getPurchasedCourseList(studentId, academyId);
+    List<PurchasedCourseVO> purchasedCourseList = courseService.getPurchasedCourseList(studentId, academyId);
 
     Map<String, Object> response = new HashMap<>();
-    response.put("purchaseAndStudyHistory", purchaseAndStudyHistory);
+    response.put("purchasedCourseList", purchasedCourseList);
     response.put("message", "구매한 강의 목록을 성공적으로 조회했습니다.");
 
     return ResponseEntity.ok(response);
