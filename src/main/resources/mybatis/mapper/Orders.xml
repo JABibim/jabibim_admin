@@ -125,4 +125,11 @@
     ON o.payment_id = p.payment_id AND o.orders_id = p.orders_id AND o.course_id = p.course_id
     WHERE o.orders_id = #{ordersId}
   </select>
+
+  <select id="getPurchasedCourseList" resultType="purchasedCourseVO">
+    SELECT course_id, MAX(created_at) as created_at
+    FROM orders
+    WHERE academy_id = #{academyId} AND student_id = #{studentId} AND orders_status = 1
+    GROUP BY course_id
+  </select>
 </mapper>

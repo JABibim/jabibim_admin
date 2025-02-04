@@ -70,7 +70,7 @@
     </if>
   </sql>
 
-  <insert id="insertLoginHistory" parameterType="LoginHistory">
+  <insert id="insertLoginHistory" parameterType="loginHistory">
     INSERT INTO login_history
     (student_id, academy_id, ip_info, os_info, browser_info, login_success, created_at)
     VALUES (#{studentId}, #{academyId}, #{ipInfo}, #{osInfo}, #{browserInfo}, #{loginSuccess}, CURRENT_TIMESTAMP)

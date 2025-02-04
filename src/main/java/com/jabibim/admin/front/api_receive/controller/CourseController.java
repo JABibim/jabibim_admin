@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jabibim.admin.dto.CourseDetailVO;
 import com.jabibim.admin.dto.CourseInfoVO;
+import com.jabibim.admin.dto.PurchasedCourseVO;
 import com.jabibim.admin.dto.StudentUserVO;
 import com.jabibim.admin.front.security.custom.JwtCustomUserDetails;
 import com.jabibim.admin.service.CourseService;
@@ -52,8 +53,6 @@ public class CourseController {
     response.put("courseList", courseInfoList);
     response.put("message", "강의 목록을 성공적으로 조회했습니다.");
 
-    logger.info("courseInfoList: {}", courseInfoList);
-
     return ResponseEntity.ok(response);
   }
 
@@ -74,12 +73,34 @@ public class CourseController {
 
     CourseDetailVO courseDetail = courseService.getCourseDetail(id, academyId);
 
-    logger.info("courseDetail: {}", courseDetail);
-
     Map<String, Object> response = new HashMap<>();
     response.put("courseDetail", courseDetail);
     response.put("message", "강의 상세 정보를 성공적으로 조회했습니다.");
 
     return ResponseEntity.ok(response);
   }
+
+  @GetMapping("/purchased")
+  public ResponseEntity<?> getPurchasedCourseList(Authentication auth) {
+    logger.info("getPurchasedCourseList 호출");
+
+    if (auth == null) {
+      logger.error("인증 실패");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증 실패"));
+    }
+
+    JwtCustomUserDetails userDetails = (JwtCustomUserDetails) auth.getPrincipal();
+    StudentUserVO user = userDetails.getUser();
+    String academyId = user.getAcademyId();
+    String studentId = user.getStudentId();
+
+    List<PurchasedCourseVO> purchasedCourseList = courseService.getPurchasedCourseList(studentId, academyId);
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("purchasedCourseList", purchasedCourseList);
+    response.put("message", "구매한 강의 목록을 성공적으로 조회했습니다.");
+
+    return ResponseEntity.ok(response);
+  }
+
 }

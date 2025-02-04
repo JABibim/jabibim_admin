@@ -24,9 +24,9 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class FrontAuthController {
 
-  private final Logger logger = LoggerFactory.getLogger(AuthController.class);
+  private final Logger logger = LoggerFactory.getLogger(FrontAuthController.class);
   private final StudentService studentService;
   private final RedisService redisService;
   private final JwtTokenProvider jwtTokenProvider;
