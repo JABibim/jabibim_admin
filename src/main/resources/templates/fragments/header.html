@@ -2,11 +2,21 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <th:block th:fragment="Header">
+    <!-- WebSocket 관련 라이브러리 -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+
+    <!-- WebSocket 스크립트 -->
+    <script th:src="@{/js/websocket.js}"></script>
+
     <script th:inline="javascript">
-        let token = $("meta[name='_csrf']").attr("content");
-        let header = $("meta[name='_csrf_header']").attr("content");
+        let chatRoomId = null; // 현재 채팅방 ID
+        let loggedInUserId = /*[[${session.id}]]*/ ''; // 로그인한 사용자 ID
 
         $(document).ready(function () {
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
+
             // 관리자 비밀번호 확인 버튼
             $('#confirmPasswordBtn').click(function () {
                 let enteredPassword = $('#adminPassword').val();
@@ -37,20 +47,18 @@
                 }
             });
 
-            // 채팅 시작 버튼 클릭 이벤트
+            // 채팅 시작 버튼 클릭 이벤트 (선생님 리스트 가져오기)
             $('#chatStartBtn').click(function () {
-                // AJAX 요청으로 선생님 리스트 가져오기
                 $.ajax({
                     url: "/chat/teacherList",
                     method: "GET",
                     success: function (data) {
-                        // 성공적으로 데이터를 가져온 경우, 리스트를 동적으로 렌더링
                         $('#teacherList').html(''); // 기존 리스트 초기화
                         data.forEach(teacher => {
                             $('#teacherList').append(`
                                 <div class="list-group-item d-flex justify-content-between align-items-center">
                                     <span>${teacher.teacherName}</span>
-                                    <button class="btn btn-primary btn-sm" onclick="startChat(${teacher.teacherId})">채팅하기</button>
+                                    <button class="teacherChat btn btn-primary btn-sm" id="${teacher.teacherId}">채팅하기</button>
                                 </div>
                             `);
                         });
@@ -61,13 +69,69 @@
                     }
                 });
             });
-        });
 
-        // 채팅 시작 함수
-        function startChat(teacherId) {
-            // AJAX로 채팅 메시지 로드 후 모달 표시 (추후 추가 가능)
-            console.log("채팅 시작: ", teacherId); // 디버깅용
+            // 채팅방 열기 (선생님 선택 시 실행)
+            $('#chatTeacherListModal').on('click', 'button.teacherChat', function () {
+                let teacherId = $(this).attr("id"); // 선택한 선생님 ID
+
+                // AJAX로 채팅방 ID 가져오기
+                $.ajax({
+                    url: "/chat/openChat",
+                    method: "GET",
+                    data: { teacherId: teacherId },
+                    success: function (response) {
+                        console.log("reponse는요!!!!!!!!!" , response);
+                        chatRoomId = response.chatRoomId; // 서버에서 받은 채팅방 ID 저장
+                        senderId = response.senderId;
+
+                        $("#chatRoomId").val(chatRoomId);
+                        $("#loggedInUserId").val(senderId);
+
+                        console.log("채팅방 ID 설정됨: ", chatRoomId);
+                        console.log("로그인한 사용자 ID 설정됨", senderId);
+
+                        $('#chatModal').modal('show');
+                        $('#chatBox').html(''); // 채팅창 초기화
+
+                        fetchChatHistory(chatRoomId);
+
+                    },
+                    error: function () {
+                        alert("채팅 방을 열 수 없습니다.");
+                    }
+                });
+            });
+        });
+        function fetchChatHistory(chatRoomId) {
+            console.log("📌 fetchChatHistory 실행됨, chatRoomId:", chatRoomId);
+
+            $.ajax({
+                url: '/chat/recent?id='+ chatRoomId,  // 🔹 기존 '/chat/recent?id=' → '/chat/recent/'로 수정
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+                    console.log("🟢 서버 응답 데이터:", data);
+
+                    if (!Array.isArray(data.list)) {  // 🔹 응답이 배열인지 확인
+                        console.error("🔴 오류: chatHistory가 배열이 아닙니다! 데이터 타입:", typeof data, "데이터 내용:", data);
+                        return;
+                    }
+
+                    const chatBox = document.getElementById("chatBox");
+                    chatBox.innerHTML = ""; // 기존 메시지 초기화
+
+                    data.list.forEach(msg => {  // 🔹 `data.list`가 아니라 `data`를 직접 반복
+                        const messageElement = document.createElement("div");
+                        messageElement.textContent = `${msg.senderName}: ${msg.chatMessage}`;
+                        chatBox.appendChild(messageElement);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("🔴 채팅 내역 불러오기 실패:", status, error);
+                }
+            });
         }
+
     </script>
 
     <header id="header" class="header fixed-top d-flex align-items-center">
@@ -186,22 +250,24 @@
         </div>
     </div>
 
-    <!-- 관리자 비밀번호 확인 모달 -->
-    <div class="modal fade" id="passwordConfirmModal" tabindex="-1" aria-labelledby="passwordConfirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+    <!-- 채팅 모달 -->
+    <div class="modal fade" id="chatModal" tabindex="-1" aria-labelledby="chatModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="passwordConfirmModalLabel">관리자 인증</h5>
+                    <input type="hidden" id="chatRoomId">
+                    <input type="hidden" id="loggedInUserId">
+                    <h5 class="modal-title" id="chatModalLabel">채팅</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="passwordConfirmForm">
-                        <div class="mb-3">
-                            <label for="adminPassword" class="form-label">비밀번호</label>
-                            <input type="password" class="form-control" id="adminPassword" required>
-                        </div>
-                        <button type="button" class="btn btn-primary" id="confirmPasswordBtn">확인</button>
-                    </form>
+                    <div id="chatBox" style="height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;">
+                        <!-- 채팅 메시지가 여기에 표시됩니다 -->
+                    </div>
+                    <textarea id="chatInput" class="form-control mt-3" placeholder="메시지를 입력하세요"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="sendMessageBtn">보내기</button>
                 </div>
             </div>
         </div>

@@ -84,8 +84,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public int replaceGrade(DeleteGradeDTO deleteGradeDTO) {
-        return dao.replaceGrade(deleteGradeDTO);
+    public void replaceGrade(DeleteGradeDTO deleteGradeDTO) {
+        dao.replaceGrade(deleteGradeDTO);
     }
 
 
