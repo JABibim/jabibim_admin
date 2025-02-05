@@ -3,7 +3,7 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jabibim.admin.mybatis.mapper.LoginHistoryMapper">
 
-  <select id="getSignInHistCount" resultType="int">
+  <select id="getLoginHistCount" resultType="int">
     SELECT COUNT(*)
     FROM (SELECT *
           FROM (SELECT *
@@ -21,7 +21,7 @@
   </select>
 
 
-  <select id="getSignInHistList" resultType="signInHistListVO">
+  <select id="getLoginHistList" resultType="LoginHistListVO">
     SELECT *
     FROM (SELECT *
           FROM (SELECT *
@@ -69,5 +69,11 @@
       )
     </if>
   </sql>
+
+  <insert id="insertLoginHistory" parameterType="loginHistory">
+    INSERT INTO login_history
+    (student_id, academy_id, ip_info, os_info, browser_info, login_success, created_at)
+    VALUES (#{studentId}, #{academyId}, #{ipInfo}, #{osInfo}, #{browserInfo}, #{loginSuccess}, CURRENT_TIMESTAMP)
+  </insert>
 
 </mapper>

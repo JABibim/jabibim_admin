@@ -34,8 +34,15 @@ public interface TeacherMapper {
 
     void resetAllCareers();
 
-    int updateCareerActive(String careerName, int displayStatus);
+    int updateCareerActive(String asisCareerId, String tobeCareerId);
 
-    void insertCareer(TeacherCareer career);
+    void insertCareer(HashMap<String, Object> map);
 
+    String getUploadPathByCareerId(String careerId);
+
+    void insertOauthTeacher(Teacher teacher);
+
+    void updateOauthTeacher(Teacher existData);
+
+    Teacher getTeacherByProviderId(String provider);
 }

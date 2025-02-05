@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.CalendarMapper">
+
+    <insert id="insertNewCalendarInfo">
+        INSERT INTO calendar
+        ( calendar_id
+        , created_at
+        , google_calendar_id
+        , access_token
+        , refresh_token
+        , expires_in
+        , academy_id
+        , teacher_id)
+        VALUES ( #{calendarId}
+               , current_timestamp
+               , #{googleCalendarId}
+               , #{accessToken}
+               , #{refreshToken}
+               , #{expiresIn}
+               , #{academyId}
+               , #{teacherId})
+    </insert>
+
+    <select id="getTeacherCalendarId" resultType="selectTeacherCalInfoReqDto">
+        SELECT calendar_id
+             , google_calendar_id
+             , access_token
+          FROM calendar
+         WHERE deleted_at IS NULL
+           AND teacher_id = #{teacherId}
+           AND academy_id = #{academyId}
+    </select>
+
+    <select id="getRefreshToken" resultType="String">
+        SELECT refresh_token
+        FROM calendar
+        WHERE deleted_at IS NULL
+          AND teacher_id = #{teacherId}
+          AND academy_id = #{academyId}
+    </select>
+
+    <update id="updateReIssueTokenInfo">
+        UPDATE calendar
+        SET access_token  = #{newAccessToken}
+          , refresh_token = #{refreshToken}
+          , expires_in    = #{newExpiresIn}
+          , updated_at = current_timestamp
+        WHERE deleted_at IS NULL
+          AND academy_id = #{academyId}
+          AND teacher_id = #{teacherId}
+    </update>
+
+    <insert id="insertCalendar">
+        INSERT INTO calendar_event
+        (calendar_event_id, created_at, google_event_id, event_creator_email, event_title,
+         event_description, event_start, event_end, event_location, calendar_id,
+         academy_id, teacher_id)
+        VALUES
+            (#{calendarEventId}, NOW(), #{googleEventId}, #{eventCreatorEmail}, #{eventTitle},
+             #{eventDescription}, #{eventStart}, #{eventEnd}, #{eventLocation}, #{calendarId},
+             #{academyId}, #{teacherId});
+    </insert>
+
+    <select id="getCalendarInfo" resultType="selectTeacherCalInfoReqDto">
+        SELECT ce.calendar_event_id
+             , ce.google_event_id
+             , ce.calendar_id
+             , c.access_token
+        FROM calendar_event ce
+                 JOIN calendar c ON ce.calendar_id = c.google_calendar_id
+        WHERE ce.deleted_at IS NULL
+          AND ce.google_event_id = #{eventId}
+    </select>
+
+    <update id="updateCalendar">
+        UPDATE calendar_event
+        SET updated_at = now(),
+            event_title = #{eventTitle},
+            event_description = #{eventDescription},
+            event_start = #{eventStart},
+            event_end = #{eventEnd},
+            event_location = #{eventLocation}
+        WHERE google_event_id = #{googleEventId}
+    </update>
+
+    <update id="deleteEvent">
+        UPDATE calendar_event
+        SET deleted_at = NOW()
+        WHERE google_event_id = #{googleEventId}
+    </update>
+
+</mapper>

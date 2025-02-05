@@ -55,18 +55,24 @@
     </select>
 
     <select id="teacherInfo" resultType="TeacherProfileDTO">
-        select t.teacher_name, a.academy_name, t.teacher_job, t.teacher_password,
-               t.teacher_email, t.teacher_phone, t.teacher_img_name
-        from teacher t, academy a
+        select t.teacher_name,
+               a.academy_name,
+               t.teacher_job,
+               t.teacher_password,
+               t.teacher_email,
+               t.teacher_phone,
+               t.teacher_img_name
+        from teacher t,
+             academy a
         where t.academy_id = a.academy_id
-        and teacher_id = #{id}
+          and teacher_id = #{id}
     </select>
 
     <update id="update">
         update teacher
         set teacher_img_origin = #{teacherImgOrigin},
-            teacher_phone = #{teacherPhone},
-            teacher_email = #{teacherEmail}
+            teacher_phone      = #{teacherPhone},
+            teacher_email      = #{teacherEmail}
         where teacher_id = #{teacherId}
     </update>
 
@@ -146,18 +152,58 @@
 
     <update id="updateCareerActive">
         UPDATE career
-        SET display_status = #{displayStatus}
-        WHERE career_name = #{careerName}
+        SET display_status = CASE
+                                 WHEN career_id = #{asisCareerId} THEN 0
+                                 WHEN career_id = #{tobeCareerId} THEN 1
+            END
+        WHERE career_id IN (#{asisCareerId}, #{tobeCareerId});
     </update>
 
     <insert id="insertCareer">
         INSERT INTO career
-        (career_id, created_at, career_name, career_file_name,
-         career_file_origin, display_status, teacher_id, academy_id)
-        VALUES
-            (#{careerId}, current_timestamp, #{careerName}, '',
-             '', 0, #{teacherId}, #{academyId})
+        ( career_id
+        , created_at
+        , career_name
+        , career_file_origin_name
+        , career_file_path
+        , display_status
+        , teacher_id
+        , academy_id)
+        VALUES ( #{careerId}
+               , current_timestamp
+               , #{careerName}
+               , #{careerFileOriginName}
+               , #{careerFilePath}
+               , 0
+               , #{teacherId}
+               , #{academyId})
     </insert>
 
+    <select id="getUploadPathByCareerId" resultType="String">
+        SELECT career_file_path
+        FROM career
+        WHERE deleted_at IS NULL
+          AND career_id = #{careerId}
+    </select>
+    <insert id="insertOauthTeacher">
+        INSERT INTO teacher
+        (teacher_id, created_at, teacher_name, teacher_email,oauth_picture, provider, provider_id, auth_role, academy_id)
+        VALUES
+            (#{teacherId}, current_timestamp, #{teacherName}, #{teacherEmail},
+             #{oauthPicture}, #{provider}, #{providerId} ,#{authRole}, #{academyId})
+    </insert>
+
+    <update id="updateOauthTeacher">
+        UPDATE teacher
+        SET updated_at = current_timestamp, teacher_name = #{teacherName},
+            oauth_picture = #{oauthPicture}
+        WHERE teacher_id = #{teacherId}
+    </update>
+
+    <select id="getTeacherByProviderId">
+        select *
+        from teacher
+        where provider_id = #{providerId}
+    </select>
 
 </mapper>

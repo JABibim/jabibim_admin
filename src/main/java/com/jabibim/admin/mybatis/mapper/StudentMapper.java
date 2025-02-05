@@ -24,4 +24,6 @@ public interface StudentMapper {
     int replaceGrade(DeleteGradeDTO deleteGradeDTO);
 
     StudentUserVO getStudentByEmail(String email, String academyId);
+
+    void insertStudent(Student student);
 }
