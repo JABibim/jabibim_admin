@@ -21,7 +21,6 @@ public interface BoardMapper {
 
     public Board getDetail(String id);
 
-
     public Board getPreData(int rnum);
 
     public Board getNextData(int rnum);

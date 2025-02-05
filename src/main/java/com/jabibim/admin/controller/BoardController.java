@@ -5,12 +5,13 @@ import com.jabibim.admin.domain.Board;
 import com.jabibim.admin.domain.PaginationResult;
 import com.jabibim.admin.dto.CourseListDTO;
 import com.jabibim.admin.func.UUIDGenerator;
+import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,21 +24,17 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping(value="/board")
+@RequestMapping(value = "/board")
 public class BoardController {
-
-    @Value("${upload.path}")
-    private String saveFolder;
-
     private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
 
-    private BoardService boardService;
+    private final BoardService boardService;
 
     public BoardController(BoardService boardService) {
         this.boardService = boardService;
     }
 
-    @GetMapping(value="/notice")
+    @GetMapping(value = "/notice")
     public ModelAndView boardList(
             @RequestParam(defaultValue = "1") int page,
             ModelAndView mv,
@@ -45,7 +42,7 @@ public class BoardController {
     ) {
         session.setAttribute("referer", "notice");
         session.setAttribute("page", page);
-        int limit =10;
+        int limit = 10;
 
         String academyId = (String) session.getAttribute("aid");
 
@@ -62,18 +59,17 @@ public class BoardController {
         mv.addObject("endpage", result.getEndpage());
         mv.addObject("listcount", listcount);
         mv.addObject("noticeList", list);
-        mv.addObject("limit",limit);
+        mv.addObject("limit", limit);
         return mv;
     }
 
     @ResponseBody
-    @PostMapping(value="/list_ajax")
+    @PostMapping(value = "/list_ajax")
     public Map<String, Object> NoticeListAjax(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
             HttpSession session
-    ){
-
+    ) {
         System.out.println("NoticeListAjax 호출됨!");
 
         String academyId = (String) session.getAttribute("aid");
@@ -88,13 +84,13 @@ public class BoardController {
         map.put("endpage", result.getEndpage());
         map.put("listcount", listcount);
         map.put("noticeList", list);
-        map.put("limit",limit);
+        map.put("limit", limit);
 
         System.out.println("Returned JSON Data: " + map);
         return map;
     }
 
-    @GetMapping(value="/notice/write")
+    @GetMapping(value = "/notice/write")
     public ModelAndView boardWrite(ModelAndView mv) {
         List<CourseListDTO> course = boardService.getCourseList();
 
@@ -103,32 +99,28 @@ public class BoardController {
         return mv;
     }
 
-    @PostMapping(value="/notice/add")
-    public String addNotice(Board notice, HttpServletRequest request, HttpSession session) throws Exception {
+    @PostMapping(value = "/notice/add")
+    public String addNotice(Authentication authentication, Board notice, HttpServletRequest request) throws Exception {
+        AccountDto account = (AccountDto) authentication.getPrincipal();
+        String academyId = account.getAcademyId();
+        String teacherId = account.getId();
 
-        System.out.println("Controller layer - boardExposureStat: " + notice.getBoardExposureStat());
-        MultipartFile uploadfile = notice.getUploadfile();
-        if(!uploadfile.isEmpty()){
-            String fileDBName = boardService.saveUploadedFile(uploadfile, saveFolder);
-            notice.setBoardFileName(fileDBName); //바뀐 파일명으로 저장
-            notice.setBoardFileOrigin(uploadfile.getOriginalFilename());//원래 파일명 저장
-        }
-
-        String academyId = (String) session.getAttribute("aid");
-        String teacherId = (String) session.getAttribute("id");
         // 생성한 UUID를 Privacy 객체에 설정
         notice.setBoardId(UUIDGenerator.getUUID());
         notice.setAcademyId(academyId);
         notice.setTeacherId(teacherId);
+
         boardService.insertNotice(notice);
+
         logger.info(notice.toString());
+
         return "redirect:/board/notice";
     }
 
-    @GetMapping(value="/notice/detail")
+    @GetMapping(value = "/notice/detail")
     public ModelAndView noticeDetail(String id, ModelAndView mv,
-                                      HttpServletRequest request,
-                                      @RequestHeader(value="referer", required=false) String beforeURL, HttpSession session) {
+                                     HttpServletRequest request,
+                                     @RequestHeader(value = "referer", required = false) String beforeURL, HttpSession session) {
 
         String sessionReferer = (String) session.getAttribute("referer");
         logger.info("referer: " + beforeURL);
@@ -163,7 +155,7 @@ public class BoardController {
     }
 
 
-    @GetMapping(value="/notice/modify")
+    @GetMapping(value = "/notice/modify")
     public ModelAndView boardModify(String id, ModelAndView mv,
                                     HttpServletRequest request) {
 
@@ -197,7 +189,7 @@ public class BoardController {
         System.out.println("Board Password: " + noticeData.getBoardPassword());
         boolean userCheck = boardService.isBoardWriter(noticeData.getBoardId(), noticeData.getBoardPassword());
 
-        if(userCheck == false){
+        if (userCheck == false) {
             rAttr.addFlashAttribute("message", "비밀번호 오류입니다.");
             rAttr.addFlashAttribute("url", "history.back()");
             return "redirect:/message";
@@ -208,22 +200,22 @@ public class BoardController {
         if (check != null && !check.equals("")) { // 기존 파일 그대로 사용하는 경우
             logger.info("기존 파일 그대로 사용합니다.");
 
-            noticeData.setBoardFileOrigin(check);
+//            noticeData.setBoardFileOrigin(check); TODO
 
         } else {
             if (uploadFile != null && !uploadFile.isEmpty()) {
                 logger.info("파일이 변경되었습니다.");
 
-                String fileDBName = boardService.saveUploadedFile(uploadFile, saveFolder);
+//                String fileDBName = boardService.saveUploadedFile(uploadFile, saveFolder); TODO
 
-                noticeData.setBoardFileName(fileDBName); // 바뀐 파일명으로 저장
-                noticeData.setBoardFileOrigin(uploadFile.getOriginalFilename()); // 원래 파일명 저장
+//                noticeData.setBoardFileName(fileDBName); // 바뀐 파일명으로 저장 TODO
+//                noticeData.setBoardFileOrigin(uploadFile.getOriginalFilename()); // 원래 파일명 저장 TODO
 
             } else {
                 logger.info("선택 파일이 없습니다.");
 
-                noticeData.setBoardFileName(""); // ""로 초기화합니다.
-                noticeData.setBoardFileOrigin(""); // ""로 초기화 합니다.
+//                noticeData.setBoardFileName(""); // ""로 초기화합니다. TODO
+//                noticeData.setBoardFileOrigin(""); // ""로 초기화 합니다. TODO
             }
         }
 

@@ -41,7 +41,7 @@
         INSERT INTO board
         (board_id, created_at, board_subject, board_content, board_notice,
          board_exposure_stat, board_type_id, board_re_ref, board_re_lev, board_re_seq,
-         course_id, board_password, board_file_name, board_file_origin, teacher_id,
+         course_id, board_password, board_file_origin_name, board_file_path, teacher_id,
          academy_id, board_readcount)
         VALUES
         (#{boardId}, NOW(), #{boardSubject}, #{boardContent}, #{boardNotice},
@@ -53,8 +53,8 @@
                   FROM board
                   WHERE board_type_id = #{boardTypeId}
                   AND deleted_at IS NULL) AS subquery),
-         #{boardReLev},#{boardReSeq}, #{courseId}, #{boardPassword}, #{boardFileName},
-         #{boardFileOrigin}, #{teacherId}, #{academyId}, 0)
+         #{boardReLev},#{boardReSeq}, #{courseId}, #{boardPassword}, #{boardFileOriginName},
+         #{boardFilePath}, #{teacherId}, #{academyId}, 0)
     </insert>
 
     <select id="getDetail" parameterType="string" resultType="board">
@@ -125,13 +125,13 @@
 
     <update id="boardModify">
         UPDATE board
-        SET course_id = #{courseId},
-            board_subject  = #{boardSubject},
-            board_content  = #{boardContent},
-            board_file_name     = #{boardFileName},
-            board_file_origin = #{boardFileOrigin},
-            board_exposure_stat = #{boardExposureStat},
-            board_notice = #{boardNotice}
+        SET course_id               = #{courseId},
+            board_subject           = #{boardSubject},
+            board_content           = #{boardContent},
+            board_file_origin_name  = #{boardFileOriginName},
+            board_file_path         = #{boardFilePath},
+            board_exposure_stat     = #{boardExposureStat},
+            board_notice            = #{boardNotice}
         WHERE board_id = #{boardId}
     </update>
 

@@ -2,6 +2,7 @@ package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Board;
 import com.jabibim.admin.dto.CourseListDTO;
+import com.jabibim.admin.func.S3Uploader;
 import com.jabibim.admin.mybatis.mapper.BoardMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,12 +10,16 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.jabibim.admin.func.Files.getExtension;
+
 @Service
 public class BoardServiceImpl implements BoardService {
     private BoardMapper dao;
+    private final S3Uploader s3Uploader;
 
-    public BoardServiceImpl(BoardMapper dao) {
+    public BoardServiceImpl(BoardMapper dao, S3Uploader s3Uploader) {
         this.dao = dao;
+        this.s3Uploader = s3Uploader;
     }
 
     @Override
@@ -42,7 +47,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public List<CourseListDTO> getCourseList(){
+    public List<CourseListDTO> getCourseList() {
         HashMap<String, Object> map = new HashMap<>();
 
         return dao.getCourseList(map);
@@ -50,16 +55,27 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public void insertNotice(Board notice) {
+        MultipartFile uploadFile = notice.getUploadfile();
+        if (!uploadFile.isEmpty()) {
+            if (uploadFile.getOriginalFilename() == null) {
+                throw new IllegalArgumentException("업로드하려는 파일의 이름이 null입니다.");
+            }
+
+            String fileName = "board." + getExtension(uploadFile.getOriginalFilename());
+            String uploadedPath = s3Uploader.uploadFileToS3(uploadFile, "board/" + notice.getBoardId() + "/file/" + fileName);
+
+            System.out.println("========> fileName : " + fileName);
+            System.out.println("========> uploadedPath : " + uploadedPath);
+
+            notice.setBoardFileOriginName(uploadFile.getOriginalFilename());
+            notice.setBoardFilePath(uploadedPath);
+        }
+
         dao.insertNotice(notice);
     }
 
     @Override
-    public String saveUploadedFile(MultipartFile uploadFile, String saveFolder) throws Exception {
-        return BoardService.super.saveUploadedFile(uploadFile, saveFolder);
-    }
-
-    @Override
-    public Board getDetail(String id){
+    public Board getDetail(String id) {
         return dao.getDetail(id);
     }
 
