@@ -32,4 +32,6 @@ public interface BoardMapper {
     public int boardModify(Board noticeData);
 
     public int boardDelete(Board notice);
+
+    public void initBoardTypeInfo(HashMap<String, Object> map);
 }

@@ -140,6 +140,21 @@
         SET deleted_at = NOW()
         WHERE board_id = #{boardId}
     </update>
+
+    <insert id="initBoardTypeInfo">
+        INSERT INTO board_type (
+                                  board_type_id
+                                , created_at
+                                , board_type_name
+                                , academy_id
+                                )
+        VALUES (
+                #{noticeBoardTypeId}
+              , current_timestamp
+              , #{noticeBoardTypeName}
+              , #{academyId}
+              )
+    </insert>
 </mapper>
 
 
