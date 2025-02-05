@@ -184,7 +184,7 @@
                 <!-- 프로필 및 채팅 시작 -->
                 <li class="nav-item dropdown pe-3 d-flex align-items-center">
                     <!-- 채팅 시작 아이콘 -->
-                    <th:block sec:authorize="hasRole('ROLE_LECTURER')">
+                    <th:block sec:authorize="hasRole('ROLE_LECTURER') or hasRole('ROLE_MANAGER')">
                         <a class="nav-link d-flex align-items-center me-3" href="#" id="chatStartBtn">
                             <i class="bi bi-chat-dots" style="font-size: 1.5rem;"></i>
                         </a>
