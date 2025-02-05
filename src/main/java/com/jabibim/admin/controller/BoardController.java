@@ -1,6 +1,8 @@
 package com.jabibim.admin.controller;
 
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.S3Object;
 import com.jabibim.admin.domain.Board;
 import com.jabibim.admin.domain.PaginationResult;
 import com.jabibim.admin.dto.CourseListDTO;
@@ -8,9 +10,13 @@ import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +36,12 @@ import java.util.Map;
 @RequestMapping(value = "/board")
 public class BoardController {
     private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
+
+    @Autowired
+    private AmazonS3 amazonS3;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     private final BoardService boardService;
 
@@ -271,6 +286,35 @@ public class BoardController {
             rAttr.addFlashAttribute("result", "deleteSuccess");
 
             return "redirect:/board/notice";
+        }
+    }
+
+    @GetMapping(value = "/notice/fileDownload/{boardId}")
+    @ResponseBody
+    public void fileDownload(
+            @PathVariable String boardId,
+            HttpServletResponse response
+    ) {
+        Board boardInfo = boardService.getDetail(boardId);
+        String filePath = boardInfo.getBoardFilePath();
+        int indexOfBucketName = filePath.indexOf(bucket);
+        String key = filePath.substring(indexOfBucketName + bucket.length() + 1);
+
+        S3Object s3Object = amazonS3.getObject(bucket, key);
+        try (InputStream inputStream = s3Object.getObjectContent();
+             OutputStream outputStream = response.getOutputStream()) {
+
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment; filename=" + boardInfo.getBoardFileOriginName());
+            response.setContentLengthLong(s3Object.getObjectMetadata().getContentLength());
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException ex) {
+            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value()); // 에러 처리
         }
     }
 }

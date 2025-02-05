@@ -62,7 +62,7 @@
         FROM ( SELECT ROW_NUMBER() OVER (ORDER BY b.CREATED_AT DESC) AS rnum,
                        b.course_id, b.board_id, b.board_subject,
                       b.teacher_id, s.teacher_name, b.created_at, b.board_readcount,
-                      b.board_exposure_stat, b.board_notice, b.board_content, c.course_name
+                      b.board_exposure_stat, b.board_notice, b.board_content, c.course_name, b.board_file_origin_name, b.board_file_path
                FROM board b
                         JOIN teacher s ON b.teacher_id = s.teacher_id
                         JOIN course c ON b.course_id = c.course_id
