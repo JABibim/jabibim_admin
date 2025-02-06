@@ -20,9 +20,9 @@
         SELECT *
         FROM (SELECT b.board_id,b.created_at,b.board_notice,b.board_subject,b.teacher_id,
                       t.teacher_name,b.board_readcount,b.board_exposure_stat
-              FROM BOARD b
-              JOIN TEACHER t ON b.teacher_id = t.teacher_id
-              JOIN BOARD_TYPE y
+              FROM board b
+              JOIN teacher t ON b.teacher_id = t.teacher_id
+              JOIN board_type y
                    ON b.board_type_id = y.board_type_id
               WHERE y.board_type_name = '공지사항'
               AND b.academy_id = #{academyId}
@@ -41,7 +41,7 @@
         INSERT INTO board
         (board_id, created_at, board_subject, board_content, board_notice,
          board_exposure_stat, board_type_id, board_re_ref, board_re_lev, board_re_seq,
-         course_id, board_password, board_file_name, board_file_origin, teacher_id,
+         course_id, board_password, board_file_origin_name, board_file_path, teacher_id,
          academy_id, board_readcount)
         VALUES
         (#{boardId}, NOW(), #{boardSubject}, #{boardContent}, #{boardNotice},
@@ -53,8 +53,8 @@
                   FROM board
                   WHERE board_type_id = #{boardTypeId}
                   AND deleted_at IS NULL) AS subquery),
-         #{boardReLev},#{boardReSeq}, #{courseId}, #{boardPassword}, #{boardFileName},
-         #{boardFileOrigin}, #{teacherId}, #{academyId}, 0)
+         #{boardReLev},#{boardReSeq}, #{courseId}, #{boardPassword}, #{boardFileOriginName},
+         #{boardFilePath}, #{teacherId}, #{academyId}, 0)
     </insert>
 
     <select id="getDetail" parameterType="string" resultType="board">
@@ -62,10 +62,10 @@
         FROM ( SELECT ROW_NUMBER() OVER (ORDER BY b.CREATED_AT DESC) AS rnum,
                        b.course_id, b.board_id, b.board_subject,
                       b.teacher_id, s.teacher_name, b.created_at, b.board_readcount,
-                      b.board_exposure_stat, b.board_notice, b.board_content, c.course_name
-               FROM BOARD b
-                        JOIN TEACHER s ON b.teacher_id = s.teacher_id
-                        JOIN COURSE c ON b.course_id = c.course_id
+                      b.board_exposure_stat, b.board_notice, b.board_content, c.course_name, b.board_file_origin_name, b.board_file_path
+               FROM board b
+                        JOIN teacher s ON b.teacher_id = s.teacher_id
+                        JOIN course c ON b.course_id = c.course_id
                WHERE board_type_id = (
                    SELECT board_type_id
                    FROM board_type
@@ -79,7 +79,7 @@
     <select id="getPreData" parameterType="int" resultType="board">
         SELECT *
         FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, board_subject, board_id, deleted_at
-               FROM BOARD
+               FROM board
                WHERE board_type_id = (
                    SELECT board_type_id
                    FROM board_type
@@ -96,7 +96,7 @@
     <select id="getNextData" parameterType="int" resultType="board">
         SELECT *
         FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, board_subject, board_id, deleted_at
-               FROM BOARD
+               FROM board
                WHERE board_type_id = (
                    SELECT board_type_id
                    FROM board_type
@@ -118,28 +118,43 @@
 
     <select id="isBoardWriter" resultType="board">
         SELECT *
-        FROM BOARD
+        FROM board
         WHERE board_id = #{id}
         AND board_password = #{pass}
     </select>
 
     <update id="boardModify">
-        UPDATE BOARD
-        SET course_id = #{courseId},
-            board_subject  = #{boardSubject},
-            board_content  = #{boardContent},
-            board_file_name     = #{boardFileName},
-            board_file_origin = #{boardFileOrigin},
-            board_exposure_stat = #{boardExposureStat},
-            board_notice = #{boardNotice}
+        UPDATE board
+        SET course_id               = #{courseId},
+            board_subject           = #{boardSubject},
+            board_content           = #{boardContent},
+            board_file_origin_name  = #{boardFileOriginName},
+            board_file_path         = #{boardFilePath},
+            board_exposure_stat     = #{boardExposureStat},
+            board_notice            = #{boardNotice}
         WHERE board_id = #{boardId}
     </update>
 
     <update id="boardDelete">
-        UPDATE BOARD
+        UPDATE board
         SET deleted_at = NOW()
         WHERE board_id = #{boardId}
     </update>
+
+    <insert id="initBoardTypeInfo">
+        INSERT INTO board_type (
+                                  board_type_id
+                                , created_at
+                                , board_type_name
+                                , academy_id
+                                )
+        VALUES (
+                #{noticeBoardTypeId}
+              , current_timestamp
+              , #{noticeBoardTypeName}
+              , #{academyId}
+              )
+    </insert>
 </mapper>
 
 

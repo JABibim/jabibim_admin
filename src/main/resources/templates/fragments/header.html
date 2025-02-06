@@ -10,13 +10,12 @@
     <script th:src="@{/js/websocket.js}"></script>
 
     <script th:inline="javascript">
+        let token = $("meta[name='_csrf']").attr("content");
+        let header = $("meta[name='_csrf_header']").attr("content");
         let chatRoomId = null; // 현재 채팅방 ID
         let loggedInUserId = /*[[${session.id}]]*/ ''; // 로그인한 사용자 ID
 
         $(document).ready(function () {
-            let token = $("meta[name='_csrf']").attr("content");
-            let header = $("meta[name='_csrf_header']").attr("content");
-
             // 관리자 비밀번호 확인 버튼
             $('#confirmPasswordBtn').click(function () {
                 let enteredPassword = $('#adminPassword').val();
@@ -184,7 +183,7 @@
                 <!-- 프로필 및 채팅 시작 -->
                 <li class="nav-item dropdown pe-3 d-flex align-items-center">
                     <!-- 채팅 시작 아이콘 -->
-                    <th:block sec:authorize="hasRole('ROLE_LECTURER')">
+                    <th:block sec:authorize="hasRole('ROLE_LECTURER') or hasRole('ROLE_MANAGER')">
                         <a class="nav-link d-flex align-items-center me-3" href="#" id="chatStartBtn">
                             <i class="bi bi-chat-dots" style="font-size: 1.5rem;"></i>
                         </a>
@@ -268,6 +267,27 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" id="sendMessageBtn">보내기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 관리자 비밀번호 확인 모달 -->
+    <div class="modal fade" id="passwordConfirmModal" tabindex="-1" aria-labelledby="passwordConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordConfirmModalLabel">관리자 인증</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="passwordConfirmForm">
+                        <div class="mb-3">
+                            <label for="adminPassword" class="form-label">비밀번호</label>
+                            <input type="password" class="form-control" id="adminPassword" required>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="confirmPasswordBtn">확인</button>
+                    </form>
                 </div>
             </div>
         </div>
