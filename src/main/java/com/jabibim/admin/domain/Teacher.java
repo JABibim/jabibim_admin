@@ -24,4 +24,5 @@ public class Teacher {
     private String provider;
     private String providerId;
     private String academyId;
+    private String code;
 }

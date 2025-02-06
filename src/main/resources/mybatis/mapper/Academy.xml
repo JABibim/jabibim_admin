@@ -59,4 +59,13 @@
                , #{businessRegisNum}
                , #{registeredAt})
     </insert>
+
+    <!-- 코드로 Academy 조회 -->
+    <select id="getAcademyByCode" resultType="academy">
+        SELECT * FROM academy WHERE code = #{code}
+    </select>
+
+    <select id="getAcademyIdByCode" resultType="String">
+        SELECT academy_id FROM academy WHERE code = #{code}
+    </select>
 </mapper>
