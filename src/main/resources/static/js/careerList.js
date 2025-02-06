@@ -29,12 +29,13 @@ function updateCareerActive(asisCareerId, tobeCareerId) {
 $(function () {
     let asisCareerId = $('.toggle-display-status:checked').data('career-id');
     console.log('asisCareerId:', asisCareerId);
-    $(document).on('click', '.toggle-display-status', function () {
+
+    $(document).on('click', '.toggle-display-status', function (event) {
         let tobeCareerId = $(this).data('career-id');
 
         if (asisCareerId === tobeCareerId) {
             showToast("선택한 약력이 현재 활성화 된 약력과 동일합니다. 다른 약력을 선택해주세요.");
-            $(this).prop('checked', false);
+            event.preventDefault(); // 클릭 이벤트를 취소해서 토글 상태 유지
             return;
         }
 
@@ -42,7 +43,6 @@ $(function () {
 
         updateCareerActive(asisCareerId, tobeCareerId);
 
-        // 토글 변경한 뒤에, asisCareerId를 갱신
         asisCareerId = tobeCareerId;
     });
 });
