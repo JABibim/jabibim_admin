@@ -17,8 +17,8 @@ public class Teacher {
     private int teacherEmailVerified;
     private String teacherPassword;
     private String teacherJob;
-    private String teacherImgName;
-    private String teacherImgOrigin;
+    private String teacherProfileOriginName;
+    private String teacherProfilePath;
     private String oauthPicture;
     private String authRole;
     private String provider;

@@ -230,7 +230,7 @@
                 )
             </if>
             <if test="isAdmin == false">
-                academy_id = #{academyId})
+                where academy_id = #{academyId})
             </if>
         </where>
         GROUP BY
