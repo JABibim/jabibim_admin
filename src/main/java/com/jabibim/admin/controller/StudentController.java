@@ -9,6 +9,7 @@ import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.service.GradeService;
 import com.jabibim.admin.service.StudentService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ public class StudentController {
 
     @GetMapping("")
     public String student(
+            Authentication authentication,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "option1") String state,
@@ -45,13 +47,15 @@ public class StudentController {
             @RequestParam(defaultValue = "0") String search_field,  // 0:전체, 1:이름, 2:이메일
             @RequestParam(defaultValue = "") String search_word,
             Model model,
-            HttpSession session) {
+            HttpSession session, HttpServletRequest request) {
+
+        System.out.println("authentication==========:" + authentication.getPrincipal().toString());
 
         logger.info("---------->>>>> page: {}, limit: {}, state: {}, startDate: {}, endDate: {}, studentGrade:{}, search_field: {}, search_word: {}",
                 page, limit, state, startDate, endDate, studentGrade, search_field, search_word);
 
         session.setAttribute("referer", "list");
-        String academyId = (String) session.getAttribute("aid");
+        String academyId =  (String) session.getAttribute("aid");
         boolean isAdmin = academyId.equals("ADMIN");
 
         // 총 학생 수를 받아옴
