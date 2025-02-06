@@ -4,8 +4,8 @@
 <mapper namespace="com.jabibim.admin.mybatis.mapper.TeacherMapper">
 
     <select id="getTeacherCount" parameterType="map" resultType="int">
-        SELECT COUNT(*)
-        FROM TEACHER
+        SELECT count(*)
+        FROM teacher
         <where>
             <if test="state != 'option1'">
                 DELETED_AT IS
@@ -15,14 +15,14 @@
                 </choose>
             </if>
             <if test='search_field == "0"'>
-                AND (TEACHER_NAME LIKE CONCAT('%', #{search_word}, '%')
-                OR TEACHER_EMAIL LIKE CONCAT('%', #{search_word}, '%'))
+                AND (teacher_name LIKE concat('%', #{search_word}, '%')
+                OR teacher_email LIKE concat('%', #{search_word}, '%'))
             </if>
             <if test='search_field == "1"'>
-                AND TEACHER_EMAIL LIKE CONCAT('%', #{search_word}, '%')
+                AND teacher_email LIKE concat('%', #{search_word}, '%')
             </if>
             <if test='search_field == "2"'>
-                AND TEACHER_NAME LIKE CONCAT('%', #{search_word}, '%')
+                AND teacher_email LIKE concat('%', #{search_word}, '%')
             </if>
         </where>
     </select>
@@ -30,25 +30,25 @@
     <select id="getTeacherList" parameterType="map" resultType="Teacher">
         SELECT *
         FROM (
-        SELECT ROW_NUMBER() OVER (ORDER BY A.ACADEMY_NAME, T.TEACHER_NAME) AS rnum,
-        A.ACADEMY_NAME, T.TEACHER_NAME, T.TEACHER_ID, T.TEACHER_PHONE, T.TEACHER_EMAIL, T.DELETED_AT
-        FROM TEACHER T
-        JOIN ACADEMY A ON A.ACADEMY_ID = T.ACADEMY_ID
+        SELECT row_number() OVER (ORDER BY a.academy_name, t.teacher_name) AS rnum,
+               a.academy_name, t.teacher_name, t.teacher_id, t.teacher_phone, t.teacher_email, t.deleted_at
+        FROM teacher t
+        JOIN academy a ON a.academy_id = t.academy_id
         <if test="!isAdmin">
-            WHERE A.ACADEMY_ID = #{academyId}
+            WHERE a.academy_id = #{academyId}
         </if>
         <if test="state != 'option1'">
-            AND T.DELETED_AT IS ${state == 'option2' ? 'NULL' : 'NOT NULL'}
+            AND t.deleted_at IS ${state == 'option2' ? 'NULL' : 'NOT NULL'}
         </if>
         <if test='search_field == "0"'>
-            AND (TEACHER_NAME LIKE CONCAT('%', #{search_word}, '%')
-            OR TEACHER_EMAIL LIKE CONCAT('%', #{search_word}, '%'))
+            AND (teacher_name LIKE concat('%', #{search_word}, '%')
+            OR teacher_email LIKE concat('%', #{search_word}, '%'))
         </if>
         <if test='search_field == "1"'>
-            AND T.TEACHER_EMAIL LIKE CONCAT('%', #{search_word}, '%')
+            AND t.teacher_email LIKE concat('%', #{search_word}, '%')
         </if>
         <if test='search_field == "2"'>
-            AND T.TEACHER_NAME LIKE CONCAT('%', #{search_word}, '%')
+            AND t.teacher_name LIKE concat('%', #{search_word}, '%')
         </if>
         ) AS subquery
         WHERE rnum BETWEEN #{start} AND #{end}

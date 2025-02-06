@@ -11,26 +11,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
 import java.util.HashMap;
 import java.util.List;
 
 
 @Service
 public class TeacherServiceImpl implements TeacherService {
-
     private final TeacherMapper dao;
     private final S3Uploader s3Uploader;
-    private TeacherMapper dao;
 
     public TeacherServiceImpl(TeacherMapper dao, TeacherMapper teacherMapper, S3Uploader s3Uploader) {
         this.dao = dao;
-        this.teacherMapper = teacherMapper;
         this.s3Uploader = s3Uploader;
     }
-
 
     @Override
     public int getTeacherCount(String state, String search_field, String search_word) {
