@@ -12,7 +12,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +34,7 @@ public class ChatController {
      */
     @GetMapping(value = "/teacherList")
     public ResponseEntity<List<Teacher>> getTeacherList(Authentication auth) {
+
         AccountDto account = (AccountDto) auth.getPrincipal();
         String academyId = account.getAcademyId();
         String loggedInTeacherId = account.getId(); // 현재 로그인한 선생의 teacherId
@@ -67,12 +67,11 @@ public class ChatController {
     }
 
     /**
-     * WebSocket을 통해 메시지 전송
+     * WebSocket 을 통해 메시지 전송
      */
-    @MessageMapping("/chat/sendMessage")    // 클라이언트가 메시지를 보내는 경로
+    @MessageMapping("/sendMessage")    // 클라이언트가 메시지를 보내는 경로
     @SendTo("/topic/chatRoom")              // 메시지를 브로드캐스트할 경로
     public ChatMessage sendMessage(@Payload Map<String, Object> payload, Authentication auth) {
-        logger.info("==== [ChatController] 메시지 전송 요청 ====");
 
         AccountDto accountDto = (AccountDto) auth.getPrincipal();
         String chatRoomId = (String) payload.get("chatRoomId");
@@ -80,10 +79,6 @@ public class ChatController {
         String chatMessage = (String) payload.get("chatMessage");
         String senderName = accountDto.getName();
         LocalDateTime sentAt = LocalDateTime.now();
-
-        logger.info("chatRoomId: {}", chatRoomId);
-        logger.info("senderId: {}", senderId);
-        logger.info("chatMessage: {}", chatMessage);
 
         if (chatRoomId == null || chatRoomId.isEmpty()) {
             throw new IllegalArgumentException("채팅방 ID가 없습니다!");
@@ -107,12 +102,9 @@ public class ChatController {
 
     @GetMapping("/recent")
     public ResponseEntity<?> findRecentChat(@RequestParam String id) {
-        System.out.println("일단 여기까지 옴!!!!!!!!!!!!!!!!!!!!!!!");
-        logger.info("Fetching chat history for chatRoomId: {}", id);
 
         List<ChatMessage> chatHistory = chatService.findRecentChat(id);
 
-        logger.info("Fetched {} messages", chatHistory.size());  // 가져온 메시지 개수 로그 추가
         for (ChatMessage msg : chatHistory) {
             logger.info("Message: {}", msg);
         }

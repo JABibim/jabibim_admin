@@ -47,7 +47,8 @@ public class ChatServiceImpl implements ChatService{
 
     @Override
     public void sendMessage(ChatMessage chatMessage) {
-        if (chatMessage.getChatRoomId() == null || chatMessage.getSenderId() == null || chatMessage.getChatMessage() == null) {
+        if (chatMessage.getChatRoomId() == null || chatMessage.getSenderId() == null
+                || chatMessage.getChatMessage() == null) {
             System.out.println("==== [sendMessage] 메시지 정보 오류 ====");
             System.out.println("chatRoomId: " + chatMessage.getChatRoomId());
             System.out.println("senderId: " + chatMessage.getSenderId());
