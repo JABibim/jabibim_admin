@@ -57,7 +57,6 @@ public class StudentController {
         session.setAttribute("referer", "list");
         String academyId =  (String) session.getAttribute("aid");
         boolean isAdmin = academyId.equals("ADMIN");
-
         // 총 학생 수를 받아옴
         int listcount = studentService.getStudentCount(academyId, isAdmin, state, startDate, endDate, studentGrade, search_field, search_word);
 
