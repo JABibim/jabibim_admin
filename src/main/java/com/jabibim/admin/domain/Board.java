@@ -2,7 +2,6 @@ package com.jabibim.admin.domain;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Board {
@@ -18,8 +17,8 @@ public class Board {
     private String boardSubject;
     private String boardPassword;
     private String boardContent;
-    private String boardFileName;
-    private String boardFileOrigin;
+    private String boardFileOriginName; // 파일의 실제 이름
+    private String boardFilePath; // 파일의 S3 업로드 경로
     private int boardReadCount;
     private int boardExposureStat;
     private String boardTypeId;
@@ -209,20 +208,20 @@ public class Board {
         this.boardPassword = boardPassword;
     }
 
-    public String getBoardFileName() {
-        return boardFileName;
+    public String getBoardFileOriginName() {
+        return boardFileOriginName;
     }
 
-    public void setBoardFileName(String boardFileName) {
-        this.boardFileName = boardFileName;
+    public void setBoardFileOriginName(String boardFileOriginName) {
+        this.boardFileOriginName = boardFileOriginName;
     }
 
-    public String getBoardFileOrigin() {
-        return boardFileOrigin;
+    public String getBoardFilePath() {
+        return boardFilePath;
     }
 
-    public void setBoardFileOrigin(String boardFileOrigin) {
-        this.boardFileOrigin = boardFileOrigin;
+    public void setBoardFilePath(String boardFilePath) {
+        this.boardFilePath = boardFilePath;
     }
 
     public MultipartFile getUploadfile() {
@@ -231,5 +230,9 @@ public class Board {
 
     public void setUploadfile(MultipartFile uploadfile) {
         this.uploadfile = uploadfile;
+    }
+
+    public String toString() {
+        return "Board [rnum=" + rnum + ", boardId=" + boardId + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deletedAt=" + deletedAt + ", boardReRef=" + boardReRef + ", boardReLev=" + boardReLev + ", boardReSeq=" + boardReSeq + ", boardNotice=" + boardNotice + ", boardSubject=" + boardSubject + ", boardPassword=" + boardPassword + ", boardContent=" + boardContent + ", boardFileOriginName=" + boardFileOriginName + ", boardFilePath=" + boardFilePath + ", boardReadCount=" + boardReadCount + ", boardExposureStat=" + boardExposureStat + ", boardTypeId=" + boardTypeId + ", studentId=" + studentId + ", studentName=" + studentName + ", teacherId=" + teacherId + ", teacherName=" + teacherName + ", courseId=" + courseId + ", uploadfile=" + uploadfile + ", academyId=" + academyId + ", courseName=" + courseName + "]";
     }
 }

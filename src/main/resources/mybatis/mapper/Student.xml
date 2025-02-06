@@ -74,10 +74,10 @@
     </select>
 
     <select id="getStudentList" parameterType="map" resultType="student">
-        SELECT *
+        SELECT subquery.*, p.payment_amount_sum
         FROM (
         SELECT ROW_NUMBER() OVER (ORDER BY A.academy_name, S.student_name) AS rnum,
-        A.academy_name, S.student_name, S.student_email, S.created_at, S.deleted_at
+        A.academy_name, S.student_id, S.student_name, S.student_email, S.created_at, S.deleted_at
         FROM student S
         JOIN academy A ON A.academy_id = S.academy_id
         <where>
@@ -141,6 +141,8 @@
             </if>
         </where>
         ) AS subquery
+        LEFT OUTER JOIN (SELECT student_id, COALESCE(sum(payment_amount), 0) as payment_amount_sum FROM payment WHERE academy_id = #{academyId} GROUP BY student_id) p
+        ON subquery.student_id = p.student_id
         WHERE rnum BETWEEN #{start} AND #{end}
     </select>
     

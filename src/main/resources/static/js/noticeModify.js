@@ -37,7 +37,12 @@ $(document).ready(function() {
         // 파일첨부를 변경하지 않으면 $('#fileValue').text()의 파일명을 파라미터 'check'라는 이름으로 form에 추가하여 전송합니다.
         if (check == 0) {
             const value = $('#fileValue').text();
-            const html = `<input type='hidden' value='${value}' name='check'>`;
+            const pathValue = $('#boardFilePath').val();
+
+            const html = `
+                <input type='hidden' value='${value}' name='check'>
+                <input type='hidden' value='${pathValue}' name='pathValue'>
+            `;
 
             console.log(html);
             $(this).append(html);

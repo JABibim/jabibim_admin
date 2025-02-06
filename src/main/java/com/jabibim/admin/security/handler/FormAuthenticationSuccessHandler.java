@@ -24,6 +24,9 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
+        System.out.println("==========onAuthenticationSuccess====authentication===: " + authentication.getPrincipal());
+
         setDefaultTargetUrl("/dashboard");
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);

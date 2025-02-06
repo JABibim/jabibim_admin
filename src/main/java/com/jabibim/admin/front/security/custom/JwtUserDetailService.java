@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.jabibim.admin.dto.StudentUserVO;
+import com.jabibim.admin.front.dto.LoginRequest;
 import com.jabibim.admin.mybatis.mapper.StudentMapper;
 
 import lombok.NonNull;
@@ -24,25 +25,30 @@ public class JwtUserDetailService implements UserDetailsService {
 
   @NonNull
   private StudentMapper dao;
-  private final Logger logger = LoggerFactory.getLogger(JwtUserDetailService.class);
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+  public UserDetails loadUserByUsername(String username) {
+    // 기본 메서드는 남겨두되 사용하지 않음
+    throw new UnsupportedOperationException("기본 loadUserByUsername은 사용할 수 없습니다.");
+  }
 
-    logger.info("loadUserByUsername");
-    String email = username.split(",")[0];
-    String academyId = username.split(",")[1];
+  // 새로운 메서드 추가
+  public UserDetails loadUserByLoginRequest(LoginRequest loginRequest) {
+    logger.info("loadUserByLoginRequest");
 
-    StudentUserVO user = dao.getStudentByEmail(email, academyId);
-    logger.info("JwtUserDetailService" + user.toString());
+    StudentUserVO user = dao.getStudentByEmail(
+        loginRequest.getEmail(),
+        loginRequest.getAcademyId());
+    logger.info("JwtUserDetailService " + user.toString());
+
+    if (user == null) {
+      throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+    }
 
     Collection<? extends GrantedAuthority> authorities = Collections
         .singletonList(new SimpleGrantedAuthority(user.getAuthRole()));
 
-    if (user != null) {
-      return new JwtCustomUserDetails(user, authorities);
-      // userDetails 에 담아서 넘기면 AuthenticationManager 가 검증 실시
-    }
-    return null;  
+    return new JwtCustomUserDetails(user, authorities);
   }
 }

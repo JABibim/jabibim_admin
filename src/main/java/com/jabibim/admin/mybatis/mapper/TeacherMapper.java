@@ -5,7 +5,6 @@ import com.jabibim.admin.domain.TeacherCareer;
 import com.jabibim.admin.dto.TeacherProfileDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
 import java.util.HashMap;
 
@@ -40,4 +39,10 @@ public interface TeacherMapper {
     void insertCareer(HashMap<String, Object> map);
 
     String getUploadPathByCareerId(String careerId);
+
+    void insertOauthTeacher(Teacher teacher);
+
+    void updateOauthTeacher(Teacher existData);
+
+    Teacher getTeacherByProviderId(String provider);
 }
