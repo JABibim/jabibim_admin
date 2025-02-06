@@ -29,4 +29,10 @@ public interface TeacherService {
     void insertCareer(String academyId, String teacherId, String careerName, MultipartFile careerImage);
 
     String getUploadPathByCareerId(String careerId);
+
+    void updateTeacherAcademy(String teacherId, String academyId, String code);
+
+    String getTeacherIdByEmail(String teacheremail);
+
+    String getAcademyIdByEmail(String email);
 }

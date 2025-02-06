@@ -29,16 +29,19 @@
                                       method="post" novalidate>
                                     <input type="hidden" name="uri" value="${param.uri}">
 
-                                    <div class="col-12">
-                                        <img th:src="@{/img/secure_icon.png}" alt="Code">
+                                    <div class="col-12 d-flex justify-content-center">
+                                        <img th:src="@{/img/secure_icon.png}" alt="Code" style="width: 100px; height: auto;">
                                     </div>
 
                                     <div class="col-12">
                                         <label for="password" class="form-label">Code</label>
-                                        <input type="password" name="password" class="form-control" id="password"
+                                        <input type="password" name="code" class="form-control" id="password"
                                                required>
                                         <div class="invalid-feedback">코드 6자리를 입력해주세요.</div>
                                     </div>
+
+                                    <!-- 에러 메시지 표시 -->
+                                    <div class="col-12 text-danger text-center" th:if="${error}" th:text="${error}"></div>
 
                                     <div class="col-12">
                                         <button class="btn btn-primary w-100" type="submit">확인</button>

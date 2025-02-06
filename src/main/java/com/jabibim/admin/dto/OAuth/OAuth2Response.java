@@ -12,4 +12,5 @@ public interface OAuth2Response {   //google에서 보낸 데이터를 받을 �
     String getName();
     //프로필경로
     String getAccessTokenScopes();
+
 }

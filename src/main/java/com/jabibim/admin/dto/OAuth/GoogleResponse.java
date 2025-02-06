@@ -39,4 +39,6 @@ public class GoogleResponse implements OAuth2Response {
     public String getAccessTokenScopes() {
         return attribute.get("picture").toString();
     }
+
+
 }
