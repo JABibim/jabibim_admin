@@ -75,7 +75,7 @@ public class FormAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuc
 
             // 세션에 필요한 정보 저장
             session.setAttribute("isAdmin", account.getId().equals("ADMIN"));
-            session.setAttribute("id", account.getId());
+            session.setAttribute("id", teacherService.getTeacherIdByEmail(account.getEmail()));
             session.setAttribute("aid", teacherService.getAcademyIdByEmail(account.getEmail()));
             session.setAttribute("name", account.getName());
             session.setAttribute("email", account.getEmail());

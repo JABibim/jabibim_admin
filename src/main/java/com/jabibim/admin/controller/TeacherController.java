@@ -3,6 +3,7 @@ package com.jabibim.admin.controller;
 import com.jabibim.admin.domain.PaginationResult;
 import com.jabibim.admin.domain.Teacher;
 import com.jabibim.admin.domain.TeacherCareer;
+import com.jabibim.admin.dto.OAuth.CustomOAuth2User;
 import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.service.TeacherService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -119,13 +120,14 @@ public class TeacherController {
 
     @PostMapping("/profile/addProcess")
     public String careerAdd(
-            Authentication authentication,
+            HttpSession session,
             @RequestPart("careerName") String careerName,
             @RequestPart("careerImage") MultipartFile careerImage
     ) {
-        AccountDto account = (AccountDto) authentication.getPrincipal();
-        String academyId = account.getAcademyId();
-        String teacherId = account.getId();
+        String academyId =  (String) session.getAttribute("aid");
+        String teacherId = (String) session.getAttribute("id");
+        System.out.println("====약력 추가 academyId========:" + academyId);
+        System.out.println("====약력 추가 teacherId========:" + teacherId);
 
         // 서비스 계층을 통해 약력 추가
         teacherService.insertCareer(academyId, teacherId, careerName, careerImage);
