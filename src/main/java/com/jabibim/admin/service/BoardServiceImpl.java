@@ -24,7 +24,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public int getListCount(String academyId) {
-
         return dao.getListCount(academyId);
     }
 
@@ -61,11 +60,9 @@ public class BoardServiceImpl implements BoardService {
                 throw new IllegalArgumentException("업로드하려는 파일의 이름이 null입니다.");
             }
 
-            String fileName = "board." + getExtension(uploadFile.getOriginalFilename());
-            String uploadedPath = s3Uploader.uploadFileToS3(uploadFile, "board/" + notice.getBoardId() + "/file/" + fileName);
-
-            System.out.println("========> fileName : " + fileName);
-            System.out.println("========> uploadedPath : " + uploadedPath);
+            String fileName = "notice." + getExtension(uploadFile.getOriginalFilename());
+            String filePath = notice.getAcademyId() + "/notice/" + notice.getBoardId() + "/" + fileName;
+            String uploadedPath = s3Uploader.uploadFileToS3(uploadFile, filePath);
 
             notice.setBoardFileOriginName(uploadFile.getOriginalFilename());
             notice.setBoardFilePath(uploadedPath);
@@ -97,8 +94,6 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public boolean isBoardWriter(String boardId, String boardPassword) {
         HashMap<String, Object> map = new HashMap<>();
-
-
         map.put("id", boardId);
         map.put("pass", boardPassword);
 
@@ -123,5 +118,45 @@ public class BoardServiceImpl implements BoardService {
         return result;
     }
 
+    @Override
+    public String changeFile(MultipartFile uploadFile, String boardId, String academyId) {
+        Board boardDetail = this.getDetail(boardId);
+        if (boardDetail == null) {
+            throw new IllegalArgumentException("해당 공지사항이 존재하지 않습니다.");
+        }
+        String newFilePath = "";
+        try {
+            String oldFilePath = boardDetail.getBoardFilePath();
 
+            // s3에 있던 기존 파일 제거
+            if (oldFilePath != null && !oldFilePath.isEmpty()) {
+                s3Uploader.deleteFileFromS3(oldFilePath);
+            }
+
+            // s3에 새로운 파일 업로드
+            if (uploadFile.getOriginalFilename() == null) {
+                throw new IllegalArgumentException("업로드하려는 파일의 이름이 null입니다.");
+            }
+
+            String fileName = "notice." + getExtension(uploadFile.getOriginalFilename());
+            String filePath = academyId + "/notice/" + boardDetail.getBoardId() + "/" + fileName;
+
+            newFilePath = s3Uploader.uploadFileToS3(uploadFile, filePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return newFilePath;
+    }
+
+    @Override
+    public void deleteBoardFile(String boardId) {
+        Board notice = dao.getDetail(boardId);
+        if (notice != null) {
+            String filePath = notice.getBoardFilePath();
+            if (filePath != null && !filePath.isEmpty()) {
+                s3Uploader.deleteFileFromS3(filePath);
+            }
+        }
+    }
 }

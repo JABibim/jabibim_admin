@@ -2,6 +2,7 @@ package com.jabibim.admin.service;
 
 import com.jabibim.admin.domain.Board;
 import com.jabibim.admin.dto.CourseListDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -39,4 +40,8 @@ public interface BoardService {
     public int boardModify(Board noticeData);
 
     int boardDelete(String boardId);
+
+    String changeFile(MultipartFile uploadFile, String boardId, String academyId);
+
+    void deleteBoardFile(String boardId);
 }

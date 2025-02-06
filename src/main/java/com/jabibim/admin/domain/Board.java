@@ -231,4 +231,8 @@ public class Board {
     public void setUploadfile(MultipartFile uploadfile) {
         this.uploadfile = uploadfile;
     }
+
+    public String toString() {
+        return "Board [rnum=" + rnum + ", boardId=" + boardId + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", deletedAt=" + deletedAt + ", boardReRef=" + boardReRef + ", boardReLev=" + boardReLev + ", boardReSeq=" + boardReSeq + ", boardNotice=" + boardNotice + ", boardSubject=" + boardSubject + ", boardPassword=" + boardPassword + ", boardContent=" + boardContent + ", boardFileOriginName=" + boardFileOriginName + ", boardFilePath=" + boardFilePath + ", boardReadCount=" + boardReadCount + ", boardExposureStat=" + boardExposureStat + ", boardTypeId=" + boardTypeId + ", studentId=" + studentId + ", studentName=" + studentName + ", teacherId=" + teacherId + ", teacherName=" + teacherName + ", courseId=" + courseId + ", uploadfile=" + uploadfile + ", academyId=" + academyId + ", courseName=" + courseName + "]";
+    }
 }

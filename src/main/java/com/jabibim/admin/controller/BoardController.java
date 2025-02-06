@@ -194,17 +194,20 @@ public class BoardController {
 
     @PostMapping("/notice/modifyAction")
     public String noticeModifyAction(
+            Authentication authentication,
             Board noticeData,
             String check,
+            String pathValue,
             Model mv,
             HttpServletRequest request,
             RedirectAttributes rAttr
     ) throws Exception {
+        AccountDto account = (AccountDto) authentication.getPrincipal();
         System.out.println("Board ID: " + noticeData.getBoardId());
         System.out.println("Board Password: " + noticeData.getBoardPassword());
         boolean userCheck = boardService.isBoardWriter(noticeData.getBoardId(), noticeData.getBoardPassword());
 
-        if (userCheck == false) {
+        if (!userCheck) {
             rAttr.addFlashAttribute("message", "비밀번호 오류입니다.");
             rAttr.addFlashAttribute("url", "history.back()");
             return "redirect:/message";
@@ -212,25 +215,27 @@ public class BoardController {
 
         String url = "";
         MultipartFile uploadFile = noticeData.getUploadfile();
+
         if (check != null && !check.equals("")) { // 기존 파일 그대로 사용하는 경우
             logger.info("기존 파일 그대로 사용합니다.");
 
-//            noticeData.setBoardFileOrigin(check); TODO
-
+            noticeData.setBoardFileOriginName(check); // 원래 파일명으로 저장
+            noticeData.setBoardFilePath(pathValue); // 원래 파일 경로로 저장 ( check와 동일하게, 기존 파일을 사용하는 경우 원래 파일의 경로를 그대로 사용 )
         } else {
             if (uploadFile != null && !uploadFile.isEmpty()) {
                 logger.info("파일이 변경되었습니다.");
 
-//                String fileDBName = boardService.saveUploadedFile(uploadFile, saveFolder); TODO
+                String newUploadedFilePath = boardService.changeFile(uploadFile, noticeData.getBoardId(), account.getAcademyId());
 
-//                noticeData.setBoardFileName(fileDBName); // 바뀐 파일명으로 저장 TODO
-//                noticeData.setBoardFileOrigin(uploadFile.getOriginalFilename()); // 원래 파일명 저장 TODO
-
+                noticeData.setBoardFileOriginName(uploadFile.getOriginalFilename());
+                noticeData.setBoardFilePath(newUploadedFilePath); // s3에 업로드 후 새로운 파일 경로를 set
             } else {
                 logger.info("선택 파일이 없습니다.");
 
-//                noticeData.setBoardFileName(""); // ""로 초기화합니다. TODO
-//                noticeData.setBoardFileOrigin(""); // ""로 초기화 합니다. TODO
+                noticeData.setBoardFileOriginName(""); // ""로 초기화합니다.
+                noticeData.setBoardFilePath(""); // ""로 초기화합니다.
+
+                boardService.deleteBoardFile(noticeData.getBoardId());
             }
         }
 
