@@ -82,10 +82,10 @@ public class S3Uploader {
         logger.info("(local)파일이 삭제되지 않았습니다.");
     }
 
-    public void deleteFileFromS3(String asisProfileImagePath) {
+    public void deleteFileFromS3(String asisFilePath) {
         try {
-            int indexOfBucketName = asisProfileImagePath.indexOf(bucket);
-            String key = asisProfileImagePath.substring(indexOfBucketName + bucket.length() + 1);
+            int indexOfBucketName = asisFilePath.indexOf(bucket);
+            String key = asisFilePath.substring(indexOfBucketName + bucket.length() + 1);
 
             try {
                 amazonS3Client.deleteObject(bucket, key);

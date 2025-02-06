@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.ChatMapper">
+
+    <!-- 채팅방 있는지 확인 -->
+    <select id="findRoomId" resultType="String">
+        SELECT chat_room_id
+        FROM chat_room
+        WHERE (teacher_1_id = #{teacher1Id} AND teacher_2_id = #{teacher2Id})
+           OR (teacher_1_id = #{teacher2Id} AND teacher_2_id = #{teacher1Id})
+    </select>
+
+    <!-- 채팅방 생성 -->
+    <insert id="insertChatRoom">
+        INSERT INTO chat_room (chat_room_id, teacher_1_id, teacher_2_id, created_at)
+        VALUES (#{chatRoomId}, #{teacher1Id}, #{teacher2Id}, NOW())
+    </insert>
+
+    <insert id="insertMessage">
+        INSERT INTO chat_message (chat_message_id, chat_room_id, sender_id, chat_message, sent_at)
+        VALUES (#{chatMessage.chatMessageId}, #{chatMessage.chatRoomId},
+                #{chatMessage.senderId}, #{chatMessage.chatMessage}, #{chatMessage.sentAt})
+    </insert>
+
+    <select id="findRecentChatWithSenderName" resultType="com.jabibim.admin.domain.ChatMessage">
+        SELECT cm.chat_message_id, cm.chat_room_id, cm.sender_id,
+               t.teacher_name AS sender_name, cm.chat_message, cm.sent_at
+        FROM chat_message cm
+                 JOIN teacher t ON cm.sender_id = t.teacher_id
+        WHERE cm.chat_room_id = #{chatRoomId}
+        ORDER BY cm.sent_at ASC;
+    </select>
+
+</mapper>
