@@ -55,10 +55,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             dao.insertOauthTeacher(teacher);
         }
         else{       //존재하면
-            existData.setTeacherEmail(oAuth2Response.getEmail());
             existData.setTeacherName(oAuth2Response.getName());
-            existData.setProvider(oAuth2Response.getProvider());
-            existData.setProviderId(oAuth2Response.getProviderId());
+            //TODO 프로필 이미지 업뎃 추가
+
 
             role = existData.getAuthRole();
 
