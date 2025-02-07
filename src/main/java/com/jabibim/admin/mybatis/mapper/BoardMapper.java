@@ -21,7 +21,6 @@ public interface BoardMapper {
 
     public Board getDetail(String id);
 
-
     public Board getPreData(int rnum);
 
     public Board getNextData(int rnum);
@@ -33,4 +32,6 @@ public interface BoardMapper {
     public int boardModify(Board noticeData);
 
     public int boardDelete(Board notice);
+
+    public void initBoardTypeInfo(HashMap<String, Object> map);
 }
