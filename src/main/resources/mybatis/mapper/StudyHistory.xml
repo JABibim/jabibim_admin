@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.StudyHistoryMapper">
+
+  <select id="getLastStudyHistory" resultType="lastStudyHistoryVO">
+    SELECT study_history_id, study_history.class_id as last_accessed_class_id, class_name as last_accessed_class_name, study_history.created_at as last_accessed_date
+    FROM study_history
+    INNER JOIN class
+    ON class.class_id = study_history.class_id
+    WHERE study_history.academy_id = #{academyId} AND study_history.student_id = #{studentId}
+    ORDER BY study_history.created_at DESC
+    LIMIT 1
+  </select>
+
+</mapper>

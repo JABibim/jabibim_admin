@@ -6,8 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.jabibim.admin.func.UUIDGenerator;
+import com.jabibim.admin.domain.Cart;
 import com.jabibim.admin.dto.CartItemVO;
+import com.jabibim.admin.dto.CourseDetailVO;
+import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.mybatis.mapper.CartMapper;
 
 import lombok.NonNull;
@@ -47,17 +49,17 @@ public class CartServiceImpl implements CartService {
   }
 
   @Override
-  public void addCartItem(CartItemVO cartItem) {
+  public void addCartItem(String courseId, String studentId, String academyId) {
     logger.info("=== 장바구니 상품 추가 서비스 시작 ===");
     String cartId = UUIDGenerator.getUUID();
-    cartItem.setCartId(cartId);
 
-    try {
-      dao.addCartItem(cartItem);
-    } catch (Exception e) {
-      logger.error("장바구니 상품 추가 중 오류 발생: {}", e.getMessage());
-      throw new RuntimeException("장바구니 상품 추가 실패", e);
-    }
+    Cart cart = new Cart();
+    cart.setCartId(cartId);
+    cart.setStudentId(studentId);
+    cart.setAcademyId(academyId);
+    cart.setCourseId(courseId);
+
+    dao.addCartItem(cart);
   }
 
   @Override

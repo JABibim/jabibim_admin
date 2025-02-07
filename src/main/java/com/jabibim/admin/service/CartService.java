@@ -1,14 +1,14 @@
 package com.jabibim.admin.service;
 
-import com.jabibim.admin.dto.CartItemVO;
-
 import java.util.List;
+
+import com.jabibim.admin.dto.CartItemVO;
 
 public interface CartService {
 
   List<CartItemVO> getCartList(String studentId, String academyId);
 
-  void addCartItem(CartItemVO cartItem);
+  void addCartItem(String courseId, String studentId, String academyId);
 
   void deleteCartItem(String cartId, String studentId, String academyId);
 }

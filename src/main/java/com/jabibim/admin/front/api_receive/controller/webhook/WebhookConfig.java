@@ -21,9 +21,9 @@ public class WebhookConfig {
 
     // 재시도 간격 조정 (5초 → 15초 → 45초 → 135초 → 405초)
     ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-    backOffPolicy.setInitialInterval(5000); // 5초
-    backOffPolicy.setMultiplier(3.0); // 3.0
-    backOffPolicy.setMaxInterval(60000); // 60초
+    backOffPolicy.setInitialInterval(1000); // 1초
+    backOffPolicy.setMultiplier(2.0); // 2.0
+    backOffPolicy.setMaxInterval(20000); // 20초
 
     // 재시도 가능 예외 지정
     Map<Class<? extends Throwable>, Boolean> retryMap = new HashMap<>();

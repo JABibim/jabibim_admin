@@ -10,12 +10,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.jabibim.admin.dto.CartItemVO;
-import com.jabibim.admin.service.CartService;
+import com.jabibim.admin.dto.CourseDetailVO;
 import com.jabibim.admin.dto.StudentUserVO;
 import com.jabibim.admin.front.security.custom.JwtCustomUserDetails;
+import com.jabibim.admin.service.CartService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -71,35 +78,25 @@ public class CartController {
 
   @PostMapping("/add")
   public ResponseEntity<Map<String, Object>> addCartItem(
-      @RequestBody CartItemVO cartItem,
-      HttpServletRequest request) {
+      @RequestBody(required = true) Map<String, Object> input,
+      Authentication auth) {
     logger.info("=== 장바구니 상품 추가 요청 시작 ===");
 
-    try {
-      // SecurityContext에서 인증 정보 가져오기
-      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-      if (authentication == null || !authentication.isAuthenticated()) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-            .body(Map.of(
-                "error", "인증되지 않은 사용자입니다."));
-      }
-
-      JwtCustomUserDetails userDetails = (JwtCustomUserDetails) authentication.getPrincipal();
-      StudentUserVO student = userDetails.getUser();
-      cartItem.setStudentId(student.getStudentId());
-
-      // 장바구니 추가 로직
-      cartService.addCartItem(cartItem);
-
-      return ResponseEntity.ok(Map.of(
-          "data", null,
-          "message", "장바구니에 상품이 추가되었습니다."));
-
-    } catch (Exception e) {
-      logger.error("장바구니 상품 추가 실패", e);
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(Map.of("error", e.getMessage()));
+    if (auth == null || !auth.isAuthenticated()) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(Map.of("error", "인증되지 않은 사용자입니다."));
     }
+
+    JwtCustomUserDetails userDetails = (JwtCustomUserDetails) auth.getPrincipal();
+    StudentUserVO student = userDetails.getUser();
+
+    String id = (String) input.get("courseId");
+
+    // 장바구니 추가 로직
+    cartService.addCartItem(id, student.getStudentId(), student.getAcademyId());
+
+    return ResponseEntity.ok(Map.of(
+        "message", "장바구니에 상품이 추가되었습니다."));
   }
 
   @DeleteMapping("/{cartId}")
