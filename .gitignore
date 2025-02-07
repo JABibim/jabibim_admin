@@ -295,4 +295,3 @@ buildNumber.properties
 # End of https://www.toptal.com/developers/gitignore/api/macos,maven
 
 application-dev.properties
-application.properties
