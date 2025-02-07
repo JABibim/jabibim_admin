@@ -206,4 +206,17 @@
         where provider_id = #{providerId}
     </select>
 
+    <update id="updateTeacherAcademy">
+        UPDATE teacher SET academy_id = #{academyId}, code = #{code}, auth_role = 'ROLE_LECTURER' WHERE teacher_id = #{teacherId}
+    </update>
+
+    <select id="getTeacherIdByEmail" resultType="String">
+        select teacher_id from teacher
+        where teacher_email = #{teacherEmail}
+    </select>
+
+    <select id="getAcademyIdByEmail" resultType="String">
+        select academy_id from teacher
+        where teacher_email = #{teacherEmail}
+    </select>
 </mapper>

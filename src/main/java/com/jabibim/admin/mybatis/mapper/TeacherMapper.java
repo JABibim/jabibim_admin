@@ -45,4 +45,10 @@ public interface TeacherMapper {
     void updateOauthTeacher(Teacher existData);
 
     Teacher getTeacherByProviderId(String provider);
+
+    void updateTeacherAcademy(String teacherId, String academyId, String code);
+
+    String getTeacherIdByEmail(String teacheremail);
+
+    String getAcademyIdByEmail(String email);
 }

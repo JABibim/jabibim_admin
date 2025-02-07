@@ -60,6 +60,15 @@
                , #{registeredAt})
     </insert>
 
+    <!-- 코드로 Academy 조회 -->
+    <select id="getAcademyByCode" resultType="academy">
+        SELECT * FROM academy WHERE code = #{code}
+    </select>
+
+    <select id="getAcademyIdByCode" resultType="String">
+        SELECT academy_id FROM academy WHERE code = #{code}
+    </select>
+
     <insert id="initGradeInfo">
         INSERT INTO grade ( grade_id, created_at, grade_name, discount_rate, academy_id)
         VALUES ( #{goldGradeId}, current_timestamp, #{goldGradeName}, #{goldGradeDiscountRate}, #{academyId})

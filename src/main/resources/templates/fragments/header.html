@@ -5,9 +5,66 @@
     <!-- WebSocket 관련 라이브러리 -->
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
-
     <!-- WebSocket 스크립트 -->
     <script th:src="@{/js/websocket.js}"></script>
+    <style>
+        /* 채팅 메시지 박스 */
+        .chat-message {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        /* 내가 보낸 메시지 (오른쪽 정렬) */
+        .my-message {
+            justify-content: flex-end;
+        }
+
+        /* 상대방 메시지 (왼쪽 정렬) */
+        .other-message {
+            justify-content: flex-start;
+        }
+
+        /* 말풍선 스타일 */
+        .message-content {
+            max-width: 60%;
+            padding: 10px;
+            border-radius: 15px;
+            word-wrap: break-word;
+        }
+
+        /* 내 메시지 스타일 (파란색) */
+        .my-message .message-content {
+            background-color: #007bff;
+            color: white;
+            border-top-right-radius: 0;
+        }
+
+        /* 상대 메시지 스타일 (회색) */
+        .other-message .message-content {
+            background-color: #f1f1f1;
+            color: black;
+            border-top-left-radius: 0;
+        }
+
+        /* 보낸 사람 이름 스타일 */
+        .sender-name {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 3px;
+            display: block;
+        }
+
+        /* 채팅 입력창 스타일 */
+        #chatBox {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
 
     <script th:inline="javascript">
         let token = $("meta[name='_csrf']").attr("content");
@@ -101,6 +158,7 @@
                 });
             });
         });
+
         function fetchChatHistory(chatRoomId) {
             console.log("📌 fetchChatHistory 실행됨, chatRoomId:", chatRoomId);
 
@@ -119,13 +177,29 @@
                     const chatBox = document.getElementById("chatBox");
                     chatBox.innerHTML = ""; // 기존 메시지 초기화
 
-                    data.list.forEach(msg => {  // 🔹 `data.list`가 아니라 `data`를 직접 반복
+                    data.list.forEach(msg => {
                         const messageElement = document.createElement("div");
-                        messageElement.textContent = `${msg.senderName}: ${msg.chatMessage}`;
+                        messageElement.classList.add("chat-message");
+
+                        // 보낸 사람이 현재 로그인한 사용자라면 오른쪽 정렬
+                        if (msg.senderId === loggedInUserId) {
+                            messageElement.classList.add("my-message");
+                        } else {
+                            messageElement.classList.add("other-message");
+                        }
+
+                        messageElement.innerHTML = `
+                    <div class="message-content">
+                        <span class="sender-name">${msg.senderName}</span>
+                        <p class="message-text">${msg.chatMessage}</p>
+                    </div>
+                `;
+
                         chatBox.appendChild(messageElement);
+                        chatBox.scrollTop = chatBox.scrollHeight; // 최신 메시지로 스크롤 이동
                     });
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.error("🔴 채팅 내역 불러오기 실패:", status, error);
                 }
             });
@@ -147,50 +221,47 @@
         <nav class="header-nav ms-auto">
             <ul class="d-flex align-items-center">
 
-                <!-- START 어드민 메뉴 -->
-                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
-                    <li class="nav-item dropdown">
-                        <!-- 관리자 메뉴 버튼 -->
-                        <a class="nav-link nav-icon" href="#" id="adminMenuBtn" data-bs-toggle="modal"
-                           data-bs-target="#passwordConfirmModal">
-                            <i class="bi bi-tools"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages" id="adminMenuDropdown">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" th:href="@{/setting/manageAcademy}">
-                                    <i class="bi bi-building-add"></i>
-                                    <span>학원 추가하기</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" th:href="@{/setting/manageTeacher}">
-                                    <i class="bi bi-person-add"></i>
-                                    <span>강사 추가하기</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center"
-                                   th:href="@{/setting/manageSystemNotice}">
-                                    <i class="bi bi-bell"></i>
-                                    <span>시스템 공지사항 관리</span>
-                                </a>
-                            </li>
-                        </ul>
+                <th:block sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_LECTURER', 'ROLE_MANAGER')">
+                    <li class="nav-item dropdown pe-1 d-flex align-items-center">
+                        <!-- 관리자 메뉴 버튼 (ROLE_ADMIN) -->
+                        <th:block sec:authorize="hasAnyRole('ROLE_ADMIN')">
+                            <a class="nav-link nav-icon ms-5" href="#" id="adminMenuBtn" data-bs-toggle="modal" data-bs-target="#passwordConfirmModal">
+                                <i class="bi bi-tools"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages" id="adminMenuDropdown">
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" th:href="@{/setting/manageAcademy}">
+                                        <i class="bi bi-building-add"></i>
+                                        <span>학원 추가하기</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" th:href="@{/setting/manageTeacher}">
+                                        <i class="bi bi-person-add"></i>
+                                        <span>강사 추가하기</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" th:href="@{/setting/manageSystemNotice}">
+                                        <i class="bi bi-bell"></i>
+                                        <span>시스템 공지사항 관리</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </th:block>
+
+                        <!-- 채팅 시작 아이콘 (ROLE_LECTURER, ROLE_MANAGER) -->
+                        <th:block sec:authorize="hasAnyRole('ROLE_LECTURER', 'ROLE_MANAGER')">
+                            <a class="nav-link d-flex align-items-center me-3" href="#" id="chatStartBtn">
+                                <i class="bi bi-chat-dots" style="font-size: 1.5rem;"></i>
+                            </a>
+                        </th:block>
                     </li>
                 </th:block>
-                <!-- END 어드민 메뉴 -->
 
-                <!-- 프로필 및 채팅 시작 -->
-                <li class="nav-item dropdown pe-3 d-flex align-items-center">
-                    <!-- 채팅 시작 아이콘 -->
-                    <th:block sec:authorize="hasRole('ROLE_LECTURER') or hasRole('ROLE_MANAGER')">
-                        <a class="nav-link d-flex align-items-center me-3" href="#" id="chatStartBtn">
-                            <i class="bi bi-chat-dots" style="font-size: 1.5rem;"></i>
-                        </a>
-                    </th:block>
 
-                    <!-- 프로필 이미지 -->
-                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#"
+                <!-- 프로필 이미지 -->
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0 me-4" href="#"
                        data-bs-toggle="dropdown">
                         <th:block th:if="${#strings.isEmpty(teacherImgName)}">
                             <img th:src="@{/img/default_profile.jpg}" alt="Profile" class="rounded-circle">

@@ -146,4 +146,19 @@ public class TeacherServiceImpl implements TeacherService {
     public String getUploadPathByCareerId(String careerId) {
         return dao.getUploadPathByCareerId(careerId);
     }
+
+    @Override
+    public void updateTeacherAcademy(String teacherId, String academyId, String code) {
+        dao.updateTeacherAcademy(teacherId, academyId, code);
+    }
+
+    @Override
+    public String getTeacherIdByEmail(String teacheremail) {
+        return dao.getTeacherIdByEmail(teacheremail);
+    }
+
+    @Override
+    public String getAcademyIdByEmail(String email) {
+        return dao.getAcademyIdByEmail(email);
+    }
 }

@@ -18,4 +18,5 @@ public class Academy {
     private String academyContect;
     private String businessRegisNum;
     private LocalDateTime registeredAt;
+    private String code;
 }

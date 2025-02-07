@@ -69,12 +69,12 @@ public class AuthController {
     @ResponseBody
     public ResponseEntity<ApiResponse<HashMap<String, Object>>> refreshGoogleTokens(Authentication authentication) {
         try {
+            System.out.println("========= refresh Token Server =============");
             AccountDto account = (AccountDto) authentication.getPrincipal();
             String academyId = account.getAcademyId();
             String teacherId = account.getId();
             String refreshToken = calendarService.getRefreshToken(academyId, teacherId);
             GoogleAuthTokenResponse newTokens = googleCalendar.getNewAccessToken(refreshToken);
-
             calendarService.updateReIssueTokenInfo(academyId, teacherId, newTokens);
 
             HashMap<String, Object> result = new HashMap<>();
