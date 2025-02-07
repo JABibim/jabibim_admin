@@ -107,7 +107,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (response && response.success) {
                     alert('일정이 추가되었습니다.');
                 } else {
-                    alert('일정 추가 실패: ' + (response.error || '알 수 없는 오류'));
+                    console.log('일정 추가 실패: ' + (response.error || '알 수 없는 오류'))
+                    alert('일정 추가 실패');
                 }
 
                 popup.close();
@@ -125,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         submitEvent(); // 토큰 갱신 후 재요청
                     }).catch((err) => {
                         console.log('토큰 갱신 실패:', err);
+                        alert('오류가 발생하였습니다.');
                         popup.close();
                     });
                 }  else {
@@ -211,7 +213,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert('일정이 수정되었습니다.');
                     window.location.reload();
                 } else {
-                    alert('일정 수정 실패: ' + (response.error || '알 수 없는 오류'));
+                    console.log('일정 수정 실패: ' + (response.error || '알 수 없는 오류'));
+                    alert('일정 수정 실패');
                 }
                 popup.close();
             },
@@ -227,6 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         saveEvent(); // 토큰 갱신 후 재요청
                     }).catch((err) => {
                         console.log('토큰 갱신 실패:', err);
+                        alert("오류가 발생하였습니다.")
                         popup.close();
                     });
                 }  else {
@@ -254,7 +258,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         closePopup();
                         window.location.reload();
                     } else {
-                        alert('이벤트 삭제 실패: ' + data.message);  // 실패 메시지 표시
+                        console.log('이벤트 삭제 실패: ' + data.message)
+                        alert('이벤트 삭제 실패');  // 실패 메시지 표시
                     }
                 },
                 error: function (xhr, status, error) {
@@ -268,6 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         getNewToken().then(() => {
                             deleteEvent(); // 토큰 갱신 후 재요청
                         }).catch((err) => {
+                            alert("오류가 발생하였습니다.");
                             console.log('토큰 갱신 실패:', err);
                             popup.close();
                         });
@@ -301,14 +307,16 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('==> customMessage : ', customMessage);
 
             if (success) {
-                alert('토큰이 갱신되었습니다.');
+                console.log('토큰이 갱신되었습니다.');
             } else {
-                alert('토큰 갱신 중 오류가 발생했습니다.');
+                alert("오류가 발생하였습니다.");
+                console.log('토큰 갱신 중 오류가 발생했습니다.');
             }
         } catch (error) {
             console.log('토큰 갱신 중 오류 발생');
             console.log('에러 메시지:', error);  // 에러 메시지
-            alert('토큰 갱신 중 오류가 발생했습니다.');
+            console.log('토큰 갱신 중 오류가 발생했습니다.');
+            alert("오류가 발생하였습니다.");
             throw error; // 오류가 발생한 경우 예외를 던짐
         }
     }
