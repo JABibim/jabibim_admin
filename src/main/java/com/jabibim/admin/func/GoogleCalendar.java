@@ -65,6 +65,7 @@ public class GoogleCalendar {
     }
 
     public GoogleAuthTokenResponse getNewAccessToken(String refreshToken) {
+        System.out.println("===========getNewAccessToken Controller================");
         try {
             URI tokenUri = new URI(this.tokenUri);
 
