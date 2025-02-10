@@ -78,38 +78,36 @@
 
     <select id="getPreData" resultType="board">
         SELECT *
-        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, board_subject, board_id, deleted_at
+        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, board_subject, board_id, deleted_at, academy_id
                FROM board
                WHERE board_type_id = (
                    SELECT board_type_id
                    FROM board_type
                    WHERE board_type_name = '공지사항'
-                   AND academy_id = #{academyId}
-                   AND deleted_at IS NULL
                LIMIT 1
             )
             )AS temp
         WHERE  deleted_at IS NULL
         AND rnum &gt; #{rnum}
+        AND academy_id = #{academyId}
         ORDER BY rnum ASC
         LIMIT 1
     </select>
 
     <select id="getNextData" resultType="board">
         SELECT *
-        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, board_subject, board_id, deleted_at
+        FROM(  SELECT ROW_NUMBER() OVER (ORDER BY created_at DESC) AS rnum, board_subject, board_id, deleted_at, academy_id
                FROM board
                WHERE board_type_id = (
                    SELECT board_type_id
                    FROM board_type
                    WHERE board_type_name = '공지사항'
-                   AND academy_id = #{academyId}
-                   AND deleted_at IS NULL
                 LIMIT 1
             )
             )AS temp
         WHERE deleted_at IS NULL
         AND rnum &lt; #{rnum}
+        AND academy_id = #{academyId}
         ORDER BY rnum DESC
         LIMIT 1
     </select>
