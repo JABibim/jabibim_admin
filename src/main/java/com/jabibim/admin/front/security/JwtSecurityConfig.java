@@ -87,7 +87,7 @@ public class JwtSecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.addAllowedOrigin("https://bibimfront.vercel.app/"); // 프론트엔드
+    configuration.addAllowedOrigin("https://bibimfront.vercel.app"); // 프론트엔드
     configuration.addAllowedMethod("*");
     configuration.addAllowedHeader("*");
     configuration.setAllowCredentials(true); // 인증 정보 허용
