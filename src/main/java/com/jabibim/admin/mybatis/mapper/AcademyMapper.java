@@ -16,6 +16,10 @@ public interface AcademyMapper {
 
     Academy getAcademyById(String academyId);
 
+    Academy getAcademyByCode(String code);  // code로 academy를 찾는 메서드 추가
+
+    String getAcademyIdByCode(String code);
+
     void initGradeInfo(HashMap<String, Object> map);
 
     void initBoardInfo(String academyId);

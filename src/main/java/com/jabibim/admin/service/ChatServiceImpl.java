@@ -47,7 +47,8 @@ public class ChatServiceImpl implements ChatService{
 
     @Override
     public void sendMessage(ChatMessage chatMessage) {
-        if (chatMessage.getChatRoomId() == null || chatMessage.getSenderId() == null || chatMessage.getChatMessage() == null) {
+        if (chatMessage.getChatRoomId() == null || chatMessage.getSenderId() == null
+                || chatMessage.getChatMessage() == null) {
             System.out.println("==== [sendMessage] 메시지 정보 오류 ====");
             System.out.println("chatRoomId: " + chatMessage.getChatRoomId());
             System.out.println("senderId: " + chatMessage.getSenderId());
@@ -63,4 +64,17 @@ public class ChatServiceImpl implements ChatService{
     public List<ChatMessage> findRecentChat(String chatRoomId) {
         return chatMapper.findRecentChatWithSenderName(chatRoomId);
     }
+
+    @Override
+    public int getUnreadMessageCount(String userId) {
+        return chatMapper.countUnreadMessages(userId);
+    }
+
+    @Override
+    @Transactional
+    public void markMessagesAsRead(String chatRoomId, String userId) {
+        chatMapper.markMessagesAsRead(chatRoomId, userId);
+    }
+
+
 }

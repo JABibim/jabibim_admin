@@ -18,6 +18,8 @@ public interface ChatMapper {
     //ChatRoomId 로 일단 해당 chatRoom 내역 전부 찾기
     List<ChatMessage> findRecentChatWithSenderName(@Param("chatRoomId") String chatRoomId);
 
+    int countUnreadMessages(@Param("userId") String userId);
 
+    void markMessagesAsRead(@Param("chatRoomId") String chatRoomId, @Param("userId") String userId);
 
 }

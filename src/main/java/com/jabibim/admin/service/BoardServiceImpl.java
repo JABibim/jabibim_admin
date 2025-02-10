@@ -77,13 +77,13 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Board getPreData(int rnum) {
-        return dao.getPreData(rnum);
+    public Board getPreData(int rnum, String academyId) {
+        return dao.getPreData(rnum, academyId);
     }
 
     @Override
-    public Board getNextData(int rnum) {
-        return dao.getNextData(rnum);
+    public Board getNextData(int rnum, String academyId) {
+        return dao.getNextData(rnum,academyId);
     }
 
     @Override
