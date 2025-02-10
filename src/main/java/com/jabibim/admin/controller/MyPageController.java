@@ -75,6 +75,7 @@ public class MyPageController {
             String fileName = "profile." + Files.getExtension(teacherProfileImage.getOriginalFilename());
             String dirName = academyId + "/teacher/" + teacherId + "/profile/" + fileName;
             String uploadedPath = s3FileService.uploadFile(teacherProfileImage, dirName);
+
             teacher.setTeacherProfileOriginName(teacherProfileImage.getOriginalFilename());
             teacher.setTeacherProfilePath(uploadedPath);
         }
