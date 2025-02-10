@@ -25,10 +25,13 @@ public class S3Uploader {
     private String bucket;
 
     public String uploadFileToS3(MultipartFile multipartFile, String filePath) {
+        System.out.println("📍📍uploadFileToS3() multipartFile : " + multipartFile);
+        System.out.println("📍📍uploadFileToS3() filePath : " + filePath);
         File uploadFile = null;
         try {
             uploadFile = convert(multipartFile)
                     .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File로 전환이 실패했습니다."));
+            System.out.println("📍📍uploadFileToS3() uploadFile : " + uploadFile);
         } catch (IOException ioe) {
             throw new RuntimeException("파일 변환 중 오류가 발생했습니다.");
         }
@@ -60,6 +63,9 @@ public class S3Uploader {
                          + file.getOriginalFilename();
 
         File convertFile = new File(dirPath);
+
+        System.out.println("📍📍convert() dirPath : " + dirPath);
+        System.out.println("📍📍convert() convertFile : " + convertFile);
 
         if (convertFile.createNewFile()) {
             try (
