@@ -64,4 +64,17 @@ public class ChatServiceImpl implements ChatService{
     public List<ChatMessage> findRecentChat(String chatRoomId) {
         return chatMapper.findRecentChatWithSenderName(chatRoomId);
     }
+
+    @Override
+    public int getUnreadMessageCount(String userId) {
+        return chatMapper.countUnreadMessages(userId);
+    }
+
+    @Override
+    @Transactional
+    public void markMessagesAsRead(String chatRoomId, String userId) {
+        chatMapper.markMessagesAsRead(chatRoomId, userId);
+    }
+
+
 }
