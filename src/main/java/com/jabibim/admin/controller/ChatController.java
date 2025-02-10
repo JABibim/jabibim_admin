@@ -58,7 +58,8 @@ public class ChatController {
         String loggedInTeacherId = account.getId();
         String roomId = chatService.getOrCreateChatRoom(loggedInTeacherId, teacherId);
 
-
+        //채팅방 열 시, 메시지를 읽음 처리
+        chatService.markMessagesAsRead(roomId, loggedInTeacherId);
 
         Map<String, Object> response = new HashMap<>();
         response.put("chatRoomId", roomId);
@@ -105,14 +106,27 @@ public class ChatController {
 
         List<ChatMessage> chatHistory = chatService.findRecentChat(id);
 
-        for (ChatMessage msg : chatHistory) {
-            logger.info("Message: {}", msg);
-        }
-
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("list", chatHistory);
 
         return ResponseEntity.ok(response);
     }
 
+    //안읽은 메시지 조회용 API
+    @GetMapping("unreadCount")
+    public ResponseEntity<Integer> getUnreadMessageCount(Authentication auth) {
+
+        AccountDto account = (AccountDto) auth.getPrincipal();
+        int unreadCount = chatService.getUnreadMessageCount(account.getId());
+        return ResponseEntity.ok(unreadCount);
+    }
+    
+    //채팅방을 열면 자동으로 메시지를 읽음으로 처리
+    @PostMapping("/markAsRead")
+    public ResponseEntity<Void> markMessageAsRead(@RequestParam String chatRoomId, Authentication auth) {
+        System.out.println("컨트롤러 markAsRead 여기까지 잘 옴!!!!!!");
+        AccountDto account = (AccountDto) auth.getPrincipal();
+        chatService.markMessagesAsRead(chatRoomId, account.getId());
+        return ResponseEntity.ok().build();
+    }
 }
