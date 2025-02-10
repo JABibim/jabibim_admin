@@ -6,8 +6,6 @@ import com.jabibim.admin.dto.TeacherProfileDTO;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 import java.util.List;
 
 public interface TeacherService {
@@ -24,13 +22,7 @@ public interface TeacherService {
 
     int updatePassword(Teacher teacher);
 
-    String saveProfileImage(MultipartFile file, String uploadDir) throws IOException;
-
-    int updateProfileImage(String teacherId, String teacherImgName);
-
     List<TeacherCareer> getcareerList(boolean isAdmin, String academyId);
-
-    void resetAllCareers();
 
     int updateCareerActive(String asisCareerId, String tobeCareerId);
 
