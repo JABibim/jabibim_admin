@@ -13,5 +13,6 @@ public class TeacherProfileDTO {
     private String teacherJob;
     private String teacherEmail;
     private String teacherPhone;
-    private String teacherImgName;
+    private String teacherProfileOriginName;
+    private String teacherProfilePath;
 }
