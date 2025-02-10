@@ -62,10 +62,10 @@ public class MyPageController {
             , HttpServletRequest request
             , @RequestParam("teacherProfileImage") MultipartFile teacherProfileImage
             , RedirectAttributes redirectAttributes
+            , HttpSession session
     ) {
-        AccountDto account = (AccountDto) authentication.getPrincipal();
-        String teacherId = account.getId();
-        String academyId = account.getAcademyId();
+        String teacherId = (String) session.getAttribute("id");
+        String academyId = (String) session.getAttribute("aid");
         teacher.setTeacherId(teacherId);
 
         if (!teacherProfileImage.isEmpty()) {
