@@ -34,10 +34,10 @@ public class S3Uploader {
 
         try (InputStream inputStream = multipartFile.getInputStream()) {  // InputStream(입력스트림) 획득
             // PutObjectRequest(객체업로드요청)를 이용하여 S3 업로드
-            System.out.println("📍📍uploadFileToS3() bucket : " + bucket);
-            System.out.println("📍📍uploadFileToS3() filePath : " + filePath);
-            System.out.println("📍📍uploadFileToS3() inputStream : " + inputStream.toString());
-            System.out.println("📍📍uploadFileToS3() metadata : " + metadata.toString());
+//            System.out.println("📍📍uploadFileToS3() bucket : " + bucket);
+//            System.out.println("📍📍uploadFileToS3() filePath : " + filePath);
+//            System.out.println("📍📍uploadFileToS3() inputStream : " + inputStream.toString());
+//            System.out.println("📍📍uploadFileToS3() metadata : " + metadata.toString());
 
             amazonS3Client.putObject(
                     new PutObjectRequest(bucket, filePath, inputStream, metadata)
