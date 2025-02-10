@@ -69,7 +69,7 @@ function updateBoardList(data) {
 
     $(privacylist).each(function (index, item) {
 
-        const {privacyTermSubject, privacyTermName, privacyTermEffectiveDate} = item;
+        const {rnum,privacyTermSubject, privacyTermName, privacyTermEffectiveDate} = item;
         const subject = privacyTermSubject.length >= 20 ? privacyTermSubject.substring(0, 20) + "..." : privacyTermSubject;
         const changeSubject = subject
             .replace(/</g, '&lt;')
@@ -78,7 +78,7 @@ function updateBoardList(data) {
         output += `
             <tr>
                 <td>${num--}</td>
-                <td><div><a href='detail?subject=${privacyTermSubject}'>${changeSubject}</a></a></div></td>
+                <td><div><a href='privacy/detail?rnum=${rnum}'>${changeSubject}</a></a></div></td>
                 <td><div>${privacyTermName}</div></td>
                 <td><div>${privacyTermEffectiveDate}</div></td>
             </tr>
