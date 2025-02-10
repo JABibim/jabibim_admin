@@ -147,7 +147,6 @@
                         $('#chatBox').html(''); // 채팅창 초기화
 
                         fetchChatHistory(chatRoomId);
-
                     },
                     error: function () {
                         alert("채팅 방을 열 수 없습니다.");
@@ -187,7 +186,6 @@
                         <p class="message-text">${msg.chatMessage}</p>
                     </div>
                 `;
-
                         chatBox.appendChild(messageElement);
                         chatBox.scrollTop = chatBox.scrollHeight; // 최신 메시지로 스크롤 이동
                     });
@@ -245,8 +243,11 @@
 
                         <!-- 채팅 시작 아이콘 (ROLE_LECTURER, ROLE_MANAGER) -->
                         <th:block sec:authorize="hasAnyRole('ROLE_LECTURER', 'ROLE_MANAGER')">
-                            <a class="nav-link d-flex align-items-center me-3" href="#" id="chatStartBtn">
+                            <a class="nav-link d-flex align-items-center me-3 position-relative" href="#" id="chatStartBtn">
                                 <i class="bi bi-chat-dots" style="font-size: 1.5rem;"></i>
+                                <span id="chatNotificationBadge"
+                                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                      style="display: none; font-size: 0.75rem;">0</span>
                             </a>
                         </th:block>
                     </li>

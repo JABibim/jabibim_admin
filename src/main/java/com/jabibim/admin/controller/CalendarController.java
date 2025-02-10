@@ -8,7 +8,6 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.jabibim.admin.domain.CalendarEvent;
 import com.jabibim.admin.dto.common.ApiResponse;
-import com.jabibim.admin.dto.common.ApiResponse;
 import com.jabibim.admin.dto.calendar.response.SelectTeacherCalInfoReqDto;
 import com.jabibim.admin.func.GoogleCalendarServiceFactory;
 import com.jabibim.admin.func.UUIDGenerator;
