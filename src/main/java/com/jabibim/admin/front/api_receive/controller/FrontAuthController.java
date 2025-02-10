@@ -56,7 +56,6 @@ public class FrontAuthController {
     cookie.setHttpOnly(true);
     cookie.setMaxAge(0);
     cookie.setPath("/");
-    cookie.setAttribute("SameSite", "None"); // CORS 요청에서 쿠키 전송 허용
     response.addCookie(cookie);
 
     logger.info("=== 로그아웃 요청 완료 ===");

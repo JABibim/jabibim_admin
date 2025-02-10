@@ -128,6 +128,10 @@ public class PaymentsController {
 
     List<CartItemVO> carts = cartService.getCartList(order.getStudentId(), order.getAcademyId());
 
+    for (CartItemVO cartItemVO : carts) {
+      cartService.deleteCartItem(cartItemVO.getCartId(),cartItemVO.getStudentId(),cartItemVO.getAcademyId());
+    }
+
     String paymentId = orderService.addOrder(carts);
 
     if (paymentId == null) {
