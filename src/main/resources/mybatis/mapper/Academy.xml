@@ -75,4 +75,5 @@
              , ( #{silverGradeId}, current_timestamp, #{silverGradeName}, #{silverGradeDiscountRate}, #{academyId})
              , ( #{bronzeGradeId}, current_timestamp, #{bronzeGradeName}, #{bronzeGradeDiscountRate}, #{academyId})
     </insert>
+    
 </mapper>

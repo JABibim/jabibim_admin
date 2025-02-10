@@ -23,4 +23,5 @@ public interface AcademyMapper {
     void initGradeInfo(HashMap<String, Object> map);
 
     void initBoardInfo(String academyId);
+
 }

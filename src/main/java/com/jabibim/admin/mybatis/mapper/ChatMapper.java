@@ -22,6 +22,4 @@ public interface ChatMapper {
 
     void markMessagesAsRead(@Param("chatRoomId") String chatRoomId, @Param("userId") String userId);
 
-
-
 }

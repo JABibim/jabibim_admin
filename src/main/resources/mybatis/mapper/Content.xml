@@ -226,12 +226,12 @@
         <where>
             co.deleted_at IS NULL
             AND co.teacher_id IN (SELECT teacher_id FROM teacher
-            <if test="isAdmin == true">
-                )
-            </if>
-            <if test="isAdmin == false">
-                academy_id = #{academyId})
-            </if>
+                                    <where>
+                                        <if test="isAdmin == false">
+                                            academy_id = #{academyId}
+                                        </if>
+                                    </where>
+            )
         </where>
         GROUP BY
             co.course_id,

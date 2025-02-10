@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @RequestMapping(value = "/teacher")
@@ -170,12 +168,28 @@ public class TeacherController {
         //teacherInfo 가 없으면 default 이미지 쓰기
         String teacherImgName = teacherInfoOpt
                 .filter(teacher -> !"ADMIN".equals(teacherId))
-                .map(Teacher::getTeacherImgName)
+                .map(Teacher::getTeacherProfilePath)
                 .orElse("");
+
 
         model.addAttribute("teacherImgName", teacherImgName);
 
         return "redirect:/dashboard";
     }
 
+    @GetMapping(value = "/getProfileImgInfo")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> getProfileImgInfo(
+            Authentication authentication, HttpSession session
+    ) {
+        String teacheremail = (String) session.getAttribute("email");
+        String teacherId = teacherService.getTeacherIdByEmail(teacheremail);
+
+        Teacher teacher = teacherService.getTeacherById(teacherId);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("profileImgPath", teacher.getTeacherProfilePath() != null ? teacher.getTeacherProfilePath() : "");
+
+        return ResponseEntity.ok(response);
+    }
 }
