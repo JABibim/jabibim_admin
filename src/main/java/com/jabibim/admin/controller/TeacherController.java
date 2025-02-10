@@ -180,10 +180,10 @@ public class TeacherController {
     @GetMapping(value = "/getProfileImgInfo")
     @ResponseBody
     public ResponseEntity<Map<String, String>> getProfileImgInfo(
-            Authentication authentication
+            Authentication authentication, HttpSession session
     ) {
-        AccountDto account = (AccountDto) authentication.getPrincipal();
-        String teacherId = account.getId();
+        String teacheremail = (String) session.getAttribute("email");
+        String teacherId = teacherService.getTeacherIdByEmail(teacheremail);
 
         Teacher teacher = teacherService.getTeacherById(teacherId);
 
