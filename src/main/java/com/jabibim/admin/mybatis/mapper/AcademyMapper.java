@@ -24,7 +24,4 @@ public interface AcademyMapper {
 
     void initBoardInfo(String academyId);
 
-    Academy getAcademyByCode(String code);  // code로 academy를 찾는 메서드 추가
-
-    String getAcademyIdByCode(String code);
 }
