@@ -12,7 +12,6 @@ CREATE TABLE review
     review_rating        tinyint,
     review_readcount     int,
     review_exposure_stat tinyint(1),
-    review_reply_stat    tinyint(1),
     academy_id           varchar(36),
     course_id            varchar(36),
     teacher_id           varchar(36),

@@ -11,9 +11,8 @@ CREATE TABLE course
     course_diff            varchar(100),
     course_price           int,
     course_activation      tinyint(1),
-    course_img_name        varchar(500),
-    course_img_origin_name varchar(1024),
     course_profile_path    varchar(1024),
+    course_profile_origin_name varchar(1024),
     academy_id             varchar(36),
     teacher_id             varchar(36)
 ) ENGINE = InnoDB
