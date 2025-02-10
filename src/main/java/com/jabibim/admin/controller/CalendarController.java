@@ -1,13 +1,11 @@
 package com.jabibim.admin.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventDateTime;
 import com.jabibim.admin.domain.CalendarEvent;
-import com.jabibim.admin.dto.common.ApiResponse;
 import com.jabibim.admin.dto.common.ApiResponse;
 import com.jabibim.admin.dto.calendar.response.SelectTeacherCalInfoReqDto;
 import com.jabibim.admin.func.GoogleCalendarServiceFactory;
@@ -25,10 +23,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import java.time.LocalDateTime;
@@ -41,8 +37,6 @@ import java.util.Map;
 @RequestMapping(value = "/calendar")
 public class CalendarController {
     private final CalendarService calendarEventService;
-
-
     private static final Logger logger = LoggerFactory.getLogger(CalendarController.class);
 
     public CalendarController(CalendarService calendarEventService) {
@@ -50,7 +44,7 @@ public class CalendarController {
     }
 
     @GetMapping(value = "")
-    public ModelAndView boardList(
+    public ModelAndView calendarList(
             Authentication authentication
     ) {
         AccountDto account = (AccountDto) authentication.getPrincipal();
@@ -80,10 +74,8 @@ public class CalendarController {
 
         try {
             // JSON 파싱
-            System.out.println("🚀🚀🚀 JSON 파싱 시작 🚀🚀🚀");
             JSONParser parser = new JSONParser();
             JSONObject obj = (JSONObject) parser.parse(item.toString());
-            System.out.println("🚀🚀🚀 JSON 파싱 끝 🚀🚀🚀");
 
             String summary = (String) obj.get("summary");
             String description = (String) obj.get("description");
@@ -106,12 +98,9 @@ public class CalendarController {
             end.setDateTime(new DateTime(endTime));
             event.setEnd(end);
 
-            System.out.println("🚀🚀🚀 구글 캘린더 서비스 생성 시작 🚀🚀🚀");
             Calendar calendarService = GoogleCalendarServiceFactory.createCalendarService(accessToken);
-            System.out.println("🚀🚀🚀 구글 캘린더 서비스 생성 완료 🚀🚀🚀");
 
             // 구글 캘린더에 이벤트 추가
-            System.out.println("🚀🚀🚀 구글 캘린더에 이벤트 추가 🚀🚀🚀");
             Event confirmed = calendarService.events().insert(calendarInfo.getGoogleCalendarId(), event).execute();
             System.out.println("✅ Event created successfully: " + confirmed);
 
@@ -133,24 +122,26 @@ public class CalendarController {
             // DB에 캘린더 저장
             calendarEventService.insertCalendar(calendar);
 
-            System.out.println("==> before body setting!!");
-
             HashMap<String, Object> result = new HashMap<>();
             result.put("message", "success");
             ApiResponse<HashMap<String, Object>> body = new ApiResponse<>(true, result, "새로운 일정이 추가되었습니다.");
 
-            System.out.println("==> 성공처리 응답 전!!!");
-
             return ResponseEntity.ok(body);
         } catch (GoogleJsonResponseException e) {
+
             if (e.getStatusCode() == 401) {
                 HashMap<String, Object> result = new HashMap<>();
-                result.put("message", "401");
-                ApiResponse<HashMap<String, Object>> response = new ApiResponse<>(false, null, "일정 추가에 실패했습니다: " + e.getMessage());
-                System.out.println("=======401====================== : " +  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-            }
+                result.put("message", 401);
 
+                ApiResponse<HashMap<String, Object>> response = new ApiResponse<>(
+                        false,
+                        result,
+                        "Unauthorized: 토큰이 만료되었습니다. 다시 로그인하세요."
+                );
+                System.out.println("======= 401 Unauthorized 발생 =======");
+                // 401 상태 코드로 응답
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
             HashMap<String, Object> result = new HashMap<>();
             result.put("message", "500");
             ApiResponse<HashMap<String, Object>> response = new ApiResponse<>(false, null, "일정 추가에 실패했습니다: " + e.getMessage());
@@ -175,7 +166,6 @@ public class CalendarController {
 
         SelectTeacherCalInfoReqDto calendarInfo = calendarEventService.getCalendarInfo(googleEventId);
         String accessToken = calendarInfo.getAccessToken();
-        System.out.println("========update method 이동 =============");
 
         try {
             // 필요한 값들을 item에서 직접 가져오기
@@ -186,17 +176,7 @@ public class CalendarController {
             String location = (String) item.get("eventLocation");
             String timeZone = (String) item.get("timeZone");
 
-            System.out.println("🚀 data 🚀");
-            System.out.println(summary);
-            System.out.println(description);
-            System.out.println(startTime);
-            System.out.println(endTime);
-            System.out.println(location);
-            System.out.println(timeZone);
-
-            System.out.println("🚀🚀🚀 구글 캘린더 서비스 생성 시작 🚀🚀🚀");
             Calendar calendarService = GoogleCalendarServiceFactory.createCalendarService(accessToken);
-            System.out.println("🚀🚀🚀 구글 캘린더 서비스 생성 완료 🚀🚀🚀");
 
             // 기존 이벤트 가져오기
             Event event = calendarService.events().get(calendarInfo.getCalendarId(), googleEventId).execute();
@@ -215,17 +195,14 @@ public class CalendarController {
                 end.setDateTime(new DateTime(endTime));
                 end.setTimeZone(timeZone);
                 event.setEnd(end);
-                System.out.println("Event before update: " + event); // update 요청 전에 event 객체 확인
             }catch(Exception e){
                 e.printStackTrace();
                 System.out.println(e);
             }
             // 업데이트 요청
-            System.out.println("🚀🚀🚀 구글 캘린더에 이벤트 수정 🚀🚀🚀");
             Event updatedEvent = calendarService.events()
                     .update(calendarInfo.getCalendarId(), googleEventId, event)
                     .execute();
-            System.out.println("Event update: " + updatedEvent);
 
             CalendarEvent calendar = new CalendarEvent();
             calendar.setGoogleEventId(updatedEvent.getId());
@@ -242,7 +219,6 @@ public class CalendarController {
             HashMap<String, Object> result = new HashMap<>();
             result.put("message", "success");
 
-            System.out.println("==> 성공처리 응답 전!!!");
             return ResponseEntity.ok(result);
 
         } catch (GoogleJsonResponseException e) {
@@ -262,49 +238,47 @@ public class CalendarController {
     }
 
     @PostMapping("/delete")
-    @ResponseBody
-    public Map<String, Object> deleteEvent(@RequestParam("eventId") String eventId, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> deleteEvent(@RequestParam("eventId") String eventId) {
+        Map<String, Object> result = new HashMap<>();
+
         SelectTeacherCalInfoReqDto calendarInfo = calendarEventService.getCalendarInfo(eventId);
         String accessToken = calendarInfo.getAccessToken();
         System.out.println("========delete method 이동 =============");
 
-        System.out.println("🚀🚀🚀 구글 캘린더 서비스 생성 시작 🚀🚀🚀");
         Calendar calendarService = GoogleCalendarServiceFactory.createCalendarService(accessToken);
-        System.out.println("🚀🚀🚀 구글 캘린더 서비스 생성 완료 🚀🚀🚀");
 
-        // 예시로, 이벤트를 조회한 후 해당 ID를 얻고 삭제하는 방법
         try {
-            // 이벤트 조회 (eventId는 실제 이벤트 ID로 바꿔주세요)
+            // 이벤트 조회 및 삭제
             Event event = calendarService.events().get(calendarInfo.getCalendarId(), eventId).execute();
-            String googleEventId = event.getId();  // 이벤트의 ID를 얻을 수 있습니다.
+            String googleEventId = event.getId();
             System.out.println("googleEventId: " + googleEventId);
 
-            // 이벤트 삭제
             calendarService.events().delete(calendarInfo.getCalendarId(), googleEventId).execute();
             System.out.println("이벤트가 성공적으로 삭제되었습니다.");
+        } catch (GoogleJsonResponseException e) {
+            if (e.getStatusCode() == 401) {
+                result.put("message", "401 Unauthorized");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result);
+            }
+            result.put("message", "Google API Error: " + e.getStatusCode());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("이벤트 삭제 중 오류 발생");
+            result.put("message", "500 Internal Server Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         }
 
-        // DB에서 삭제 처리 (DB 관련 작업)
+        // DB에서 이벤트 삭제 처리
         int isDeleted = calendarEventService.deleteEvent(eventId);
 
-        // 응답을 Map 객체로 반환하여 JSON 형식으로 클라이언트에 전달
-        Map<String, Object> response = new HashMap<>();
-
         if (isDeleted == 0) {
-            // 삭제 실패
-            response.put("success", false);
-            response.put("message", "삭제 실패");
-            return response;
+            result.put("success", false);
+            result.put("message", "이벤트 삭제 실패");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
         } else {
-            // 삭제 성공
-            response.put("success", true);
-            response.put("message", "삭제 성공");
-            return response;
+            result.put("success", true);
+            result.put("message", "이벤트 삭제 성공");
+            return ResponseEntity.ok(result);
         }
     }
-
 
 }
