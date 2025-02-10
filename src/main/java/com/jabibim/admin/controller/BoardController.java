@@ -147,10 +147,11 @@ public class BoardController {
             session.removeAttribute("referer");
         }
 
+        String academyId = (String) session.getAttribute("aid");
         Board notice = boardService.getDetail(id);
         System.out.println("Rnum : " + notice.getRnum());
-        Board preData = boardService.getPreData(notice.getRnum());
-        Board nextData = boardService.getNextData(notice.getRnum());
+        Board preData = boardService.getPreData(notice.getRnum(),academyId);
+        Board nextData = boardService.getNextData(notice.getRnum(),academyId);
 
 
         if (notice == null) {

@@ -21,9 +21,9 @@ public interface BoardMapper {
 
     public Board getDetail(String id);
 
-    public Board getPreData(int rnum);
+    public Board getPreData(int rnum,String academyId);
 
-    public Board getNextData(int rnum);
+    public Board getNextData(int rnum, String academyId);
 
     public void setReadCountUpdate(String id);
 
