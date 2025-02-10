@@ -69,7 +69,6 @@
     <script th:inline="javascript">
         let token = $("meta[name='_csrf']").attr("content");
         let header = $("meta[name='_csrf_header']").attr("content");
-
         let chatRoomId = null; // 현재 채팅방 ID
         let loggedInUserId = /*[[${session.id}]]*/ ''; // 로그인한 사용자 ID
 
@@ -137,11 +136,15 @@
                     method: "GET",
                     data: { teacherId: teacherId },
                     success: function (response) {
+                        console.log("reponse는요!!!!!!!!!" , response);
                         chatRoomId = response.chatRoomId; // 서버에서 받은 채팅방 ID 저장
                         senderId = response.senderId;
 
                         $("#chatRoomId").val(chatRoomId);
                         $("#loggedInUserId").val(senderId);
+
+                        console.log("채팅방 ID 설정됨: ", chatRoomId);
+                        console.log("로그인한 사용자 ID 설정됨", senderId);
 
                         $('#chatModal').modal('show');
                         $('#chatBox').html(''); // 채팅창 초기화
@@ -157,11 +160,15 @@
         });
 
         function fetchChatHistory(chatRoomId) {
+            console.log("📌 fetchChatHistory 실행됨, chatRoomId:", chatRoomId);
+
             $.ajax({
                 url: '/chat/recent?id='+ chatRoomId,  // 🔹 기존 '/chat/recent?id=' → '/chat/recent/'로 수정
                 type: "GET",
                 dataType: "json",
                 success: function(data) {
+                    console.log("🟢 서버 응답 데이터:", data);
+
                     if (!Array.isArray(data.list)) {  // 🔹 응답이 배열인지 확인
                         console.error("🔴 오류: chatHistory가 배열이 아닙니다! 데이터 타입:", typeof data, "데이터 내용:", data);
                         return;

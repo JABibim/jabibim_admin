@@ -7,30 +7,40 @@
     <meta charset="UTF-8">
     <title>중앙비빔 Admin</title>
     <style>
-    #upfile{display:none}
-    img{width:20px;}
+        #upfile {
+            display: none
+        }
+
+        img {
+            width: 20px;
+        }
+
+        .file-section {
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
 <div layout:fragment="content">
     <script th:src="@{/js/jquery-3.7.1.js}"></script>
     <script th:src="@{/js/noticeWrite.js}"></script>
-<main id="main" class="main">
-    <div class="pagetitle">
-        <h1>홈페이지 관리</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a th:href="@{dashboard}">게시판</a></li>
-                <li class="breadcrumb-item active">공지사항 등록</li>
-            </ol>
-        </nav>
-    </div><!-- End Page Title -->
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>홈페이지 관리</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">게시판</li>
+                    <li class="breadcrumb-item"><a th:href="@{/board/notice}">공지사항 목록</a></li>
+                    <li class="breadcrumb-item active">공지사항 등록</li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
 
-    <div class="container">
         <div class="card">
             <div class="card-body">
                 <!-- General Form Elements -->
-                <form th:action="@{/board/notice/add}" enctype="multipart/form-data" method="post" name="noticeForm" id="save-form">
+                <form th:action="@{/board/notice/add}" enctype="multipart/form-data" method="post" name="noticeForm"
+                      id="save-form">
                     <br>
                     <h3 class="card-title">공지사항 등록</h3><br>
                     <div class="row mb-3">
@@ -59,14 +69,14 @@
                             <input type="hidden" name="boardContent" id="boardContent">
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group file-section">
                         <label for="upfile" class="col-sm-2 col-form-label fw-bold">파일첨부
                             <img th:src="@{/img/attach.png}" alt="파일첨부">
                             <input type="file" id="upfile" name="uploadfile">
                         </label>
                         <span id="filevalue"></span>
                     </div>
-                    <fieldset class="row mb-3">
+                    <div class="row mb-3">
                         <legend class="col-form-label col-sm-2 pt-0 fw-bold">상단 고정</legend>
                         <div class="col-sm-10 d-flex">
                             <div class="form-check" style="padding-right: 16px;">
@@ -85,9 +95,8 @@
                                 </label>
                             </div>
                         </div>
-
-                    </fieldset>
-                    <fieldset class="row mb-3">
+                    </div>
+                    <div class="row mb-3">
                         <legend class="col-form-label col-sm-2 pt-0 fw-bold">노출</legend>
                         <div class="col-sm-10 d-flex">
                             <div class="form-check" style="padding-right: 16px;">
@@ -105,7 +114,7 @@
                                 </label>
                             </div>
                         </div>
-                    </fieldset>
+                    </div>
                     <div class="row mb-3">
                         <label for="boardPassword" class="col-sm-2 col-form-label fw-bold">비밀번호</label>
                         <div class="col-sm-10">
@@ -114,16 +123,16 @@
                         </div>
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: 20px; float: right;">
-                        <button type="reset" class="btn btn-secondary btn-sm" th:onClick="|location.href='/board/notice'|">목록</button>
+                        <button type="reset" class="btn btn-secondary btn-sm"
+                                th:onClick="|location.href='/board/notice'|">목록
+                        </button>
                         <button type="button" id="save-button" class="btn btn-primary btn-sm">등록</button>
                     </div>
 
                 </form>
             </div>
         </div><!-- End General Form Elements -->
-    </div>
-</main><!-- End #main -->
+    </main><!-- End #main -->
 </div>
-
 </body>
 </html>

@@ -6,11 +6,11 @@
 <head>
     <meta charset="UTF-8">
     <title>중앙비빔 Admin</title>
-<style>
-    img {
-        width: 20px
-    }
-</style>
+    <style>
+        img {
+            width: 20px
+        }
+    </style>
     <script>
         const result = "${result}";
         if (result == 'passFail') {
@@ -25,125 +25,152 @@
                 }
             })
         })
-
     </script>
 </head>
 <body>
 <div layout:fragment="content">
     <script th:src="@{/js/jquery-3.7.1.js}"></script>
     <script th:src="@{/js/noticeModify.js}"></script>
-<main id="main" class="main">
-    <div class="pagetitle">
-        <h1>홈페이지 관리</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a th:href="@{dashboard}">게시판</a></li>
-                <li class="breadcrumb-item active">공지사항 수정</li>
-            </ol>
-        </nav>
-    </div><!-- End Page Title -->
+    <main id="main" class="main">
+        <div class="pagetitle">
+            <h1>홈페이지 관리</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/board/notice}">게시판</a></li>
+                    <li class="breadcrumb-item active">공지사항 수정</li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
 
-    <div class="container">
-        <div class="card">
-            <div class="card-body">
-                <h3 class="card-title">공지사항 수정</h3>
-                <!-- General Form Elements -->
-                <form th:action="@{modifyAction}" enctype="multipart/form-data" method="post" name="noticeForm" id="save-form">
-                    <input type="hidden" name="boardId" th:value="${noticeData.boardId}">
-                    <input type="hidden" name="BOARD_FILE" th:value="${noticeData.boardFileName}">
-                    <div class="row mb-3">
-                        <label for="courseId" class="col-sm-2 col-form-label fw-bold">과정명</label>
-                        <div class="col-sm-10">
-                            <select class="form-select" aria-label="Default select example" id="courseId"
-                                    name="courseId">
-                                <option selected>과정명을 선택해주세요</option>
-                                <th:block th:each=" course, interSat : ${course}">
-                                    <option th:value="${course.courseId}"
-                                            th:text="${course.courseName}"
-                                            th:selected="${course.courseId == noticeData.courseId}"></option>
-                                </th:block>
-                            </select>
+        <div class="container">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">공지사항 수정</h3>
+                    <!-- General Form Elements -->
+                    <form th:action="@{modifyAction}" enctype="multipart/form-data" method="post" name="noticeForm"
+                          id="save-form">
+                        <input type="hidden" name="boardId" th:value="${noticeData.boardId}">
+                        <input type="hidden" name="BOARD_FILE" th:value="${noticeData.boardFileOriginName}">
+                        <input type="hidden" id="boardFilePath" th:value="${noticeData.boardFilePath}">
+
+                        <!-- 과정명 -->
+                        <div class="row mb-3">
+                            <label for="courseId" class="col-sm-2 col-form-label fw-bold">과정명</label>
+                            <div class="col-sm-10">
+                                <select class="form-select" aria-label="Default select example" id="courseId"
+                                        name="courseId">
+                                    <option selected>과정명을 선택해주세요</option>
+                                    <th:block th:each=" course, interSat : ${course}">
+                                        <option th:value="${course.courseId}"
+                                                th:text="${course.courseName}"
+                                                th:selected="${course.courseId == noticeData.courseId}"></option>
+                                    </th:block>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="boardSubject" class="col-sm-2 col-form-label fw-bold">제목</label>
-                        <div class="col-sm-10">
+
+                        <!-- 제목 -->
+                        <div class="row mb-3">
+                            <label for="boardSubject" class="col-sm-2 col-form-label fw-bold">제목</label>
+                            <div class="col-sm-10">
                             <textarea name="boardSubject" id="boardSubject" maxlength="100" rows="1"
                                       class="form-control" th:text="${noticeData.boardSubject}"></textarea>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label fw-bold">내용</label>
-                        <div class="col-sm-10 pb-5">
-                            <div id="editor" th:utext="${noticeData.boardContent}"></div>
-                            <input type="hidden" name="boardContent" id="boardContent">
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label class="fw-bold">
-                            파일 첨부
-                            <img th:src="@{/img/attach.png}" alt="파일첨부">
-                            <input type="file" id="upFile" name="uploadfile">
-                        </label>
-                        <span id="fileValue" th:text="${noticeData.boardFileOrigin}"></span>
-                        <img th:src="@{/img/remove.png}" alt="파일삭제" width="10px" class="remove">
-                    </div>
-
-                    <fieldset class="row mb-3">
-                        <legend class="col-form-label col-sm-2 pt-0 fw-bold">상단 고정</legend>
-                        <div class="col-sm-10 d-flex">
-                            <div class="form-check" style="padding-right: 16px;">
-                                <input class="form-check-input" name="boardNotice" type="radio" id="fixed"
-                                       th:value="1"
-                                       th:checked="${noticeData.boardNotice == 1}">
-                                <label class="form-check-label" for="fixed">
-                                    고정
-                                </label>
-                            </div>
-                            <div class="form-check" style="padding-right: 16px;">
-                                <input class="form-check-input" name="boardNotice" type="radio" id="unfixed"
-                                       th:value="0" th:checked="${noticeData.boardNotice == 0}">
-                                <label class="form-check-label" for="unfixed">
-                                    비고정
-                                </label>
                             </div>
                         </div>
 
-                    </fieldset>
-                    <fieldset class="row mb-3">
-                        <legend class="col-form-label col-sm-2 pt-0 fw-bold">노출</legend>
-                        <div class="col-sm-10 d-flex">
-                            <div class="form-check" style="padding-right: 16px;">
-                                <input class="form-check-input" name="boardExposureStat" type="radio" id="exposure"
-                                       th:value="1" th:checked="${noticeData.boardExposureStat == 1}">
-                                <label class="form-check-label" for="exposure">
-                                    노출
-                                </label>
-                            </div>
-                            <div class="form-check" style="padding-right: 16px;">
-                                <input class="form-check-input" name="boardExposureStat" type="radio"
-                                       id="hide" th:value="0" th:checked="${noticeData.boardExposureStat == 0}">
-                                <label class="form-check-label" for="hide">
-                                    숨김
-                                </label>
+                        <!-- 내용 -->
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">내용</label>
+                            <div class="col-sm-10 pb-5">
+                                <div id="editor" th:utext="${noticeData.boardContent}"></div>
+                                <input type="hidden" name="boardContent" id="boardContent">
                             </div>
                         </div>
-                    </fieldset>
-                    <div class="form-group">
-                        <label class="col-form-label col-sm-2 pt-0 fw-bold" for="boardPassword">비밀번호</label>
-                        <input name="boardPassword" id="boardPassword" type="password" maxlength="30"
-                               class="form-control" placeholder="Enter password">
-                    </div>
-                    <div style="display: flex; gap: 10px; margin-top: 20px; float: right;">
-                        <button type="submit" id="save-button" class="btn btn-primary btn-sm">수정</button>
-                        <button type="reset" class="btn btn-secondary btn-sm" onClick="history.go(-1)">취소</button>
-                    </div>
-                </form>
-            </div>
-        </div><!-- End General Form Elements -->
-    </div>
-</main><!-- End #main -->
+
+                        <!-- 파일첨부 -->
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label fw-bold">파일 첨부</label>
+                            <input type="hidden">
+                            <input type="hidden">
+                            <div class="col-sm-10">
+                                <!-- 파일 입력 필드 -->
+                                <div class="d-flex align-items-center">
+                                    <input type="file" id="upFile" name="uploadfile" class="form-control me-3">
+
+                                    <!-- 파일 이름 -->
+                                    <span id="fileValue" th:text="${noticeData.boardFileOriginName}"
+                                          class="text-muted me-3"></span>
+
+                                    <!-- 삭제 버튼 -->
+                                    <button type="button" class="btn btn-sm btn-danger remove"
+                                            style="display: none; min-width: 100px;">
+                                        <i class="bi bi-trash" style="font-size: 1rem;"></i> 삭제
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 상단고정 여부 -->
+                        <div class="row mb-3">
+                            <legend class="col-form-label col-sm-2 pt-0 fw-bold">상단 고정</legend>
+                            <div class="col-sm-10 d-flex">
+                                <div class="form-check" style="padding-right: 16px;">
+                                    <input class="form-check-input" name="boardNotice" type="radio" id="fixed"
+                                           th:value="1"
+                                           th:checked="${noticeData.boardNotice == 1}">
+                                    <label class="form-check-label" for="fixed">
+                                        고정
+                                    </label>
+                                </div>
+                                <div class="form-check" style="padding-right: 16px;">
+                                    <input class="form-check-input" name="boardNotice" type="radio" id="unfixed"
+                                           th:value="0" th:checked="${noticeData.boardNotice == 0}">
+                                    <label class="form-check-label" for="unfixed">
+                                        비고정
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 노출 여부 -->
+                        <div class="row mb-3">
+                            <legend class="col-form-label col-sm-2 pt-0 fw-bold">노출</legend>
+                            <div class="col-sm-10 d-flex">
+                                <div class="form-check" style="padding-right: 16px;">
+                                    <input class="form-check-input" name="boardExposureStat" type="radio" id="exposure"
+                                           th:value="1" th:checked="${noticeData.boardExposureStat == 1}">
+                                    <label class="form-check-label" for="exposure">
+                                        노출
+                                    </label>
+                                </div>
+                                <div class="form-check" style="padding-right: 16px;">
+                                    <input class="form-check-input" name="boardExposureStat" type="radio"
+                                           id="hide" th:value="0" th:checked="${noticeData.boardExposureStat == 0}">
+                                    <label class="form-check-label" for="hide">
+                                        숨김
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 비밀번호 -->
+                        <div class="row mb-3">
+                            <label class="col-form-label col-sm-2 pt-0 fw-bold" for="boardPassword">비밀번호</label>
+                            <div class="col-sm-10">
+                                <input name="boardPassword" id="boardPassword" type="password" maxlength="30"
+                                       class="form-control" placeholder="Enter password">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 20px; float: right;">
+                            <button type="submit" id="save-button" class="btn btn-primary btn-sm">수정</button>
+                            <button type="reset" class="btn btn-secondary btn-sm" onClick="history.go(-1)">취소</button>
+                        </div>
+                    </form>
+                </div>
+            </div><!-- End General Form Elements -->
+        </div>
+    </main><!-- End #main -->
 </div>
-
 </body>
 </html>
