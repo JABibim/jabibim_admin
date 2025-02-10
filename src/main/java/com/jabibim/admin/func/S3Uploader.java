@@ -65,12 +65,18 @@ public class S3Uploader {
         File convertFile = new File(dirPath);
 
         System.out.println("📍📍convert() dirPath : " + dirPath);
+
         System.out.println("📍📍convert() convertFile : " + convertFile);
+        System.out.println("📍📍convert() convertFile.getPath() : " + convertFile.getPath());
 
         if (convertFile.createNewFile()) {
+            System.out.println("📍📍convert() convertFile.createNewFile() 진입!");
             try (
                     FileOutputStream fos = new FileOutputStream(convertFile)
             ) {
+                System.out.println("📍📍convert() fos : " + fos);
+                System.out.println("📍📍convert() file.getBytes() : " + file.getBytes());
+
                 fos.write(file.getBytes());
             }
 
