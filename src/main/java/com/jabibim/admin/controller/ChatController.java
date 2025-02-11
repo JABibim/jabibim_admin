@@ -34,7 +34,6 @@ public class ChatController {
      */
     @GetMapping(value = "/teacherList")
     public ResponseEntity<List<Teacher>> getTeacherList(Authentication auth) {
-
         AccountDto account = (AccountDto) auth.getPrincipal();
         String academyId = account.getAcademyId();
         String loggedInTeacherId = account.getId(); // 현재 로그인한 선생의 teacherId
@@ -124,7 +123,6 @@ public class ChatController {
     //채팅방을 열면 자동으로 메시지를 읽음으로 처리
     @PostMapping("/markAsRead")
     public ResponseEntity<Void> markMessageAsRead(@RequestParam String chatRoomId, Authentication auth) {
-        System.out.println("컨트롤러 markAsRead 여기까지 잘 옴!!!!!!");
         AccountDto account = (AccountDto) auth.getPrincipal();
         chatService.markMessagesAsRead(chatRoomId, account.getId());
         return ResponseEntity.ok().build();
