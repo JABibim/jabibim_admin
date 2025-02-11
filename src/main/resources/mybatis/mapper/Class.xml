@@ -3,20 +3,37 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jabibim.admin.mybatis.mapper.ClassMapper">
 
-<select id="getClassList" resultType="classInfoVO">
-  SELECT c.*, t.teacher_name
-  FROM (SELECT * FROM class WHERE course_id = #{courseId} AND academy_id = #{academyId} AND deleted_at IS NULL) c
-  INNER JOIN (SELECT teacher_id, teacher_name FROM teacher WHERE academy_id = #{academyId}) t
-  ON c.teacher_id = t.teacher_id
-</select>
+    <select id="getClassList" resultType="classInfoVO">
+        SELECT c.*, t.teacher_name
+        FROM (SELECT * FROM class WHERE course_id = #{courseId} AND academy_id = #{academyId} AND deleted_at IS NULL) c
+                 INNER JOIN (SELECT teacher_id, teacher_name FROM teacher WHERE academy_id = #{academyId}) t
+                            ON c.teacher_id = t.teacher_id
+        ORDER BY c.class_seq -- 출력시 seq 오름차순으로 정렬되도록 추가
+    </select>
 
-<select id="getClassCount" resultType="int">
-  SELECT COUNT(class_id) AS class_count
-  FROM class
-  WHERE academy_id = #{academyId}
-    AND course_id = #{courseId}
-    AND deleted_at IS NULL
-</select>
+    <select id="getClassCount" resultType="int">
+        SELECT COUNT(class_id) AS class_count
+        FROM class
+        WHERE academy_id = #{academyId}
+          AND course_id = #{courseId}
+          AND deleted_at IS NULL
+    </select>
 
+    <select id="getClassDetail" resultType="classDetailVO">
+        SELECT c.class_id,
+               c.class_name,
+               c.class_content,
+               c.class_seq,
+               c.class_type,
+               cf.class_file_id,
+               cf.class_file_origin_name,
+               cf.class_file_path,
+               cf.class_file_type,
+               cf.class_file_size
+        FROM class c
+                 LEFT OUTER JOIN class_file cf ON c.class_id = cf.class_id
+        WHERE c.class_id = #{classId}
+          AND c.academy_id = #{academyId}
+    </select>
 
 </mapper>
