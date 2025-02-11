@@ -5,6 +5,7 @@ import com.jabibim.admin.dto.auth.response.GoogleAuthTokenResponse;
 import com.jabibim.admin.func.GoogleCalendar;
 import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.service.CalendarService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,11 +48,10 @@ public class AuthController {
     }
 
     @GetMapping(value = "/google/callback")
-    public String authGoogleCallback(Authentication authentication, @RequestParam("code") String code) {
-        AccountDto account = (AccountDto) authentication.getPrincipal();
+    public String authGoogleCallback(Authentication authentication, @RequestParam("code") String code, HttpSession session) {
         GoogleAuthTokenResponse tokens = googleCalendar.requestTokens(code);
-        String teacherId = account.getId();
-        String academyId = account.getAcademyId();
+        String academyId = (String) session.getAttribute("aid");
+        String teacherId = (String) session.getAttribute("id");
         String accessToken = tokens.getAccessToken();
         String refreshToken = tokens.getRefreshToken();
         long expiresIn = tokens.getExpiresIn();
@@ -67,12 +67,11 @@ public class AuthController {
 
     @GetMapping(value = "/google/refreshToken")
     @ResponseBody
-    public ResponseEntity<ApiResponse<HashMap<String, Object>>> refreshGoogleTokens(Authentication authentication) {
+    public ResponseEntity<ApiResponse<HashMap<String, Object>>> refreshGoogleTokens(Authentication authentication, HttpSession session) {
         try {
             System.out.println("========= refresh Token Server =============");
-            AccountDto account = (AccountDto) authentication.getPrincipal();
-            String academyId = account.getAcademyId();
-            String teacherId = account.getId();
+            String academyId = (String) session.getAttribute("aid");
+            String teacherId = (String) session.getAttribute("id");
             String refreshToken = calendarService.getRefreshToken(academyId, teacherId);
             GoogleAuthTokenResponse newTokens = googleCalendar.getNewAccessToken(refreshToken);
             calendarService.updateReIssueTokenInfo(academyId, teacherId, newTokens);
