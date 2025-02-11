@@ -11,27 +11,30 @@ function getStudentChartData() {
             console.log('서버 응답:', res);
 
             if (res.success && res.result) {
-                // dateList와 studentCntList 초기화
                 const dateList = [];
                 const studentCntList = [];
 
-                // 응답 데이터에서 날짜와 학생 수를 추출하여 배열에 추가
-                const rows = res.result;  // 여러 데이터가 있을 경우, 배열로 받아야 함
-                rows.forEach(row => {
-                    dateList.push(row.CREATED_DATE); // 날짜
-                    studentCntList.push(row.STUDENT_COUNT); // 학생 수
+                res.result.forEach(row => {
+                    console.log('Row data:', row); // 서버에서 전달된 데이터 확인
+                    if (row.created_date) {
+                        dateList.push(row.created_date); // 날짜
+                        studentCntList.push(row.STUDENT_COUNT); // 학생 수
+                    } else {
+                        console.error('잘못된 날짜 형식:', row);
+                    }
                 });
 
                 // 날짜 리스트를 ISO 8601 형식으로 변환
                 const isoDateList = dateList.map(date => {
-                    // 유효한 날짜인지 확인
-                    const parsedDate = new Date(date);
-                    if (isNaN(parsedDate)) {
-                        console.error('잘못된 날짜 형식:', date); // 잘못된 날짜 형식이 있을 경우
-                        return null;  // 잘못된 날짜는 null로 처리
+                    const correctedDate = date.includes('T') ? date : `${date}T00:00:00`;
+                    const newDate = new Date(correctedDate);
+
+                    if (isNaN(newDate)) {
+                        console.error('잘못된 날짜 형식:', date);
+                        return null; // 잘못된 날짜 형식인 경우 null 반환
                     }
-                    return parsedDate.toISOString(); // ISO 형식으로 변환
-                }).filter(date => date !== null); // null인 날짜는 제외
+                    return newDate.toISOString();
+                }).filter(date => date !== null); // null인 값 필터링
 
                 // 차트 옵션값 설정
                 Apex.chart = {
@@ -91,6 +94,8 @@ function getStudentChartData() {
             console.log('학생 증가 추이를 표현하는 차트를 그리는데 오류가 발생했습니다.', err);
         }
     });
+
+
 
 }
 
