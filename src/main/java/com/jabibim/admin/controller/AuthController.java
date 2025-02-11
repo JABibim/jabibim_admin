@@ -48,7 +48,7 @@ public class AuthController {
     }
 
     @GetMapping(value = "/google/callback")
-    public String authGoogleCallback(Authentication authentication, @RequestParam("code") String code, HttpSession session) {
+    public String authGoogleCallback(@RequestParam("code") String code, HttpSession session) {
         GoogleAuthTokenResponse tokens = googleCalendar.requestTokens(code);
         String academyId = (String) session.getAttribute("aid");
         String teacherId = (String) session.getAttribute("id");
@@ -67,7 +67,7 @@ public class AuthController {
 
     @GetMapping(value = "/google/refreshToken")
     @ResponseBody
-    public ResponseEntity<ApiResponse<HashMap<String, Object>>> refreshGoogleTokens(Authentication authentication, HttpSession session) {
+    public ResponseEntity<ApiResponse<HashMap<String, Object>>> refreshGoogleTokens(HttpSession session) {
         try {
             System.out.println("========= refresh Token Server =============");
             String academyId = (String) session.getAttribute("aid");
