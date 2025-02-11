@@ -76,6 +76,7 @@
         let isOpen = false;
 
         $(document).ready(function () {
+
             // 관리자 비밀번호 확인 버튼
             $('#confirmPasswordBtn').click(function () {
                 let enteredPassword = $('#adminPassword').val();
@@ -152,6 +153,10 @@
                         $('#chatBox').html(''); // 채팅창 초기화
 
                         fetchChatHistory(chatRoomId);
+
+                        $(document).on('hide.bs.modal', '#chatModal', function () {
+                            isOpen = false;
+                        });
                     },
                     error: function () {
                         alert("채팅 방을 열 수 없습니다.");

@@ -15,7 +15,7 @@ public interface ChatService {
 
     List<ChatMessage> findRecentChat(String chatRoomId);
 
-    int getUnreadMessageCount(String userId);
-
     void markMessagesAsRead(String chatRoomId, String userId);
+
+    int getUnreadMessageCount(String userId);
 }
