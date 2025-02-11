@@ -7,6 +7,8 @@ function getStudentChartData() {
         cache: false,
         data: {},
         success: function (res) {
+            // 서버 응답 데이터 확인
+            console.log('서버 응답:', res);
 
             if (res.success && res.result) {
                 // dateList와 studentCntList 초기화
@@ -14,12 +16,22 @@ function getStudentChartData() {
                 const studentCntList = [];
 
                 // 응답 데이터에서 날짜와 학생 수를 추출하여 배열에 추가
-                const row = res.result;
-                dateList.push(row.CREATED_DATE); // 날짜
-                studentCntList.push(row.STUDENT_COUNT); // 학생 수
+                const rows = res.result;  // 여러 데이터가 있을 경우, 배열로 받아야 함
+                rows.forEach(row => {
+                    dateList.push(row.CREATED_DATE); // 날짜
+                    studentCntList.push(row.STUDENT_COUNT); // 학생 수
+                });
 
                 // 날짜 리스트를 ISO 8601 형식으로 변환
-                const isoDateList = dateList.map(date => new Date(date).toISOString());
+                const isoDateList = dateList.map(date => {
+                    // 유효한 날짜인지 확인
+                    const parsedDate = new Date(date);
+                    if (isNaN(parsedDate)) {
+                        console.error('잘못된 날짜 형식:', date); // 잘못된 날짜 형식이 있을 경우
+                        return null;  // 잘못된 날짜는 null로 처리
+                    }
+                    return parsedDate.toISOString(); // ISO 형식으로 변환
+                }).filter(date => date !== null); // null인 날짜는 제외
 
                 // 차트 옵션값 설정
                 Apex.chart = {
@@ -79,6 +91,7 @@ function getStudentChartData() {
             console.log('학생 증가 추이를 표현하는 차트를 그리는데 오류가 발생했습니다.', err);
         }
     });
+
 }
 
 // function go(page) {
