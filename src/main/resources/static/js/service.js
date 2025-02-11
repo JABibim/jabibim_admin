@@ -78,9 +78,9 @@ function updateBoardList(data) {
         output += `
             <tr>
                 <td>${num--}</td>
-                <td><div><a href='service/detail?rnum=${rnum}'>${changeSubject}</a></a></div></td>
-                <td><div>${serviceTermName}</div></td>
-                <td><div>${serviceTermEffectiveDate}</div></td>
+                <td style="text-align: center"><div><a href='service/detail?rnum=${rnum}'>${changeSubject}</a></a></div></td>
+                <td style="text-align: center"><div>${serviceTermName}</div></td>
+                <td style="text-align: center"><div>${serviceTermEffectiveDate}</div></td>
             </tr>
         `;
     });
