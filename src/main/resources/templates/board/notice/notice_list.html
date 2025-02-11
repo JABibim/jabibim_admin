@@ -56,12 +56,12 @@
                     <thead>
                     <tr>
                         <th>번호</th>
-                        <th>제목</th>
+                        <th style="text-align: center">제목</th>
                         <th>강사명</th>
-                        <th data-type="date" data-format="YYYY/MM/DD">등록일</th>
-                        <th>조회수</th>
-                        <th>노출여부</th>
-                        <th>고정여부</th>
+                        <th style="text-align: center" data-type="date" data-format="YYYY/MM/DD">등록일</th>
+                        <th style="text-align: center">조회수</th>
+                        <th style="text-align: center">노출여부</th>
+                        <th style="text-align: center">고정여부</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -69,7 +69,7 @@
                         <th:block th:each="b, iterStat : ${noticeList}">
                             <tr>
                                 <td><span th:text="${num - (iterStat.index)}"></span></td>
-                                <td>
+                                <td style="text-align: center">
                                     <div>
                                         <a th:href="@{'/board/notice/detail?id=' + ${b.boardId}}">
                                             <span th:text="${b.boardSubject}"></span>
@@ -77,15 +77,15 @@
                                     </div>
                                 </td>
                                 <td><div th:text="${b.teacherName}"></div></td>
-                                <td><div th:text="${#strings.substring(b.createdAt, 0, 10)}"></div></td>
-                                <td><div th:text="${b.boardReadCount}"></div></td>
-                                <td>
+                                <td style="text-align: center"><div th:text="${#strings.substring(b.createdAt, 0, 10)}"></div></td>
+                                <td style="text-align: center"><div th:text="${b.boardReadCount}"></div></td>
+                                <td style="text-align: center">
                                     <div>
                                         <span class="badge bg-primary" th:if="${b.boardExposureStat == 1}">노출</span>
                                         <span class="badge bg-secondary" th:if="${b.boardExposureStat == 0}">숨김</span>
                                     </div>
                                 </td>
-                                <td>
+                                <td style="text-align: center">
                                     <div>
                                         <span class="badge bg-primary" th:if="${b.boardNotice == 1}">고정</span>
                                         <span class="badge bg-secondary" th:if="${b.boardNotice == 0}">비고정</span>
@@ -103,7 +103,7 @@
             </th:block>
             <h6 th:if="${listcount == 0}" style="text-align: center; margin-top: 2rem;">등록된 공지사항이 없습니다.</h6>
             <button type="button" class="btn btn-outline-primary btn-sm" style="float: right"
-                    th:onclick="|location.href='notice/write'|">게시글 등록
+                    th:onclick="|location.href='notice/write'|">게시글 등록<i class="bi bi-pencil"></i>
             </button>
         </div>
     </div>
