@@ -1,5 +1,6 @@
 package com.jabibim.admin.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jabibim.admin.domain.Student;
 import com.jabibim.admin.dto.DeleteGradeDTO;
 import com.jabibim.admin.dto.StudentUserVO;
@@ -7,8 +8,11 @@ import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.mybatis.mapper.StudentMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -105,5 +109,11 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentUserVO getStudentByEmail(String studentEmail, String academyId) {
         return dao.getStudentByEmail(studentEmail, academyId);
+    }
+
+    @Override
+    public Map<String, Object> getStudentChartData(String academyId) {
+
+        return dao.getStudentChartData(academyId);
     }
 }

@@ -250,4 +250,17 @@
                   ORDER BY discount_rate
                   LIMIT 1 OFFSET 0), #{academyId})
     </insert>
+
+
+    <!--  dashboard 신규 수강생 data select 쿼리  -->
+    <select id="getStudentChartData" resultType="map">
+        SELECT DATE_FORMAT(CREATED_AT, '%Y-%m-%d') AS CREATED_DATE,
+               COUNT(*) AS STUDENT_COUNT
+        FROM STUDENT
+        WHERE CREATED_AT >= CURDATE() - INTERVAL 30 DAY
+          AND DELETED_AT IS NULL
+          AND ACADEMY_ID = #{academyId}
+        GROUP BY DATE_FORMAT(CREATED_AT, '%Y-%m-%d')
+        ORDER BY CREATED_DATE
+    </select>
 </mapper>

@@ -2,6 +2,7 @@ package com.jabibim.admin.controller;
 
 import com.jabibim.admin.dto.OAuth.CustomOAuth2User;
 import com.jabibim.admin.service.AcademyService;
+import com.jabibim.admin.service.DashboardService;
 import com.jabibim.admin.service.TeacherService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -10,16 +11,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class HomeController {
     private final AcademyService academyService;
     private final TeacherService teacherService;
+    private final DashboardService dashboardService;
 
-    public HomeController(AcademyService academyService, TeacherService teacherService) {
+    public HomeController(AcademyService academyService, TeacherService teacherService, DashboardService dashboardService) {
         this.academyService = academyService;
         this.teacherService = teacherService;
+        this.dashboardService = dashboardService;
     }
 
     @GetMapping(value = "/")
@@ -27,9 +32,19 @@ public class HomeController {
         return "redirect:/login";
     }
 
-    @GetMapping(value = "/dashboard")
-    public String dashBoard() {
-        return "dashboard";
+    @GetMapping("/dashboard")
+    public ModelAndView showDashboard(HttpSession session, ModelAndView mv) {
+        boolean isAdmin = (boolean) session.getAttribute("isAdmin");
+        String academyId = (String) session.getAttribute("aid");
+
+        int refundCount = dashboardService.getWaitRefundCount(isAdmin, academyId);
+        System.out.println(refundCount);
+
+        mv.setViewName("dashboard");
+        mv.addObject("refundCount", refundCount);
+        mv.addObject("courseStatus", dashboardService.getCourseStatus(isAdmin, academyId));
+
+        return mv;
     }
 
     @GetMapping("/message")
