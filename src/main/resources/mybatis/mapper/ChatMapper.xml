@@ -18,9 +18,9 @@
     </insert>
 
     <insert id="insertMessage">
-        INSERT INTO chat_message (chat_message_id, chat_room_id, sender_id, chat_message, sent_at)
+        INSERT INTO chat_message (chat_message_id, chat_room_id, sender_id, chat_message, sent_at, is_read)
         VALUES (#{chatMessage.chatMessageId}, #{chatMessage.chatRoomId},
-                #{chatMessage.senderId}, #{chatMessage.chatMessage}, #{chatMessage.sentAt})
+                #{chatMessage.senderId}, #{chatMessage.chatMessage}, #{chatMessage.sentAt}, 0)
     </insert>
 
     <select id="findRecentChatWithSenderName" resultType="com.jabibim.admin.domain.ChatMessage">
