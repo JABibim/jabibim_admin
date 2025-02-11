@@ -7,6 +7,7 @@ import com.jabibim.admin.dto.StudentUserVO;
 import org.apache.ibatis.annotations.Mapper;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Mapper  //쿼리 쓰는곳
 public interface StudentMapper {
@@ -26,4 +27,6 @@ public interface StudentMapper {
     StudentUserVO getStudentByEmail(String email, String academyId);
 
     void insertStudent(Student student);
+
+    Map<String, Object> getStudentChartData(String academyId);
 }
