@@ -66,14 +66,14 @@ public class ChatServiceImpl implements ChatService{
     }
 
     @Override
-    public int getUnreadMessageCount(String userId) {
-        return chatMapper.countUnreadMessages(userId);
-    }
-
-    @Override
     @Transactional
     public void markMessagesAsRead(String chatRoomId, String userId) {
         chatMapper.markMessagesAsRead(chatRoomId, userId);
+    }
+
+    @Override
+    public int getUnreadMessageCount(String userId) {
+        return chatMapper.countUnreadMessages(userId);
     }
 
 

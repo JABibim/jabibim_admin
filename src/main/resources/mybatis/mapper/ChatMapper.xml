@@ -32,18 +32,6 @@
         ORDER BY cm.sent_at ASC;
     </select>
 
-    <select id="countUnreadMessages" resultType="int">
-        SELECT COUNT(*)
-        FROM chat_message
-        WHERE chat_room_id IN (
-            SELECT chat_room_id
-            FROM chat_room
-            WHERE teacher_1_id = #{userId} OR teacher_2_id = #{userId}
-            )
-        AND sender_id != #{userId}
-        AND is_read = FALSE;
-    </select>
-
     <!-- 채팅방 메시지 읽음 처리용 쿼리-->
     <update id="markMessagesAsRead">
         UPDATE chat_message
@@ -52,5 +40,18 @@
         AND sender_id != #{userId}
         And is_read = 0;
     </update>
+
+    <!-- 안 읽은 메시지 개수 구하기-->
+    <select id="countUnreadMessages" resultType="int">
+        SELECT COUNT(*)
+        FROM chat_message
+        WHERE chat_room_id IN (
+            SELECT chat_room_id
+            FROM chat_room
+            WHERE teacher_1_id = #{userId} OR teacher_2_id = #{userId}
+        )
+          AND sender_id != #{userId}
+          AND is_read = FALSE;
+    </select>
 
 </mapper>

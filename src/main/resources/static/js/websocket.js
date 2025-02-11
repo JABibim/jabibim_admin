@@ -11,7 +11,11 @@ stompClient.connect({}, function () {
     // ✅ 메시지 구독 (채팅방 전체 메시지 수신)
     stompClient.subscribe('/topic/chatRoom', function (message) {
         const msg = JSON.parse(message.body);
-        currentChatRoomId = msg.chatRoomId;
+
+        if(!currentChatRoomId || currentChatRoomId !== msg.chatRoomId) {
+            fetchUnreadMessageCount();    //새로운 메시지가 오면 숫자 갱신
+        }
+
         appendMessageToChatBox(msg.senderId, msg.senderName, msg.chatMessage);
 
         if(isOpen === true) {
@@ -53,8 +57,22 @@ function sendMessage(chatRoomId, senderId, chatMessage) {
     stompClient.send("/app/sendMessage", {}, JSON.stringify(message));
 }
 
-// ✅ 전송 버튼 클릭 이벤트
+
 $(document).ready(function () {
+
+    fetchUnreadMessageCount();
+
+
+    // ✅ 채팅 모달이 열리면 안 읽은 메시지를 읽음 처리
+    $('#chatModal').on('shown.bs.modal', function () {
+        let chatRoomId = $("#chatRoomId").val();
+        let userId = $("#loggedInUserId").val();
+
+        currentChatRoomId = chatRoomId; // 현재 열려 있는 채팅방 ID 저장
+        markMessagesAsRead(chatRoomId, userId);
+    });
+
+    // ✅ 전송 버튼 클릭 이벤트
     $("#sendMessageBtn").click(function () {
         let message = $("#chatInput").val().trim();
         if (message === "") return;
@@ -65,27 +83,19 @@ $(document).ready(function () {
         sendMessage(chatRoomId, senderId, message);
 
         $("#chatInput").val(""); // 입력창 초기화
-
-        // ✅ 채팅 모달이 열리면 안 읽은 메시지를 읽음 처리
-        $('#chatModal').on('shown.bs.modal', function () {
-            let chatRoomId = $("#chatRoomId").val();
-            let userId = $("#loggedInUserId").val();
-
-            currentChatRoomId = chatRoomId; // 현재 열려 있는 채팅방 ID 저장
-            markMessagesAsRead(chatRoomId, userId);
-        });
-
-        $(document).on('hide.bs.modal', '#chatModal', function () {
-            isOpen = false;
-        });
-
     });
 
-    // ✅ Enter 키로 메시지 보내기
+    // ✅ Enter 키로 메시지 보내기 , Shift + Enter 누르면 줄 바꿈
     $("#chatInput").keypress(function (event) {
-        if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault();
-            $("#sendMessageBtn").click();
+        if(event.key === "Enter") {
+            if(event.shiftKey) {
+                event.preventDefault();  //기본 Enter 동작 방지용
+                let chatInput = $(this);
+                chatInput.val(chatInput.val() + "\n");    //줄바꿈
+            } else {
+                event.preventDefault();
+                $("#sendMessageBtn").click();
+            }
         }
     });
 });
@@ -106,7 +116,7 @@ function markMessagesAsRead(chatRoomId, userId) {
             xhr.setRequestHeader(header, token);
         },
         success: function () {
-            $("#chatNotificationBadge").hide();
+            fetchUnreadMessageCount(); //전체 안읽은 메시지 개수 다시 가져오기
         },
         error: function (xhr, status, error) {
             console.error("❌ 메시지 읽음 처리 실패:", error);
@@ -139,28 +149,31 @@ function appendMessageToChatBox(senderId, senderName, message) {
     chatBox.scrollTop = chatBox.scrollHeight; // 최신 메시지로 스크롤 이동
 }
 
-// ✅ 안 읽은 메시지 개수 가져와서 업데이트하는 함수
-function updateUnreadMessageBadge() {
-    let userId = $("#loggedInUserId").val();
-
-    if (!userId) {
-        console.error("🚨 userId 값이 없음! AJAX 요청을 중단합니다.");
-        return;
-    }
-
+// ✅ 안 읽은 채팅 개수 불러오는 함수 (AJAX 사용)
+function fetchUnreadMessageCount() {
     $.ajax({
         url: "/chat/unreadCount",
         type: "GET",
-        data: { userId: userId },
-        success: function (count) {
-            if (count > 0) {
-                $("#chatNotificationBadge").text(count).show();
-            } else {
-                $("#chatNotificationBadge").hide();
-            }
+        data: { userId: $("#loggedInUserId").val() },
+        success: function (response) {
+            updateUnreadMessageBadge(response);
         },
-        error: function (xhr, status, error) {
-            console.error("❌ AJAX 요청 실패:", error);
+        error: function () {
+            console.error("🚨 안 읽은 메시지 개수 불러오기 실패");
         }
     });
+}
+
+// ✅ 읽지 않은 메시지 개수를 업데이트하는 함수
+function updateUnreadMessageBadge(count = 0) {
+    const badgeElement = $("#chatNotificationBadge");
+
+    if (badgeElement.length) {
+        if (count.unreadCount > 0) {
+            badgeElement.text(count.unreadCount);
+            badgeElement.css("display", "inline-block"); // 배지 표시
+        } else {
+            badgeElement.css("display", "none"); // 배지 숨김
+        }
+    }
 }
