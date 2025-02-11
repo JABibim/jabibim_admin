@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.jabibim.admin.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -14,10 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jabibim.admin.dto.CourseDetailVO;
-import com.jabibim.admin.dto.CourseInfoVO;
-import com.jabibim.admin.dto.PurchasedCourseVO;
-import com.jabibim.admin.dto.StudentUserVO;
 import com.jabibim.admin.front.security.custom.JwtCustomUserDetails;
 import com.jabibim.admin.service.CourseService;
 
@@ -28,79 +25,102 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CourseController {
 
-  private final CourseService courseService;
-  private final Logger logger = LoggerFactory.getLogger(CourseController.class);
+    private final CourseService courseService;
+    private final Logger logger = LoggerFactory.getLogger(CourseController.class);
 
-  @GetMapping("/list")
-  public ResponseEntity<?> getCourseInfoList(Authentication auth) {
-    logger.info("getCourseInfoList 호출");
+    @GetMapping("/list")
+    public ResponseEntity<?> getCourseInfoList(Authentication auth) {
+        logger.info("getCourseInfoList 호출");
 
-    if (auth == null) {
-      logger.error("인증 실패");
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증 실패"));
+        if (auth == null) {
+            logger.error("인증 실패");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증 실패"));
+        }
+
+        JwtCustomUserDetails userDetails = (JwtCustomUserDetails) auth.getPrincipal();
+
+        StudentUserVO user = userDetails.getUser();
+
+        String academyId = user.getAcademyId();
+
+        List<CourseInfoVO> courseInfoList = courseService.getCourseInfoList(academyId);
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("courseList", courseInfoList);
+        response.put("message", "강의 목록을 성공적으로 조회했습니다.");
+
+        return ResponseEntity.ok(response);
     }
 
-    JwtCustomUserDetails userDetails = (JwtCustomUserDetails) auth.getPrincipal();
+    @GetMapping("/detail")
+    public ResponseEntity<?> getCourseDetail(@RequestParam String id, Authentication auth) {
+        logger.info("getCourseDetail 호출");
+        logger.info("courseId: {}", id);
 
-    StudentUserVO user = userDetails.getUser();
+        if (auth == null) {
+            logger.error("인증 실패");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증 실패"));
+        }
 
-    String academyId = user.getAcademyId();
+        JwtCustomUserDetails userDetails = (JwtCustomUserDetails) auth.getPrincipal();
+        StudentUserVO user = userDetails.getUser();
 
-    List<CourseInfoVO> courseInfoList = courseService.getCourseInfoList(academyId);
+        String academyId = user.getAcademyId();
 
-    Map<String, Object> response = new HashMap<>();
+        CourseDetailVO courseDetail = courseService.getCourseDetail(id, academyId);
 
-    response.put("courseList", courseInfoList);
-    response.put("message", "강의 목록을 성공적으로 조회했습니다.");
+        Map<String, Object> response = new HashMap<>();
+        response.put("courseDetail", courseDetail);
+        response.put("message", "강의 상세 정보를 성공적으로 조회했습니다.");
 
-    return ResponseEntity.ok(response);
-  }
-
-  @GetMapping("/detail")
-  public ResponseEntity<?> getCourseDetail(@RequestParam String id, Authentication auth) {
-    logger.info("getCourseDetail 호출");
-    logger.info("courseId: {}", id);
-
-    if (auth == null) {
-      logger.error("인증 실패");
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증 실패"));
+        return ResponseEntity.ok(response);
     }
 
-    JwtCustomUserDetails userDetails = (JwtCustomUserDetails) auth.getPrincipal();
-    StudentUserVO user = userDetails.getUser();
+    @GetMapping("/purchased")
+    public ResponseEntity<?> getPurchasedCourseList(Authentication auth) {
+        logger.info("getPurchasedCourseList 호출");
 
-    String academyId = user.getAcademyId();
+        if (auth == null) {
+            logger.error("인증 실패");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증 실패"));
+        }
 
-    CourseDetailVO courseDetail = courseService.getCourseDetail(id, academyId);
+        JwtCustomUserDetails userDetails = (JwtCustomUserDetails) auth.getPrincipal();
+        StudentUserVO user = userDetails.getUser();
+        String academyId = user.getAcademyId();
+        String studentId = user.getStudentId();
 
-    Map<String, Object> response = new HashMap<>();
-    response.put("courseDetail", courseDetail);
-    response.put("message", "강의 상세 정보를 성공적으로 조회했습니다.");
+        List<PurchasedCourseVO> purchasedCourseList = courseService.getPurchasedCourseList(studentId, academyId);
 
-    return ResponseEntity.ok(response);
-  }
+        Map<String, Object> response = new HashMap<>();
+        response.put("purchasedCourseList", purchasedCourseList);
+        response.put("message", "구매한 강의 목록을 성공적으로 조회했습니다.");
 
-  @GetMapping("/purchased")
-  public ResponseEntity<?> getPurchasedCourseList(Authentication auth) {
-    logger.info("getPurchasedCourseList 호출");
-
-    if (auth == null) {
-      logger.error("인증 실패");
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증 실패"));
+        return ResponseEntity.ok(response);
     }
 
-    JwtCustomUserDetails userDetails = (JwtCustomUserDetails) auth.getPrincipal();
-    StudentUserVO user = userDetails.getUser();
-    String academyId = user.getAcademyId();
-    String studentId = user.getStudentId();
+    @GetMapping("/classDetail")
+    public ResponseEntity<?> getClassDetail(@RequestParam String id, Authentication auth) {
+        logger.info("classFileDetail 호출");
+        logger.info("classId: {}", id);
 
-    List<PurchasedCourseVO> purchasedCourseList = courseService.getPurchasedCourseList(studentId, academyId);
+        if (auth == null) {
+            logger.error("인증 실패");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "인증 실패"));
+        }
 
-    Map<String, Object> response = new HashMap<>();
-    response.put("purchasedCourseList", purchasedCourseList);
-    response.put("message", "구매한 강의 목록을 성공적으로 조회했습니다.");
+        JwtCustomUserDetails userDetails = (JwtCustomUserDetails) auth.getPrincipal();
+        StudentUserVO user = userDetails.getUser();
 
-    return ResponseEntity.ok(response);
-  }
+        String academyId = user.getAcademyId();
 
+        ClassDetailVO classDetail = courseService.getClassDetail(id, academyId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("classDetail", classDetail);
+        response.put("message", "강의(파일)의 상세 정보를 성공적으로 조회했습니다.");
+
+        return ResponseEntity.ok(response);
+    }
 }
