@@ -238,15 +238,16 @@ public class StudentController {
         String academyId = (String) session.getAttribute("aid");
 
         try {
-            // 학생 차트 데이터 가져오기
-            Map<String, Object> response = studentService.getStudentChartData(academyId);
+            // 학생 차트 데이터 가져오기 (여러 데이터가 포함된 리스트로 가정)
+            List<Map<String, Object>> response = studentService.getStudentChartData(academyId);
 
             // 성공적인 응답 반환
             Map<String, Object> body = new HashMap<>();
             body.put("success", true);
-            body.put("result", response);
+            body.put("result", response);  // 여러 개의 데이터를 result에 담기
             body.put("message", "학생 차트 데이터가 성공적으로 조회되었습니다.");
-            System.out.println(ResponseEntity.ok(body));
+
+            System.out.println("응답 데이터: " + body);
 
             return ResponseEntity.ok(body);
 
@@ -259,6 +260,7 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
 
 
 }
