@@ -45,11 +45,12 @@ public class CalendarController {
 
     @GetMapping(value = "")
     public ModelAndView calendarList(
-            Authentication authentication
+            Authentication authentication,
+            HttpSession session
     ) {
-        AccountDto account = (AccountDto) authentication.getPrincipal();
-        String teacherId = account.getId();
-        String academyId = account.getAcademyId();
+        // 세션에서 academyId와 teacherId를 가져오기
+        String academyId = (String) session.getAttribute("aid");
+        String teacherId = (String) session.getAttribute("id");
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("calendar/calendar5");
