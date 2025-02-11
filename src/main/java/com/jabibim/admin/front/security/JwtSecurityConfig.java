@@ -101,5 +101,4 @@ public class JwtSecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
 }
