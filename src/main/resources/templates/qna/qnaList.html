@@ -56,15 +56,15 @@
                     <thead>
                     <tr>
                         <th>번호</th>
-                        <th>제목</th>
-                        <th>작성자</th>
-                        <th>과목명</th>
-                        <th>과정명</th>
-                        <th>담당 강사</th>
-                        <th data-type="date" data-format="YYYY/MM/DD">등록일</th>
-                        <th>조회수</th>
-                        <th>노출여부</th>
-                        <th>답변상태</th>
+                        <th style="text-align: center">제목</th>
+                        <th style="text-align: center">작성자</th>
+                        <th style="text-align: center">과목명</th>
+                        <th style="text-align: center">과정명</th>
+                        <th style="text-align: center">담당 강사</th>
+                        <th style="text-align: center" data-type="date" data-format="YYYY/MM/DD">등록일</th>
+                        <th style="text-align: center">조회수</th>
+                        <th style="text-align: center">노출여부</th>
+                        <th style="text-align: center">답변상태</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -72,26 +72,26 @@
                         <th:block th:each="b, iterStat : ${qnaList}">
                             <tr>
                                 <td><span th:text="${num - (iterStat.index)}"></span></td>
-                                <td>
+                                <td style="text-align: center">
                                     <div>
                                         <a th:href="@{'/board/qna/detail?id=' + ${b.qnaId}}">
                                             <span th:text="${b.qnaSubject}"></span>
                                         </a>
                                     </div>
                                 </td>
-                                <td><div th:text="${b.studentName}"></div></td>
-                                <td><div th:text="${b.courseName}"></div></td>
-                                <td><div th:text="${b.className}"></div></td>
-                                <td><div th:text="${b.teacherName}"></div></td>
-                                <td><div th:text="${#strings.substring(b.createdAt, 0, 10)}"></div></td>
-                                <td><div th:text="${b.qnaReadCount}"></div></td>
-                                <td>
+                                <td style="text-align: center"><div th:text="${b.studentName}"></div></td>
+                                <td style="text-align: center"><div th:text="${b.courseName}"></div></td>
+                                <td style="text-align: center"><div th:text="${b.className}"></div></td>
+                                <td style="text-align: center"><div th:text="${b.teacherName}"></div></td>
+                                <td style="text-align: center"><div th:text="${#strings.substring(b.createdAt, 0, 10)}"></div></td>
+                                <td style="text-align: center"><div th:text="${b.qnaReadCount}"></div></td>
+                                <td style="text-align: center">
                                     <div>
                                         <span class="badge bg-primary" th:if="${b.qnaExposureStat == 1}">노출</span>
                                         <span class="badge bg-secondary" th:if="${b.qnaExposureStat == 0}">숨김</span>
                                     </div>
                                 </td>
-                                <td>
+                                <td style="text-align: center">
                                     <div>
                                         <span class="badge bg-primary" th:if="${b.qnaAnswerStatus == 1}">답변 완료</span>
                                         <span class="badge bg-secondary" th:if="${b.qnaAnswerStatus == 0}">답변 대기</span>
