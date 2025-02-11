@@ -5,12 +5,12 @@
 
     <select id="getWaitRefundCount" resultType="int">
         SELECT COUNT(*)
-        FROM PAYMENT P
-        INNER JOIN STUDENT S ON P.STUDENT_ID = S.STUDENT_ID
-        INNER JOIN COURSE C ON P.STUDENT_ID = C.COURSE_ID
-        WHERE P.PAYMENT_STATUS = 2
+        FROM payment P
+        INNER JOIN student S ON P.student_id = S.student_id
+        INNER JOIN course C ON P.student_id = C.course_id
+        WHERE P.payment_status = 2
         <if test="!isAdmin">
-            AND S.ACADEMY_ID = #{academyId}
+            AND S.academy_id = #{academyId}
         </if>
     </select>
 
@@ -18,13 +18,13 @@
     <select id="getCourseStatus" parameterType="map" resultType="map">
         SELECT
         COUNT(*) AS totalCourses,
-        SUM(CASE WHEN C.COURSE_ACTIVATION = 1 THEN 1 ELSE 0 END) AS activeCount,
-        SUM(CASE WHEN C.COURSE_ACTIVATION = 0 THEN 1 ELSE 0 END) AS inactiveCount
-        FROM COURSE C
-        JOIN TEACHER T ON C.TEACHER_ID = T.TEACHER_ID
-        WHERE C.DELETED_AT IS NULL AND T.DELETED_AT IS NULL
+        SUM(CASE WHEN C.course_activation = 1 THEN 1 ELSE 0 END) AS activeCount,
+        SUM(CASE WHEN C.course_activation = 0 THEN 1 ELSE 0 END) AS inactiveCount
+        FROM course C
+        JOIN teacher T ON C.teacher_id = T.teacher_id
+        WHERE C.deleted_at IS NULL AND T.deleted_at IS NULL
         <if test="!isAdmin">
-            AND T.ACADEMY_ID = #{academyId}
+            AND T.academy_id = #{academyId}
         </if>
     </select>
 

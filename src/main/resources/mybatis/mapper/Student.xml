@@ -254,13 +254,13 @@
 
     <!--  dashboard 신규 수강생 data select 쿼리  -->
     <select id="getStudentChartData" resultType="map">
-        SELECT DATE_FORMAT(CREATED_AT, '%Y-%m-%d') AS CREATED_DATE,
+        SELECT DATE_FORMAT(created_at, '%Y-%m-%d') AS created_date,
                COUNT(*) AS STUDENT_COUNT
-        FROM STUDENT
+        FROM student
         WHERE CREATED_AT >= CURDATE() - INTERVAL 30 DAY
-          AND DELETED_AT IS NULL
-          AND ACADEMY_ID = #{academyId}
-        GROUP BY DATE_FORMAT(CREATED_AT, '%Y-%m-%d')
-        ORDER BY CREATED_DATE
+          AND deleted_at IS NULL
+          AND academy_id = #{academyId}
+        GROUP BY DATE_FORMAT(created_at, '%Y-%m-%d')
+        ORDER BY created_date
     </select>
 </mapper>
