@@ -7,22 +7,20 @@ let currentChatRoomId = null;
 
 // ✅ WebSocket 연결 및 이벤트 핸들링
 stompClient.connect({}, function () {
-    console.log("🔗 WebSocket 연결됨");
 
     // ✅ 메시지 구독 (채팅방 전체 메시지 수신)
     stompClient.subscribe('/topic/chatRoom', function (message) {
         const msg = JSON.parse(message.body);
-        console.log("📩 새 메시지 도착:", msg.senderName + ": " + msg.chatMessage);
-
+        currentChatRoomId = msg.chatRoomId;
         appendMessageToChatBox(msg.senderId, msg.senderName, msg.chatMessage);
 
-        // ✅ 현재 보고 있는 채팅방과 새 메시지의 채팅방이 같다면 `is_read` 업데이트
-        if (currentChatRoomId === msg.chatRoomId) {
-            console.log("✅ 현재 채팅방이 열려있음. 메시지를 읽음 처리합니다.");
-            markMessagesAsRead(currentChatRoomId, $("#loggedInUserId").val());
-        } else {
-            console.log("🔴 다른 채팅방에서 온 메시지입니다. 읽음 처리하지 않음.");
-            updateUnreadMessageBadge(); // 다른 채팅방이면 알림 배지 업데이트
+        if(isOpen === true) {
+            // ✅ 현재 보고 있는 채팅방과 새 메시지의 채팅방이 같다면 `is_read` 업데이트
+            if (currentChatRoomId === msg.chatRoomId) {
+                markMessagesAsRead(currentChatRoomId, $("#loggedInUserId").val());
+            } else {
+                updateUnreadMessageBadge(); // 다른 채팅방이면 알림 배지 업데이트
+            }
         }
     });
 }, function (error) {
@@ -52,8 +50,6 @@ function sendMessage(chatRoomId, senderId, chatMessage) {
         chatMessage: chatMessage
     };
 
-    console.log("📤 메시지 전송 중:", message);
-
     stompClient.send("/app/sendMessage", {}, JSON.stringify(message));
 }
 
@@ -69,6 +65,20 @@ $(document).ready(function () {
         sendMessage(chatRoomId, senderId, message);
 
         $("#chatInput").val(""); // 입력창 초기화
+
+        // ✅ 채팅 모달이 열리면 안 읽은 메시지를 읽음 처리
+        $('#chatModal').on('shown.bs.modal', function () {
+            let chatRoomId = $("#chatRoomId").val();
+            let userId = $("#loggedInUserId").val();
+
+            currentChatRoomId = chatRoomId; // 현재 열려 있는 채팅방 ID 저장
+            markMessagesAsRead(chatRoomId, userId);
+        });
+
+        $(document).on('hide.bs.modal', '#chatModal', function () {
+            isOpen = false;
+        });
+
     });
 
     // ✅ Enter 키로 메시지 보내기
@@ -79,16 +89,6 @@ $(document).ready(function () {
         }
     });
 });
-
-// ✅ WebSocket을 통해 채팅방에 들어갈 때 자동으로 안 읽은 메시지 읽음 처리
-function openChatRoom(chatRoomId) {
-    let userId = $("#loggedInUserId").val(); // 현재 로그인한 사용자 ID 가져오기
-    console.log("📌 채팅방 입장 - chatRoomId:", chatRoomId, ", userId:", userId);
-
-    currentChatRoomId = chatRoomId; // 현재 열려 있는 채팅방 ID 저장
-    fetchChatHistory(chatRoomId); // 채팅 내역 불러오기
-    markMessagesAsRead(chatRoomId, userId); // 안 읽은 메시지 읽음 처리
-}
 
 // ✅ 안 읽은 메시지를 읽음 처리하는 함수
 function markMessagesAsRead(chatRoomId, userId) {
@@ -101,8 +101,11 @@ function markMessagesAsRead(chatRoomId, userId) {
         url: "/chat/markAsRead",
         type: "POST",
         data: { chatRoomId: chatRoomId, userId: userId },
+        beforeSend : function(xhr)
+        {   //데이터를 전송하기 전에 헤더에 csrf값을 설정합니다.
+            xhr.setRequestHeader(header, token);
+        },
         success: function () {
-            console.log("✅ 안 읽은 메시지가 읽음 처리됨!");
             $("#chatNotificationBadge").hide();
         },
         error: function (xhr, status, error) {
@@ -111,35 +114,10 @@ function markMessagesAsRead(chatRoomId, userId) {
     });
 }
 
-// ✅ 채팅 내역 불러오기
-function fetchChatHistory(chatRoomId) {
-    $.ajax({
-        url: '/chat/recent?id=' + chatRoomId,
-        type: "GET",
-        dataType: "json",
-        success: function (data) {
-            displayChatHistory(data);
-        },
-        error: function (xhr, status, error) {
-            console.error("🔴 채팅 내역 불러오기 실패:", status, error);
-        }
-    });
-}
-
-// ✅ 채팅 내역을 채팅창에 표시
-function displayChatHistory(chatHistory) {
-    const chatBox = document.getElementById("chatBox");
-    chatBox.innerHTML = "";  // 기존 채팅 내역 초기화
-
-    chatHistory.forEach(msg => {
-        appendMessageToChatBox(msg.senderId, msg.senderName, msg.chatMessage);
-    });
-}
 
 // ✅ 새로운 메시지를 채팅창에 추가
 function appendMessageToChatBox(senderId, senderName, message) {
     const chatBox = document.getElementById("chatBox");
-
     const messageElement = document.createElement("div");
     messageElement.classList.add("chat-message");
 
@@ -186,13 +164,3 @@ function updateUnreadMessageBadge() {
         }
     });
 }
-
-// ✅ 채팅 모달이 열리면 안 읽은 메시지를 읽음 처리
-$('#chatModal').on('shown.bs.modal', function () {
-    let chatRoomId = $("#chatRoomId").val();
-    let userId = $("#loggedInUserId").val();
-
-    console.log("📌 채팅방 열림 - chatRoomId:", chatRoomId, ", userId:", userId);
-    currentChatRoomId = chatRoomId; // 현재 열려 있는 채팅방 ID 저장
-    markMessagesAsRead(chatRoomId, userId);
-});
