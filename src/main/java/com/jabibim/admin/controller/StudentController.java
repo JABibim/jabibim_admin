@@ -13,11 +13,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -227,6 +230,33 @@ public class StudentController {
                     "status", "fail",
                     "message", "등급 삭제/조정에 실패하였습니다."
             ));
+        }
+    }
+
+    @GetMapping("/getStudentChartData")
+    public ResponseEntity<Map<String, Object>> getStudentChartData(HttpSession session) {
+        String academyId = (String) session.getAttribute("aid");
+
+        try {
+            // 학생 차트 데이터 가져오기
+            Map<String, Object> response = studentService.getStudentChartData(academyId);
+
+            // 성공적인 응답 반환
+            Map<String, Object> body = new HashMap<>();
+            body.put("success", true);
+            body.put("result", response);
+            body.put("message", "학생 차트 데이터가 성공적으로 조회되었습니다.");
+            System.out.println(ResponseEntity.ok(body));
+
+            return ResponseEntity.ok(body);
+
+        } catch (Exception e) {
+            // 에러 발생 시 응답 처리
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "학생 차트 데이터 조회에 실패했습니다: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
