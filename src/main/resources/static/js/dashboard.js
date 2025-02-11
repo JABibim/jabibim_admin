@@ -1,4 +1,4 @@
-const page = 1;
+// const page = 1;
 
 function getStudentChartData() {
     $.ajax({
