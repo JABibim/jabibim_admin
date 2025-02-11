@@ -91,20 +91,20 @@
         </div>
         <button type="reset" class="btn btn-primary btn-sm"
                 th:onclick="|location.href='/board/notice'|"
-                style="float: right; margin: 5px;">목록
+                style="float: right; margin: 5px;"><i class="bi bi-backspace"></i>목록
         </button>
 
         <a href="#">
             <button class="btn btn-danger btn-sm"
                     style="float: right; margin: 5px;"
                     data-bs-toggle="modal"
-                    data-bs-target="#myModal">삭제
+                    data-bs-target="#myModal"><i class="bi bi-trash"></i>삭제
             </button>
         </a>
 
         <a th:href="@{'modify?id='+ ${noticeData.boardId}}"
            class="btn btn-success btn-sm"
-           style="float: right; margin: 5px;">수정</a>
+           style="float: right; margin: 5px;"><i class="bi bi-pencil"></i>수정</a>
 
         <div class="modal" id="myModal">
             <div class="modal-dialog">

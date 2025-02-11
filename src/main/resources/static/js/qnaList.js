@@ -86,15 +86,15 @@ function updateBoardList(data) {
         output += `
             <tr>
                 <td>${num--}</td>
-                <td><div><a href='qna/detail?id=${qnaId}'>${changeSubject}</a></a></div></td>
-                <td><div>${studentName}</div></td>
-                <td><div>${courseName}</div></td>
-                <td><div>${className}</div></td>
-                <td><div>${teacherName}</div></td>
-                <td><div></div>${createdAt.substring(0, 10)}</td>
-                <td><div>${qnaReadCount}</div></td>
-                <td><div>${exposureStatus}</div></td>
-                <td><div>${answer}</div></td>
+                <td style="text-align: center"><div><a href='qna/detail?id=${qnaId}'>${changeSubject}</a></a></div></td>
+                <td style="text-align: center"><div>${studentName}</div></td>
+                <td style="text-align: center"><div>${courseName}</div></td>
+                <td style="text-align: center"><div>${className}</div></td>
+                <td style="text-align: center"><div>${teacherName}</div></td>
+                <td style="text-align: center"><div></div>${createdAt.substring(0, 10)}</td>
+                <td style="text-align: center"><div>${qnaReadCount}</div></td>
+                <td style="text-align: center"><div>${exposureStatus}</div></td>
+                <td style="text-align: center"><div>${answer}</div></td>
             </tr>
         `;
     });
