@@ -5,24 +5,25 @@
 
     <select id="getTeacherCount" parameterType="map" resultType="int">
         SELECT count(*)
-        FROM teacher
+        FROM teacher t
+        INNER JOIN academy a ON t.academy_id = a.academy_id
         <where>
             <if test="state != 'option1'">
-                DELETED_AT IS
+                t.DELETED_AT IS
                 <choose>
                     <when test="state == 'option2'">NULL</when>
                     <otherwise>NOT NULL</otherwise>
                 </choose>
             </if>
             <if test='search_field == "0"'>
-                AND (teacher_name LIKE concat('%', #{search_word}, '%')
-                OR teacher_email LIKE concat('%', #{search_word}, '%'))
+                AND (t.teacher_name LIKE concat('%', #{search_word}, '%')
+                OR t.teacher_email LIKE concat('%', #{search_word}, '%'))
             </if>
             <if test='search_field == "1"'>
-                AND teacher_email LIKE concat('%', #{search_word}, '%')
+                AND t.teacher_email LIKE concat('%', #{search_word}, '%')
             </if>
             <if test='search_field == "2"'>
-                AND teacher_email LIKE concat('%', #{search_word}, '%')
+                AND t.teacher_email LIKE concat('%', #{search_word}, '%')
             </if>
         </where>
     </select>
