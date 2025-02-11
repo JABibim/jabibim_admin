@@ -22,4 +22,5 @@ public interface ChatMapper {
 
     int countUnreadMessages(@Param("userId") String userId);
 
+    ChatMessage findLastMessage(@Param("chatRoomId")String chatRoomId);
 }

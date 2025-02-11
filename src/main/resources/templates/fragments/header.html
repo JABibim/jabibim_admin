@@ -64,6 +64,12 @@
             display: flex;
             flex-direction: column;
         }
+
+        /* 채팅방 미리보기용 텍스트 */
+        .text-muted {
+            color: #6c757d !important;
+            font-size: 0.85rem;
+        }
     </style>
 
     <script th:inline="javascript">
@@ -116,9 +122,17 @@
                     success: function (data) {
                         $('#teacherList').html(''); // 기존 리스트 초기화
                         data.forEach(teacher => {
-                            $('#teacherList').append(`
+                            let lastMessage = teacher.lastMessage || "메시지가 없습니다.";
+
+                            if(lastMessage.length > 10) {
+                                lastMessage = lastMessage.substring(0, 10) + "...";
+                            }
+
+                            $('#teacherList').append(
+                                `
                                 <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>${teacher.teacherName}</span>
+                                    <span class="fw-bold">${teacher.teacherName}</span><br>
+                                    <span class="text-muted small">${lastMessage}</span>
                                     <button class="teacherChat btn btn-primary btn-sm" id="${teacher.teacherId}">채팅하기</button>
                                 </div>
                             `);

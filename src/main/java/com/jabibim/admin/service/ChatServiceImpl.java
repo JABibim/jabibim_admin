@@ -76,5 +76,10 @@ public class ChatServiceImpl implements ChatService{
         return chatMapper.countUnreadMessages(userId);
     }
 
+    @Override
+    public ChatMessage findLastMessage(String chatRoomId) {
+        return chatMapper.findLastMessage(chatRoomId);
+    }
+
 
 }

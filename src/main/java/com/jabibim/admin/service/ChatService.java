@@ -18,4 +18,6 @@ public interface ChatService {
     void markMessagesAsRead(String chatRoomId, String userId);
 
     int getUnreadMessageCount(String userId);
+
+    ChatMessage findLastMessage(String chatRoomId);
 }

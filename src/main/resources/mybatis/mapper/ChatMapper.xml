@@ -54,4 +54,13 @@
           AND is_read = FALSE;
     </select>
 
+    <select id="findLastMessage" resultType="com.jabibim.admin.domain.ChatMessage">
+        SELECT chat_message_id, chat_room_id, sender_id, chat_message, sent_at
+        FROM chat_message
+        WHERE chat_room_id = #{chatRoomId}
+        ORDER BY sent_at DESC
+        LIMIT 1
+    </select>
+
+
 </mapper>
