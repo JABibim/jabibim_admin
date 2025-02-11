@@ -112,8 +112,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Map<String, Object> getStudentChartData(String academyId) {
-
+    public List<Map<String, Object>> getStudentChartData(String academyId) {
         return dao.getStudentChartData(academyId);
     }
+
+
 }

@@ -23,5 +23,5 @@ public interface StudentService {
 
     StudentUserVO getStudentByEmail(String studentEmail, String academyId);
 
-    Map<String, Object> getStudentChartData(String academyId);
+    List<Map<String, Object>> getStudentChartData(String academyId);
 }

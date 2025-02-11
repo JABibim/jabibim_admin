@@ -28,5 +28,5 @@ public interface StudentMapper {
 
     void insertStudent(Student student);
 
-    Map<String, Object> getStudentChartData(String academyId);
+    List<Map<String, Object>> getStudentChartData(String academyId);
 }
