@@ -3,14 +3,14 @@ $(document).ready(function() {
     const quill = new Quill('#editor2', { theme: 'snow' });
     console.log(quill);  // quill 객체가 제대로 생성되었는지 확인
 
-    let check = 0;
-
-    // 파일 첨부 변경 이벤트
-    $('#upfile').change(function() {
-        console.log($(this).val());  // 파일 경로 출력
-        const inputfile = $(this).val().split('\\');  // \ 기준으로 분할
-        $('#filevalue').text(inputfile[inputfile.length - 1]);  // <span>에 파일명 출력
-    });
+    // let check = 0;
+    //
+    // // 파일 첨부 변경 이벤트
+    // $('#upfile').change(function() {
+    //     console.log($(this).val());  // 파일 경로 출력
+    //     const inputfile = $(this).val().split('\\');  // \ 기준으로 분할
+    //     $('#filevalue').text(inputfile[inputfile.length - 1]);  // <span>에 파일명 출력
+    // });
 
     // '등록' 버튼 클릭 시 폼 제출 처리
     $('#save-button').on('click', function(event) {
@@ -55,33 +55,33 @@ $(document).ready(function() {
         $('#save-form').submit();
     });
 
-    $('#upFile').change(function () {
-        check++;
-        const maxSizeInBytes = 5 * 1024 * 1024;
-        const file = this.files[0]; // 선택된 파일
-
-        if (file.size > maxSizeInBytes) {
-            alert('5MB 이하 크기로 업로드 하세요.');
-            $(this).val('');
-        } else {
-            $('#fileValue').text(file.name);
-        }
-
-        show();
-    })
-
-    function show() {
-        // 파일 이름이 있는 경우, remove 이미지를 보이게 하고
-        // 파일 이름이 없는 경우, remove 이미지 보이지 않게 합니다.
-        $('.remove')
-            .css('display', $('#fileValue').text() ? 'inline-block' : 'none')
-            .css({'position': 'relative', 'top': '-5px'});
-    }
-
-    show();
-
-    $('.remove').click(function () {
-        $('#fileValue').text('');
-        $(this).css('display', 'none');
-    })
+    // $('#upFile').change(function () {
+    //     check++;
+    //     const maxSizeInBytes = 5 * 1024 * 1024;
+    //     const file = this.files[0]; // 선택된 파일
+    //
+    //     if (file.size > maxSizeInBytes) {
+    //         alert('5MB 이하 크기로 업로드 하세요.');
+    //         $(this).val('');
+    //     } else {
+    //         $('#fileValue').text(file.name);
+    //     }
+    //
+    //     show();
+    // })
+    //
+    // function show() {
+    //     // 파일 이름이 있는 경우, remove 이미지를 보이게 하고
+    //     // 파일 이름이 없는 경우, remove 이미지 보이지 않게 합니다.
+    //     $('.remove')
+    //         .css('display', $('#fileValue').text() ? 'inline-block' : 'none')
+    //         .css({'position': 'relative', 'top': '-5px'});
+    // }
+    //
+    // show();
+    //
+    // $('.remove').click(function () {
+    //     $('#fileValue').text('');
+    //     $(this).css('display', 'none');
+    // })
 });
