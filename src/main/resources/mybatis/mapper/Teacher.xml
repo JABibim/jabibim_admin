@@ -27,7 +27,7 @@
                 AND t.teacher_email LIKE concat('%', #{search_word}, '%')
             </if>
             <if test='search_field == "2"'>
-                AND t.teacher_email LIKE concat('%', #{search_word}, '%')
+                AND t.teacher_name LIKE concat('%', #{search_word}, '%')
             </if>
         </where>
     </select>
