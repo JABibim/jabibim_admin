@@ -33,6 +33,10 @@
   </style>
   <script>
     $(function() {
+
+      const token = $('meta[name="_csrf"]').attr('content');
+      const header = $('meta[name="_csrf_header"]').attr('content');
+
       $('#reviewDelete').on('click', function() {
         const reviewId = this.getAttribute('deleteId');
         console.log(reviewId);
