@@ -75,7 +75,7 @@ public class ResignController {
       logger.error("날짜 전환 에러 " + pe.getMessage());
     }
 
-    mv.setViewName("/students/studentresignhist");
+    mv.setViewName("students/studentresignhist");
     mv.addObject("listcount", listcount);
     mv.addObject("page", page);
     mv.addObject("limit", limit);
