@@ -60,12 +60,12 @@
       AND (
       <foreach collection="searchField" item="data" separator="or">
         <choose>
-          <when test='data == "e"'>student_email</when>
-          <when test='data == "n"'>student_name</when>
-          <when test='data == "b"'>browser_info</when>
-          <when test='data == "o"'>os_info</when>
-          <when test='data == "i"'>ip_info</when>
-          <when test='data == "t"'>DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s')</when>
+          <when test='data == "e"'> student_email</when>
+          <when test='data == "n"'> student_name</when>
+          <when test='data == "b"'> browser_info</when>
+          <when test='data == "o"'> os_info</when>
+          <when test='data == "i"'> ip_info</when>
+          <when test='data == "t"'> DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s')</when>
         </choose>
         LIKE #{searchWord}
       </foreach>
