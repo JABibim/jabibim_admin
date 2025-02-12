@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -43,8 +45,9 @@ public class OdersController {
       @RequestParam(defaultValue = "nco") String searchField,
       @RequestParam(defaultValue = "") String searchWord,
       ModelAndView mv,
-      Authentication auth) {
+      HttpServletRequest request) {
 
+    HttpSession session = request.getSession();
     HashMap<String, String> searchMap = new HashMap<>();
     searchMap.put("orderDate1", orderDate1);
     searchMap.put("orderDate2", orderDate2);
@@ -55,9 +58,9 @@ public class OdersController {
     searchMap.put("searchField", searchField);
     searchMap.put("searchWord", searchWord);
 
-    int listcount = ordersService.getOrdersListCount(searchMap, auth);
+    int listcount = ordersService.getOrdersListCount(searchMap, session);
 
-    List<OrdersListVO> ordersList = ordersService.getOrdersList(page, limit, searchMap, auth);
+    List<OrdersListVO> ordersList = ordersService.getOrdersList(page, limit, searchMap, session);
 
     PaginationResult result = new PaginationResult(page, limit, listcount);
 
@@ -107,8 +110,9 @@ public class OdersController {
   }
 
   @GetMapping("/detail")
-  public ModelAndView detail(ModelAndView mv, @RequestParam String id, Authentication auth) {
-    OrdersDetailVO ordersDetail = ordersService.getOrdersDetail(id, auth);
+  public ModelAndView detail(ModelAndView mv, @RequestParam String id, HttpServletRequest request) {
+    HttpSession session = request.getSession();
+    OrdersDetailVO ordersDetail = ordersService.getOrdersDetail(id, session);
 
     mv.setViewName("orders/orders-detail");
     mv.addObject("orders", ordersDetail);

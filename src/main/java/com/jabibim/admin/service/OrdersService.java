@@ -3,6 +3,7 @@ package com.jabibim.admin.service;
 import java.util.HashMap;
 import java.util.List;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 
 import com.jabibim.admin.domain.Orders;
@@ -18,9 +19,9 @@ public interface OrdersService {
 
   public void updateOrderStatus(List<Orders> orders, int status);
 
-  public int getOrdersListCount(HashMap<String, String> searchMap, Authentication auth);
+  public int getOrdersListCount(HashMap<String, String> searchMap, HttpSession session);
 
-  public List<OrdersListVO> getOrdersList(int page, int limit, HashMap<String, String> searchMap, Authentication auth);
+  public List<OrdersListVO> getOrdersList(int page, int limit, HashMap<String, String> searchMap, HttpSession session);
 
-  public OrdersDetailVO getOrdersDetail(String ordersId, Authentication auth);
+  public OrdersDetailVO getOrdersDetail(String ordersId, HttpSession session);
 }

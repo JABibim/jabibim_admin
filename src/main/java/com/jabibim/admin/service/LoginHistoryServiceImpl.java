@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.jabibim.admin.security.dto.AccountDto;
+import jakarta.servlet.http.HttpSession;
 import org.apache.http.auth.AUTH;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -21,21 +22,19 @@ public class LoginHistoryServiceImpl implements LoginHistoryService {
   private final LoginHistoryMapper dao;
 
   @Override
-  public int getLoginHistCount(HashMap<String, String> hm, Authentication auth) {
+  public int getLoginHistCount(HashMap<String, String> hm, HttpSession session) {
     HashMap<String, Object> map = searchMap(hm);
-    AccountDto user = (AccountDto) auth.getPrincipal();
-    String academyId = user.getAcademyId();
+    String academyId = (String) session.getAttribute("aid");
     map.put("academyId", academyId);
 
     return dao.getLoginHistCount(map);
   }
 
   @Override
-  public List<LoginHistListVO> getLoginHistList(HashMap<String, String> hm, int page, int limit, Authentication auth) {
+  public List<LoginHistListVO> getLoginHistList(HashMap<String, String> hm, int page, int limit, HttpSession session) {
     HashMap<String, Object> map = searchMap(hm);
 
-    AccountDto user = (AccountDto) auth.getPrincipal();
-    String academyId = user.getAcademyId();
+    String academyId = (String) session.getAttribute("aid");
 
 
     map.put("limit", limit);

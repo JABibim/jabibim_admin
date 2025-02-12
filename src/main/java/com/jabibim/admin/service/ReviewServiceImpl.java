@@ -6,6 +6,7 @@ import com.jabibim.admin.dto.ReviewListVO;
 import com.jabibim.admin.func.UUIDGenerator;
 import com.jabibim.admin.mybatis.mapper.ReviewMapper;
 import com.jabibim.admin.security.dto.AccountDto;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -25,12 +26,11 @@ public class ReviewServiceImpl implements ReviewService {
   }
 
   @Override
-  public int getSearchListCount(HashMap<String, String> hm, Authentication auth) {
+  public int getSearchListCount(HashMap<String, String> hm, HttpSession session) {
 
     HashMap<String, Object> map = searchMap(hm);
 
-    AccountDto account = (AccountDto) auth.getPrincipal();
-    String academyId = account.getAcademyId();
+    String academyId = (String) session.getAttribute("aid");
 
     map.put("academyId", academyId);
 
@@ -38,12 +38,11 @@ public class ReviewServiceImpl implements ReviewService {
   }
 
   @Override
-  public List<ReviewListVO> getSearchList(HashMap<String, String> hm, int page, int limit, Authentication auth) {
+  public List<ReviewListVO> getSearchList(HashMap<String, String> hm, int page, int limit, HttpSession session) {
 
     HashMap<String, Object> map = searchMap(hm);
 
-    AccountDto account = (AccountDto) auth.getPrincipal();
-    String academyId = account.getAcademyId();
+    String academyId = (String) session.getAttribute("aid");
 
     map.put("academyId", academyId);
 
@@ -56,12 +55,11 @@ public class ReviewServiceImpl implements ReviewService {
   }
 
   @Override
-  public List<ReviewDetailVO> getReviewDetails(String reviewId, Authentication auth) {
+  public List<ReviewDetailVO> getReviewDetails(String reviewId, HttpSession session) {
 
     int ref = dao.getReviewRef(reviewId);
 
-    AccountDto account = (AccountDto) auth.getPrincipal();
-    String academyId = account.getAcademyId();
+    String academyId = (String) session.getAttribute("aid");
 
 
     List<ReviewDetailVO> list = dao.getReviewDetails(ref, academyId);

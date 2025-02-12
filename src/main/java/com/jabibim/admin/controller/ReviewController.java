@@ -9,6 +9,7 @@ import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.service.ReviewService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import netscape.javascript.JSObject;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,9 +58,10 @@ public class ReviewController {
       , @RequestParam(defaultValue = "all") String review_visible
       , @RequestParam(defaultValue = "snect") String review_searchField
       , @RequestParam(defaultValue = "") String search_word
-      , Authentication auth
+      , HttpServletRequest request
   ) {
 
+    HttpSession session = request.getSession();
     // 검색조건 hashmap 에 저장하여 서비스에 전달
     HashMap<String, String> hm = new HashMap<>();
     hm.put("reviewDate1", reviewDate1);
@@ -70,10 +72,10 @@ public class ReviewController {
     hm.put("review_searchField", review_searchField);
     hm.put("search_word", search_word);
 
-    int listcount = reviewService.getSearchListCount(hm, auth);
+    int listcount = reviewService.getSearchListCount(hm, session);
 //    logger.info("listcount: " + listcount);
 
-    List<ReviewListVO> list = reviewService.getSearchList(hm, page, limit, auth);
+    List<ReviewListVO> list = reviewService.getSearchList(hm, page, limit, session);
 
 //    for (ReviewListVO reviewListVO : list) {
 //      logger.info(reviewListVO.toString());
@@ -139,16 +141,16 @@ public class ReviewController {
   }
 
   @GetMapping("/detail")
-  public ModelAndView reviewDetail(@RequestParam(required = true) String reviewid, ModelAndView mv, Authentication auth) {
+  public ModelAndView reviewDetail(@RequestParam(required = true) String reviewid, ModelAndView mv, HttpServletRequest request) {
 
+    HttpSession session = request.getSession();
 
-    List<ReviewDetailVO> list = reviewService.getReviewDetails(reviewid, auth);
+    List<ReviewDetailVO> list = reviewService.getReviewDetails(reviewid, session);
 
-    AccountDto account = (AccountDto) auth.getPrincipal();
-
+    String teacherEmail = (String) session.getAttribute("email");
     mv.setViewName("review/reviewDetail");
     mv.addObject("detaillist", list);
-    mv.addObject("account", account);
+    mv.addObject("email", teacherEmail);
     return mv;
   }
 

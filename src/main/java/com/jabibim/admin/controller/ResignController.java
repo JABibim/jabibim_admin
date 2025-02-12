@@ -3,6 +3,8 @@ package com.jabibim.admin.controller;
 import com.jabibim.admin.dto.ResignListVO;
 import com.jabibim.admin.func.PaginationResult;
 import com.jabibim.admin.service.ResignedStudentService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,9 @@ public class ResignController {
       , @RequestParam(defaultValue="withdrawal") String dateField
       , @RequestParam(defaultValue="nerd") String searchField
       , @RequestParam(defaultValue="") String searchWord
-      , Authentication auth) {
+      , HttpServletRequest request) {
+
+    HttpSession session = request.getSession();
 
     HashMap<String,String> hm = new HashMap<>();
     hm.put("resignDate1", resignDate1);
@@ -48,11 +52,11 @@ public class ResignController {
     hm.put("searchField", searchField);
     hm.put("searchWord", searchWord);
 
-    int listcount = studentResignService.getResignedStudentCount(hm, auth);
+    int listcount = studentResignService.getResignedStudentCount(hm, session);
 
     logger.info("listcount: " + listcount);
 
-    List<ResignListVO> list = studentResignService.getResignedStudentList(hm, page, limit, auth);
+    List<ResignListVO> list = studentResignService.getResignedStudentList(hm, page, limit, session);
 
     for (ResignListVO resignListVO : list) {
       logger.info("resignListVO: " + resignListVO.toString());

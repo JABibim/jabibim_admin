@@ -338,7 +338,7 @@
   <!--        <c:if test="${sessionScope.id == review.teacher_id && empty reply}">-->
   <th:block th:if="${#lists.size(detaillist) == 1}">
     <th:block th:with="incharge=${detaillist[0].getTeacherEmail()}, name=${detaillist[0].getTeacherName()}">
-      <div class="card-body" th:if="${incharge == account.getEmail()}">
+      <div class="card-body" th:if="${incharge == email}">
         <!-- 담당 강사거나 어드민 role(추후 manager role로)이면 작성할 수 있다. -->
 
         <h5 class="card-title">답변</h5>

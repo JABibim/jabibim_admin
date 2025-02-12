@@ -3,6 +3,8 @@ package com.jabibim.admin.controller;
 import com.jabibim.admin.dto.LoginHistListVO;
 import com.jabibim.admin.func.PaginationResult;
 import com.jabibim.admin.service.LoginHistoryService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.*;
 import org.springframework.security.core.Authentication;
@@ -36,7 +38,9 @@ public class LoginHistoryController {
                                      , @RequestParam(defaultValue="sf") String logStatus
                                      , @RequestParam(defaultValue="enboit") String searchField
                                      , @RequestParam(defaultValue="") String searchWord
-                                     , Authentication auth) {
+                                     , HttpServletRequest request) {
+
+    HttpSession session = request.getSession();
 
     HashMap<String, String> hm = new HashMap<>();
     hm.put("signDate1", signDate1);
@@ -46,9 +50,9 @@ public class LoginHistoryController {
     hm.put("searchWord", searchWord);
 
 
-    int listcount = loginHistoryService.getLoginHistCount(hm, auth);
+    int listcount = loginHistoryService.getLoginHistCount(hm, session);
 
-    List<LoginHistListVO> list = loginHistoryService.getLoginHistList(hm, page, limit, auth);
+    List<LoginHistListVO> list = loginHistoryService.getLoginHistList(hm, page, limit, session);
 
 
     // 날짜 전환을 위한 SimpleDateFormat
