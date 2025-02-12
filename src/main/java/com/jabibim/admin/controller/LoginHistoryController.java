@@ -5,6 +5,7 @@ import com.jabibim.admin.func.PaginationResult;
 import com.jabibim.admin.service.LoginHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +35,8 @@ public class LoginHistoryController {
                                      , @RequestParam(defaultValue="") String signDate2
                                      , @RequestParam(defaultValue="sf") String logStatus
                                      , @RequestParam(defaultValue="enboit") String searchField
-                                     , @RequestParam(defaultValue="") String searchWord) {
+                                     , @RequestParam(defaultValue="") String searchWord
+                                     , Authentication auth) {
 
     HashMap<String, String> hm = new HashMap<>();
     hm.put("signDate1", signDate1);
@@ -44,9 +46,9 @@ public class LoginHistoryController {
     hm.put("searchWord", searchWord);
 
 
-    int listcount = loginHistoryService.getLoginHistCount(hm);
+    int listcount = loginHistoryService.getLoginHistCount(hm, auth);
 
-    List<LoginHistListVO> list = loginHistoryService.getLoginHistList(hm, page, limit);
+    List<LoginHistListVO> list = loginHistoryService.getLoginHistList(hm, page, limit, auth);
 
 
     // 날짜 전환을 위한 SimpleDateFormat

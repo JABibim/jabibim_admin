@@ -5,15 +5,16 @@
 
   <select id="getLoginHistCount" resultType="int">
     SELECT COUNT(*)
-    FROM (SELECT *
-          FROM (SELECT *
-                FROM (SELECT *
-                      FROM login_history
-                      WHERE academy_id = #{academyId}) l
+    FROM (
+    SELECT *
+        FROM (SELECT *
+            FROM (SELECT *
+                    FROM login_history
+                    WHERE academy_id = #{academyId}) l
                 NATURAL JOIN (SELECT student_id, student_email, student_name
-                                FROM student
-                                WHERE academy_id = #{academyId}) s
-                ) j
+                            FROM student
+                            WHERE academy_id = #{academyId}) s
+        ) j
     <where>
       <include refid="search_"/>
     </where>
@@ -23,15 +24,17 @@
 
   <select id="getLoginHistList" resultType="LoginHistListVO">
     SELECT *
+    FROM (
+    SELECT *
+    FROM (
+    SELECT *
     FROM (SELECT *
-          FROM (SELECT *
-                FROM (SELECT *
-                      FROM login_history
-                      WHERE academy_id = #{academyId}) l
-                NATURAL JOIN (SELECT student_id, student_email, student_name
-                                FROM student
-                                WHERE academy_id = #{academyId}) s
-          ) j
+    FROM login_history
+    WHERE academy_id = #{academyId}) l
+    NATURAL JOIN (SELECT student_id, student_email, student_name
+    FROM student
+    WHERE academy_id = #{academyId}) s
+    ) j
     <where>
       <include refid="search_"/>
     </where>
@@ -49,20 +52,20 @@
     </if>
 
     <if test="logStatus != null">
-          <if test='logStatus == "s"'> AND login_success = 1</if>
-          <if test='logStatus == "f"'> AND login_success = 0</if>
+      <if test='logStatus == "s"'>AND login_success = 1</if>
+      <if test='logStatus == "f"'>AND login_success = 0</if>
     </if>
 
     <if test="searchWord != null and searchField != null">
       AND (
       <foreach collection="searchField" item="data" separator="or">
         <choose>
-          <when test='data == "e"'> student_email</when>
-          <when test='data == "n"'> student_name</when>
-          <when test='data == "b"'> browser_info</when>
-          <when test='data == "o"'> os_info</when>
-          <when test='data == "i"'> ip_info</when>
-          <when test='data == "t"'> DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s')</when>
+          <when test='data == "e"'>student_email</when>
+          <when test='data == "n"'>student_name</when>
+          <when test='data == "b"'>browser_info</when>
+          <when test='data == "o"'>os_info</when>
+          <when test='data == "i"'>ip_info</when>
+          <when test='data == "t"'>DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s')</when>
         </choose>
         LIKE #{searchWord}
       </foreach>
