@@ -60,7 +60,7 @@ public class FFmpegUtil {
     public CompletableFuture<Void> createM3U8Stream(String filePath, String classFileId) {
         System.out.println("🚀🚀🚀 ==> createM3U8Stream() start!! ");
 
-        String outputDirectory = "/tmp/temp/encode";
+        String outputDirectory = "/tmp/temp/encode/";
         System.out.println("🚀🚀🚀 ==> outputDirectory : " + outputDirectory);
 
         try {
