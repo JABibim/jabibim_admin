@@ -62,7 +62,7 @@ public class FFmpegUtil {
         FFmpegBuilder builder = new FFmpegBuilder()
                 .setInput(filePath) // 원본 파일
                 .overrideOutputFiles(true)
-                .addOutput(OUTPUT_DIR + classFileId + ".m3u8")
+                .addOutput("/tmp/temp/encode/" + classFileId + ".m3u8")
                 .setFormat("hls")
                 .addExtraArgs("-codec", "copy")
                 .addExtraArgs("-crf", "28")
@@ -83,7 +83,7 @@ public class FFmpegUtil {
 
     @Async
     public CompletableFuture<String> uploadEncodedFilesToS3(String uploadPathPrefix, String classFileId) {
-        File[] files = new File(OUTPUT_DIR).listFiles();
+        File[] files = new File("/tmp/temp/encode/").listFiles();
         assert files != null;
         for (File f : files) {
             System.out.println("📍📍 ==> f : " + f);
