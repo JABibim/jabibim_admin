@@ -137,7 +137,6 @@ function deleteGrade(academyId, gradeId, newGradeId) {
             newGradeId,
         },
         success: (res) => {
-            console.log('=========> res : ', res);
             const {deleteResult, effectedRow} = res;
             if (deleteResult) {
                 const message = `등급 삭제가 성공하였습니다. (학생 ${effectedRow}명의 등급이 조정되었습니다.)`;
