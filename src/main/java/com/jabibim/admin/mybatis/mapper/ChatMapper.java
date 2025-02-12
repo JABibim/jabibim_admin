@@ -4,6 +4,7 @@ import com.jabibim.admin.domain.ChatMessage;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ChatMapper {
@@ -20,7 +21,7 @@ public interface ChatMapper {
 
     void markMessagesAsRead(@Param("chatRoomId") String chatRoomId, @Param("userId") String userId);
 
-    int countUnreadMessages(@Param("userId") String userId);
+    List<Map<String, Object>> countUnreadMessagesByChatRoom(@Param("userId") String userId);
 
     ChatMessage findLastMessage(@Param("chatRoomId")String chatRoomId);
 }

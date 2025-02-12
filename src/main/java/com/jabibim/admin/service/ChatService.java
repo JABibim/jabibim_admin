@@ -3,6 +3,7 @@ package com.jabibim.admin.service;
 import com.jabibim.admin.domain.ChatMessage;
 import com.jabibim.admin.domain.Teacher;
 import java.util.List;
+import java.util.Map;
 
 public interface ChatService {
 
@@ -17,7 +18,7 @@ public interface ChatService {
 
     void markMessagesAsRead(String chatRoomId, String userId);
 
-    int getUnreadMessageCount(String userId);
-
     ChatMessage findLastMessage(String chatRoomId);
+
+    Map<String, Integer> getUnreadMessagesByChatRoom(String userId);
 }

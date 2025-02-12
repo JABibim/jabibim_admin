@@ -5,12 +5,20 @@ const stompClient = Stomp.over(socket);
 // ✅ 현재 열려있는 채팅방 ID를 추적하는 변수
 let currentChatRoomId = null;
 
+let chatRoomIdMap = {}; // teacherId -> chatRoomId 매핑 저장
+
 // ✅ WebSocket 연결 및 이벤트 핸들링
 stompClient.connect({}, function () {
 
     // ✅ 메시지 구독 (채팅방 전체 메시지 수신)
     stompClient.subscribe('/topic/chatRoom', function (message) {
         const msg = JSON.parse(message.body);
+
+        // 안 읽은 메시지 개수 갱신
+        fetchUnreadMessagesByChatRoom();
+
+        //채팅방이 열려있지 않아도, teacherList 에서 LastMessage 업데이트
+        updateLastMessage(msg.chatRoomId, msg.senderName, msg.chatMessage);
 
         if(!currentChatRoomId || currentChatRoomId !== msg.chatRoomId) {
             fetchUnreadMessageCount();    //새로운 메시지가 오면 숫자 갱신
@@ -59,6 +67,7 @@ function sendMessage(chatRoomId, senderId, chatMessage) {
 
 
 $(document).ready(function () {
+    fetchChatRoomIds();
 
     fetchUnreadMessageCount();
 
@@ -152,10 +161,10 @@ function appendMessageToChatBox(senderId, senderName, message) {
 // ✅ 안 읽은 채팅 개수 불러오는 함수 (AJAX 사용)
 function fetchUnreadMessageCount() {
     $.ajax({
-        url: "/chat/unreadCount",
+        url: "/chat/unreadMessagesByChatRoom",
         type: "GET",
-        data: { userId: $("#loggedInUserId").val() },
         success: function (response) {
+            updateUnreadIndicators(response);
             updateUnreadMessageBadge(response);
         },
         error: function () {
@@ -165,15 +174,86 @@ function fetchUnreadMessageCount() {
 }
 
 // ✅ 읽지 않은 메시지 개수를 업데이트하는 함수
-function updateUnreadMessageBadge(count = 0) {
+function updateUnreadMessageBadge(response) {
     const badgeElement = $("#chatNotificationBadge");
 
+    let totalUnreadCount = Object.values(response).reduce((sum, count) => sum + count, 0); // 전체 개수 합산
+
     if (badgeElement.length) {
-        if (count.unreadCount > 0) {
-            badgeElement.text(count.unreadCount);
+        if (totalUnreadCount > 0) {
+            badgeElement.text(totalUnreadCount);
             badgeElement.css("display", "inline-block"); // 배지 표시
         } else {
             badgeElement.css("display", "none"); // 배지 숨김
         }
     }
+}
+
+function updateLastMessage(chatRoomId, senderName, message) {
+    let lastMessage = message.length > 10 ? message.substring(0, 10) + "..." : message;
+
+    // ✅ 현재 채팅 선택 모달창이 열려 있는 경우에만 업데이트
+    if ($("#chatTeacherListModal").hasClass("show")) {
+        $("#teacherList .list-group-item").each(function () {
+            let teacherId = $(this).find("button.teacherChat").attr("id");  // 버튼에서 teacherId 가져오기
+
+            if (teacherId) {
+                let chatRoom = chatRoomIdMap[teacherId];  // teacherId -> chatRoomId 매핑된 객체
+                if (chatRoom === chatRoomId) {
+                    $(this).find(".last-message").text(lastMessage);  // lastMessage 업데이트
+                }
+            }
+        });
+    }
+}
+
+function fetchChatRoomIds() {
+    $.ajax({
+        url: "/chat/getChatRoomIds",
+        type: "GET",
+        success: function (response) {
+            chatRoomIdMap = response;
+        },
+        error: function () {
+            console.error("🚨 채팅방 ID 매핑 가져오기 실패!");
+        }
+    });
+}
+
+function fetchUnreadMessagesByChatRoom() {
+    $.ajax({
+        url: "/chat/unreadMessagesByChatRoom",
+        type: "GET",
+        success: function (response) {
+            updateUnreadIndicators(response);
+        },
+        error: function () {
+            console.error("🚨 안 읽은 메시지 개수 가져오기 실패!");
+        }
+    });
+}
+
+function updateUnreadIndicators(unreadCounts) {
+    console.log("🔥 디버깅 - 채팅방별 안 읽은 메시지 개수:", unreadCounts); // 디버깅 추가
+
+    console.log("🔥 디버깅 - teacherList 요소 확인:", $("#teacherList").length);
+    console.log("🔥 디버깅 - teacherList 내부 HTML:", $("#teacherList").html());
+
+
+    $("#teacherList .list-group-item").each(function () {
+        let teacherId = $(this).find("button.teacherChat").attr("id");
+        let chatRoomId = chatRoomIdMap[teacherId];
+        console.log("🔥 디버깅 - 채팅 리스트 개수:", $("#teacherList .list-group-item").length);
+
+        console.log("✅ 디버깅 - teacherId:", teacherId, "chatRoomId:", chatRoomId); // 추가 디버깅
+
+        if (chatRoomId && unreadCounts[chatRoomId] > 0) {
+            console.log("🔴 안 읽은 메시지 있음 - 채팅방 ID:", chatRoomId); // 디버깅
+            if (!$(this).find(".unread-indicator").length) {
+                $(this).find(".fw-bold").after('<span class="unread-indicator" style="color: red; font-size: 1rem;">🔴</span>');
+            }
+        } else {
+            $(this).find(".unread-indicator").remove();
+        }
+    });
 }
