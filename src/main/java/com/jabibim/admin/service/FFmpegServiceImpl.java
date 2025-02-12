@@ -18,13 +18,18 @@ public class FFmpegServiceImpl implements FFmpegService {
     @Override
     public CompletableFuture<String> encoding(String uploadPathPrefix, MultipartFile file, String classFileId) {
         // 파일 인코딩을 위한 전처리 작업으로 원본 파일을 임시파일로 저장 ( 서버 내에 저장됨, s3가 아님 )
-        String saveDirectory = System.getProperty("user.dir") + File.separator
-                               + "src" + File.separator
-                               + "main" + File.separator
-                               + "resources" + File.separator
-                               + "static" + File.separator
+//        String saveDirectory = System.getProperty("user.dir") + File.separator
+//                               + "src" + File.separator
+//                               + "main" + File.separator
+//                               + "resources" + File.separator
+//                               + "static" + File.separator
+//                               + "temp" + File.separator
+//                               + "raw";
+        String saveDirectory =  "BOOT-INF/classes/static" + File.separator
                                + "temp" + File.separator
                                + "raw";
+        System.out.println("==> saveDirectory");
+
         if (file.getOriginalFilename() == null) {
             throw new IllegalArgumentException("file 또는 파일 이름이 null입니다.");
         }
