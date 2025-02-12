@@ -36,7 +36,6 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-
         <!-- mysql -->
         <!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
         <dependency>
@@ -106,7 +105,6 @@
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
 
-
         <!-- log4jjdbc 마이바티스 쿼리문 출력 위한 라이브러리-->
         <!-- https://mvnrepository.com/artifact/org.bgee.log4jdbc-log4j2/log4jdbc-log4j2-jdbc4.1 -->
         <dependency>
@@ -123,7 +121,6 @@
             <version>1.18.26</version>
             <scope>provided</scope>
         </dependency>
-
 
         <!-- gson -->
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
@@ -164,7 +161,6 @@
             <version>0.12.3</version>
         </dependency>
 
-
         <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl
             JWT 구현 위한 impl-->
         <dependency>
@@ -174,7 +170,6 @@
             <scope>runtime</scope>
         </dependency>
 
-
         <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson
             JWT 구현 위한 json api -->
         <dependency>
@@ -183,7 +178,6 @@
             <version>0.12.3</version>
             <scope>runtime</scope>
         </dependency>
-
 
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
             요청에 담긴 객체 유효성 검사에 쓰이는 api -->
@@ -221,36 +215,7 @@
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         <!-- 웹훅 재시도 관련 라이브러리 -->
-
         <dependency>
             <groupId>org.springframework.retry</groupId>
         <artifactId>spring-retry</artifactId>
@@ -261,17 +226,20 @@
             <artifactId>aspectjweaver</artifactId>
             <version>1.9.20.1</version>
         </dependency>
+
         <!-- 로그인 요청에 대한 정보 확인 위한 라이브러리 -->
         <dependency>
             <groupId>eu.bitwalker</groupId>
             <artifactId>UserAgentUtils</artifactId>
             <version>1.21</version>
         </dependency>
+
         <!-- Redis 의존성 추가-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
+
         <!-- websocket 의존성 추가-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -301,6 +269,15 @@
             <version>1.1.1</version>
         </dependency>
 
+        <!-- ffmpeg ( video encode )
+            https://velog.io/@ace0390/Java-ffmpeg을-활용한-동영상-처리하기
+            https://velog.io/@raycho521/ffmpeg-spring-연동하고-hls로-영상-스트리밍하기
+        -->
+        <dependency>
+            <groupId>net.bramp.ffmpeg</groupId>
+            <artifactId>ffmpeg</artifactId>
+            <version>0.6.2</version>
+        </dependency>
 
     </dependencies>
 

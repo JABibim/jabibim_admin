@@ -8,7 +8,7 @@ CREATE TABLE class_file
     class_file_origin_name varchar(500),
     class_file_type        varchar(50),
     class_file_size        int,
-    class_file_path        varchar(200),
+    class_file_path        varchar(1024),
     academy_id             varchar(36),
     teacher_id             varchar(36),
     course_id              varchar(36),
