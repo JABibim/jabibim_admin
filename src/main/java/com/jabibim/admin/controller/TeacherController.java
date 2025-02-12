@@ -49,7 +49,7 @@ public class TeacherController {
         boolean isAdmin = academyId.equals("ADMIN");
 
         // 총 선생 수를 받아옴
-        int listcount = teacherService.getTeacherCount(academyId, state, search_field, search_word);
+        int listcount = teacherService.getTeacherCount(academyId, isAdmin, state, search_field, search_word);
 
         // 선생 리스트를 받아옴
         List<Teacher> list = teacherService.getTeacherList(page, limit, academyId, isAdmin, state, search_field, search_word);
