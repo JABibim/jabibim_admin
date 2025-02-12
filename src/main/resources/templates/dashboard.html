@@ -3,9 +3,92 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/default}">
-
+<body>
 <div layout:fragment="content">
+    <script th:src="@{/js/dashboard.js}"></script>
 
+    <main id="main" class="main">
+        <!-- START TITLE -->
+        <div class="pagetitle">
+            <h1>Dashboard</h1>
+        </div>
+        <!-- END TITLE -->
+
+        <!-- START 상단 알림 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="pt-4">
+                    <!-- START 환불 -->
+                    <div class="todo-answer d-flex justify-content-between">
+                        <h5>
+                        <span style="color: red;" data-bs-toggle="tooltip" data-bs-placement="top"
+                              title="대기상태에 있는 환불 신청 건입니다. 환불 관리 화면에서 승인을 진행해주세요."
+                              th:text="|${refundCount}건|"></span>의 환불처리가 필요합니다.
+                        </h5>
+                        <button class="details-button refundDetailBtn">자세히</button>
+                    </div>
+                    <!-- END 환불 -->
+                </div>
+            </div>
+        </div>
+        <!-- END 상단 알림 -->
+
+        <!-- START 통계 출력 -->
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mt-4">
+                    <!-- START 학생 차트 -->
+                    <div class="card"
+                         style="width: 49%; height: auto; margin: 20px auto; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px; overflow: hidden;">
+                        <div class="card-header"
+                             style="background-color: #f8f9fa; padding: 15px; font-size: 18px; font-weight: bold;">
+                            <span style="color: black;">신규 수강생</span>
+                            <button class="btn btn-outline-primary studentDetailBtn"
+                                    style="float: right; font-size: 14px; padding: 5px 10px;">
+                                자세히
+                            </button>
+                        </div>
+                        <div id="studentChart" style="padding: 15px; width: 100%; height: 350px;">
+                            <!-- 차트가 여기에 렌더링 -->
+                        </div>
+                    </div>
+                    <!-- END 학생 차트 -->
+
+                    <!-- START 과정 개설 현황 -->
+                    <table id="courseInfo" class="table table-bordered"
+                           style="width: 49%; margin: 20px auto; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); border-radius: 8px; overflow: hidden;">
+                        <thead style="background-color: #f8f9fa;">
+                        <tr>
+                            <th colspan="2" style="padding: 15px; text-align: left; font-size: 18px; font-weight: bold;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: black;">과정개설현황</span>
+                                    <button class="btn btn-outline-primary courseDetailBtn"
+                                            style="margin-left: auto; font-size: 14px; padding: 5px 10px;">
+                                        자세히
+                                    </button>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td style="padding: 12px; font-weight: 500; color: #333;">개설과정</td>
+                            <td style="padding: 12px; text-align: right; font-weight: bold; color: #007bff;"
+                                th:text="|${courseStatus.totalCourses}건|"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; font-weight: 500; color: #333;">숨김과정</td>
+                            <td style="padding: 12px; text-align: right; font-weight: bold; color: #dc3545;"
+                                th:text="|${courseStatus.inactiveCount}건|"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <!-- END 과정 개설 현황 -->
+                </div>
+            </div>
+        </div>
+        <!-- END 통계 출력 -->
+    </main>
 </div>
-
+</body>
 </html>

@@ -69,11 +69,14 @@
     <script th:inline="javascript">
         let token = $("meta[name='_csrf']").attr("content");
         let header = $("meta[name='_csrf_header']").attr("content");
-        let profileImgPath = '';
+
         let chatRoomId = null; // 현재 채팅방 ID
         let loggedInUserId = /*[[${session.id}]]*/ ''; // 로그인한 사용자 ID
 
+        let isOpen = false;
+
         $(document).ready(function () {
+
             // 관리자 비밀번호 확인 버튼
             $('#confirmPasswordBtn').click(function () {
                 let enteredPassword = $('#adminPassword').val();
@@ -104,24 +107,24 @@
                 }
             });
 
-            // 채팅 시작 버튼 클릭 이벤트
+            // 채팅 시작 버튼 클릭 이벤트 (선생님 리스트 가져오기)
             $('#chatStartBtn').click(function () {
-                // AJAX 요청으로 선생님 리스트 가져오기
+                isOpen = false;
                 $.ajax({
                     url: "/chat/teacherList",
                     method: "GET",
                     success: function (data) {
-                        // 성공적으로 데이터를 가져온 경우, 리스트를 동적으로 렌더링
                         $('#teacherList').html(''); // 기존 리스트 초기화
                         data.forEach(teacher => {
                             $('#teacherList').append(`
                                 <div class="list-group-item d-flex justify-content-between align-items-center">
                                     <span>${teacher.teacherName}</span>
-                                    <button class="btn btn-primary btn-sm" onclick="startChat(${teacher.teacherId})">채팅하기</button>
+                                    <button class="teacherChat btn btn-primary btn-sm" id="${teacher.teacherId}">채팅하기</button>
                                 </div>
                             `);
                         });
                         $('#chatTeacherListModal').modal('show'); // 모달 표시
+                        isOpen = true;
                     },
                     error: function () {
                         alert("선생님 리스트를 가져오는 데 실패했습니다.");
@@ -129,10 +132,9 @@
                 });
             });
 
-            getProfileImgPath();
-
             // 채팅방 열기 (선생님 선택 시 실행)
             $('#chatTeacherListModal').on('click', 'button.teacherChat', function () {
+                isOpen = true;
                 let teacherId = $(this).attr("id"); // 선택한 선생님 ID
 
                 // AJAX로 채팅방 ID 가져오기
@@ -141,20 +143,20 @@
                     method: "GET",
                     data: { teacherId: teacherId },
                     success: function (response) {
-                        console.log("reponse는요!!!!!!!!!" , response);
                         chatRoomId = response.chatRoomId; // 서버에서 받은 채팅방 ID 저장
                         senderId = response.senderId;
 
                         $("#chatRoomId").val(chatRoomId);
                         $("#loggedInUserId").val(senderId);
 
-                        console.log("채팅방 ID 설정됨: ", chatRoomId);
-                        console.log("로그인한 사용자 ID 설정됨", senderId);
-
                         $('#chatModal').modal('show');
                         $('#chatBox').html(''); // 채팅창 초기화
 
                         fetchChatHistory(chatRoomId);
+
+                        $(document).on('hide.bs.modal', '#chatModal', function () {
+                            isOpen = false;
+                        });
                     },
                     error: function () {
                         alert("채팅 방을 열 수 없습니다.");
@@ -163,52 +165,24 @@
             });
         });
 
-        function getProfileImgPath() {
-            $.ajax({
-                url: "/teacher/getProfileImgInfo",
-                method: "GET",
-                success: (res) => {
-                    profileImgPath = res.profileImgPath;  // 프로필 이미지 경로 저장
-
-                    // 프로필 이미지 경로에 따라 HTML의 이미지 태그를 업데이트
-                    if (profileImgPath && profileImgPath !== '') {
-                        // 프로필 이미지가 있으면 해당 이미지 표시
-                        $('.nav-profile img').attr('src', profileImgPath);
-                    } else {
-                        // 프로필 이미지가 없으면 기본 이미지 표시
-                        $('.nav-profile img').attr('src', '/img/default_profile.jpg');
-                    }
-                },
-                error: (err) => {
-                    console.log("프로필 이미지 정보를 가져오는 데 실패했습니다:", err);
-                    $('.nav-profile img').attr('src', '/img/default_profile.jpg'); // 실패 시 기본 이미지
-                }
-            });
-        }
-
         function fetchChatHistory(chatRoomId) {
-            console.log("📌 fetchChatHistory 실행됨, chatRoomId:", chatRoomId);
-
             $.ajax({
-                url: '/chat/recent?id='+ chatRoomId,  // 🔹 기존 '/chat/recent?id=' → '/chat/recent/'로 수정
+                url: '/chat/recent?id=' + chatRoomId,
                 type: "GET",
                 dataType: "json",
-                success: function(data) {
-                    console.log("🟢 서버 응답 데이터:", data);
-
-                    if (!Array.isArray(data.list)) {  // 🔹 응답이 배열인지 확인
-                        console.error("🔴 오류: chatHistory가 배열이 아닙니다! 데이터 타입:", typeof data, "데이터 내용:", data);
+                success: function (data) {
+                    const chatBox = document.getElementById("chatBox");
+                    if (!chatBox) {
+                        console.error("🚨 chatBox 요소를 찾을 수 없습니다! `scrollHeight = 0` 원인 가능성");
                         return;
                     }
 
-                    const chatBox = document.getElementById("chatBox");
                     chatBox.innerHTML = ""; // 기존 메시지 초기화
 
                     data.list.forEach(msg => {
                         const messageElement = document.createElement("div");
                         messageElement.classList.add("chat-message");
 
-                        // 보낸 사람이 현재 로그인한 사용자라면 오른쪽 정렬
                         if (msg.senderId === loggedInUserId) {
                             messageElement.classList.add("my-message");
                         } else {
@@ -222,17 +196,21 @@
                     </div>
                 `;
                         chatBox.appendChild(messageElement);
-                        chatBox.scrollTop = chatBox.scrollHeight; // 최신 메시지로 스크롤 이동
                     });
+
+                    // ✅ 스크롤을 최하단으로 이동 (setTimeout으로 확인)
+                    setTimeout(() => {
+                        chatBox.scrollTop = chatBox.scrollHeight; // 최신 메시지로 이동
+                    }, 300);
                 },
                 error: function (xhr, status, error) {
                     console.error("🔴 채팅 내역 불러오기 실패:", status, error);
                 }
             });
         }
+
+
     </script>
-
-
 
     <header id="header" class="header fixed-top d-flex align-items-center">
         <!-- START 로고 -->
@@ -289,42 +267,43 @@
                     </li>
                 </th:block>
 
-                <!-- 프로필 이미지 -->
-                    <a class="nav-link nav-profile d-flex align-items-center pe-0 me-4" href="#"
-                       data-bs-toggle="dropdown">
-                        <th:block th:if="${#strings.isEmpty(teacherImgName)}">
-                            <img th:src="@{/img/default_profile.jpg}" alt="Profile" class="rounded-circle">
-                        </th:block>
-                        <th:block th:if="${not #strings.isEmpty(teacherImgName)}">
-                            <img th:src="@{|/resources/static/uploadFiles/profileImageUpload/${teacherImgName}|}"
-                                 alt="Profile" class="rounded-circle">
-                        </th:block>
-                        <span class="d-none d-md-block dropdown-toggle ps-2"></span>
-                    </a>
 
-                    <!-- 프로필 드롭다운 메뉴 -->
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-                        <li class="dropdown-header">
-                            <h6>[[${session.name}]]</h6>
-                            <span>[[${session.email}]]</span>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center"
-                               th:href="@{'/mypage/detail?id=' + ${session.id}}">
-                                <i class="bi bi-person"></i>
-                                <span>내 정보</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" th:href="@{/logout}">
-                                <i class="bi bi-box-arrow-right"></i>
-                                <span>로그아웃</span>
-                            </a>
-                        </li>
-                    </ul>
+                <!-- 프로필 이미지 -->
+                <a class="nav-link nav-profile d-flex align-items-center pe-0 me-4" href="#"
+                   data-bs-toggle="dropdown">
+                    <th:block th:if="${#strings.isEmpty(teacherImgName)}">
+                        <img th:src="@{/img/default_profile.jpg}" alt="Profile" class="rounded-circle">
+                    </th:block>
+                    <th:block th:if="${not #strings.isEmpty(teacherImgName)}">
+                        <img th:src="@{|/resources/static/uploadFiles/profileImageUpload/${teacherImgName}|}"
+                             alt="Profile" class="rounded-circle">
+                    </th:block>
+                    <span class="d-none d-md-block dropdown-toggle ps-2"></span>
+                </a>
+
+                <!-- 프로필 드롭다운 메뉴 -->
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                    <li class="dropdown-header">
+                        <h6>[[${session.name}]]</h6>
+                        <span>[[${session.email}]]</span>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center"
+                           th:href="@{'mypage/detail?id=' + ${session.id}}">
+                            <i class="bi bi-person"></i>
+                            <span>내 정보</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" th:href="@{/logout}">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>로그아웃</span>
+                        </a>
+                    </li>
+                </ul>
                 </li>
                 <!-- END 프로필 및 채팅 시작 -->
             </ul>
@@ -332,8 +311,7 @@
     </header>
 
     <!-- 채팅 선생님 리스트 모달 -->
-    <div class="modal fade" id="chatTeacherListModal" tabindex="-1" aria-labelledby="chatTeacherListModalLabel"
-         aria-hidden="true">
+    <div class="modal fade" id="chatTeacherListModal" tabindex="-1" aria-labelledby="chatTeacherListModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -374,8 +352,7 @@
     </div>
 
     <!-- 관리자 비밀번호 확인 모달 -->
-    <div class="modal fade" id="passwordConfirmModal" tabindex="-1" aria-labelledby="passwordConfirmModalLabel"
-         aria-hidden="true">
+    <div class="modal fade" id="passwordConfirmModal" tabindex="-1" aria-labelledby="passwordConfirmModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

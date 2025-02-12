@@ -2,10 +2,11 @@ package com.jabibim.admin.domain;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class Student {  //학생 리스트와 갯수 구할때 쓰는거
+public class Student implements Serializable {  //학생 리스트와 갯수 구할때 쓰는거
     private String studentId;
     private Date createdAt;
     private Date updatedAt;

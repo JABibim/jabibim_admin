@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jabibim.admin.mybatis.mapper.DashboardMapper">
+
+    <select id="getWaitRefundCount" resultType="int">
+        SELECT COUNT(*)
+        FROM payment P
+        INNER JOIN student S ON P.student_id = S.student_id
+        INNER JOIN course C ON P.student_id = C.course_id
+        WHERE P.payment_status = 2
+        <if test="!isAdmin">
+            AND S.academy_id = #{academyId}
+        </if>
+    </select>
+
+    <!-- 강의 개수 및 활성화 상태 조회 -->
+    <select id="getCourseStatus" parameterType="map" resultType="map">
+        SELECT
+        COUNT(*) AS totalCourses,
+        SUM(CASE WHEN C.course_activation = 1 THEN 1 ELSE 0 END) AS activeCount,
+        SUM(CASE WHEN C.course_activation = 0 THEN 1 ELSE 0 END) AS inactiveCount
+        FROM course C
+        JOIN teacher T ON C.teacher_id = T.teacher_id
+        WHERE C.deleted_at IS NULL AND T.deleted_at IS NULL
+        <if test="!isAdmin">
+            AND T.academy_id = #{academyId}
+        </if>
+    </select>
+
+</mapper>
+
+
+

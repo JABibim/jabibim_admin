@@ -69,7 +69,7 @@ function updateBoardList(data) {
 
     $(noticeList).each(function (index, item) {
 
-        const {boardSubject, teacherName, createdAt, boardReadCount, boardExposureStat, boardNotice} = item;
+        const {boardId, boardSubject, teacherName, createdAt, boardReadCount, boardExposureStat, boardNotice} = item;
         const subject = boardSubject.length >= 20 ? boardSubject.substring(0, 20) + "..." : boardSubject;
         const changeSubject = subject
             .replace(/</g, '&lt;')
@@ -86,12 +86,12 @@ function updateBoardList(data) {
         output += `
             <tr>
                 <td>${num--}</td>
-                <td><div><a href='detail?subject=${boardSubject}'>${changeSubject}</a></a></div></td>
+                <td style="text-align: center"><div><a href='notice/detail?id=${boardId}'>${changeSubject}</a></a></div></td>
                 <td><div>${teacherName}</div></td>
-                <td><div></div>${createdAt.substring(0, 10)}</td>
-                <td><div>${boardReadCount}</div></td>
-                <td><div>${exposureStatus}</div></td>
-                <td><div>${notice}</div></td>
+                <td style="text-align: center"><div></div>${createdAt.substring(0, 10)}</td>
+                <td style="text-align: center"><div>${boardReadCount}</div></td>
+                <td style="text-align: center"><div>${exposureStatus}</div></td>
+                <td style="text-align: center"><div>${notice}</div></td>
             </tr>
         `;
     });

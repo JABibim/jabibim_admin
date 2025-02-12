@@ -56,9 +56,9 @@
                     <thead>
                     <tr>
                         <th>번호</th>
-                        <th>제목</th>
-                        <th>작성자</th>
-                        <th data-type="date" data-format="YYYY/MM/DD">시행일자</th>
+                        <th style="text-align: center">제목</th>
+                        <th style="text-align: center">작성자</th>
+                        <th style="text-align: center" data-type="date" data-format="YYYY/MM/DD">시행일자</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -66,15 +66,15 @@
                         <th:block th:each="s, iterStat : ${servicelist}">
                             <tr>
                                 <td><span th:text="${num - (iterStat.index)}"></span></td>
-                                <td>
+                                <td style="text-align: center">
                                     <div>
                                         <a th:href="@{'/policy/service/detail?rnum=' + ${s.rnum}}">
                                             <span th:text="${s.serviceTermSubject}"></span>
                                         </a>
                                     </div>
                                 </td>
-                                <td><div th:text="${s.serviceTermName}"></div></td>
-                                <td><div th:text="${s.serviceTermEffectiveDate}"></div></td>
+                                <td style="text-align: center"><div th:text="${s.serviceTermName}"></div></td>
+                                <td style="text-align: center"><div th:text="${s.serviceTermEffectiveDate}"></div></td>
                             </tr>
                         </th:block>
                     </th:block>
@@ -86,8 +86,8 @@
                 <th:block th:replace="~{fragments/policyPaging :: paging('list', '')}"/>
             </th:block>
             <h6 th:if="${listcount == 0}" style="text-align: center; margin-top: 2rem;">등록된 글이 없습니다.</h6>
-            <button type="button" class="btn btn-outline-primary btn-sm" style="float: right"
-                    th:onclick="|location.href='service/write'|">신규등록
+            <button type="button" class="btn btn-primary btn-sm" style="float: right"
+                    th:onclick="|location.href='service/write'|">신규등록<i class="bi bi-pencil"></i>
             </button>
         </div>
     </div>

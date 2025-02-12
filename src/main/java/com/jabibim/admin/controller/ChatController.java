@@ -34,7 +34,6 @@ public class ChatController {
      */
     @GetMapping(value = "/teacherList")
     public ResponseEntity<List<Teacher>> getTeacherList(Authentication auth) {
-
         AccountDto account = (AccountDto) auth.getPrincipal();
         String academyId = account.getAcademyId();
         String loggedInTeacherId = account.getId(); // 현재 로그인한 선생의 teacherId
@@ -112,21 +111,24 @@ public class ChatController {
         return ResponseEntity.ok(response);
     }
 
-    //안읽은 메시지 조회용 API
-    @GetMapping("unreadCount")
-    public ResponseEntity<Integer> getUnreadMessageCount(Authentication auth) {
-
-        AccountDto account = (AccountDto) auth.getPrincipal();
-        int unreadCount = chatService.getUnreadMessageCount(account.getId());
-        return ResponseEntity.ok(unreadCount);
-    }
-    
     //채팅방을 열면 자동으로 메시지를 읽음으로 처리
     @PostMapping("/markAsRead")
     public ResponseEntity<Void> markMessageAsRead(@RequestParam String chatRoomId, Authentication auth) {
-        System.out.println("컨트롤러 markAsRead 여기까지 잘 옴!!!!!!");
         AccountDto account = (AccountDto) auth.getPrincipal();
         chatService.markMessagesAsRead(chatRoomId, account.getId());
         return ResponseEntity.ok().build();
+    }
+
+    //안읽은 메시지 조회용 API
+    @GetMapping("/unreadCount")
+    public ResponseEntity<Map<String, Integer>> getUnreadMessageCount(Authentication auth) {
+        System.out.println("여기까지 왔따......");
+        AccountDto account = (AccountDto) auth.getPrincipal();
+        int unreadCount = chatService.getUnreadMessageCount(account.getId());
+
+        Map<String, Integer> response = new HashMap<>();
+        response.put("unreadCount", unreadCount);
+
+        return ResponseEntity.ok(response);
     }
 }

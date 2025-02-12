@@ -5,6 +5,7 @@ import com.jabibim.admin.dto.DeleteGradeDTO;
 import com.jabibim.admin.dto.StudentUserVO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface StudentService {
 
@@ -21,4 +22,6 @@ public interface StudentService {
     boolean insertStudent(Student student);
 
     StudentUserVO getStudentByEmail(String studentEmail, String academyId);
+
+    List<Map<String, Object>> getStudentChartData(String academyId);
 }

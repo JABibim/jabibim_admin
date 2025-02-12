@@ -69,7 +69,7 @@ function updateBoardList(data) {
 
     $(servicelist).each(function (index, item) {
 
-        const {serviceTermSubject, serviceTermName, serviceTermEffectiveDate} = item;
+        const {rnum, serviceTermSubject, serviceTermName, serviceTermEffectiveDate} = item;
         const subject = serviceTermSubject.length >= 20 ? serviceTermSubject.substring(0, 20) + "..." : serviceTermSubject;
         const changeSubject = subject
             .replace(/</g, '&lt;')
@@ -78,9 +78,9 @@ function updateBoardList(data) {
         output += `
             <tr>
                 <td>${num--}</td>
-                <td><div><a href='detail?subject=${serviceTermSubject}'>${changeSubject}</a></a></div></td>
-                <td><div>${serviceTermName}</div></td>
-                <td><div>${serviceTermEffectiveDate}</div></td>
+                <td style="text-align: center"><div><a href='service/detail?rnum=${rnum}'>${changeSubject}</a></a></div></td>
+                <td style="text-align: center"><div>${serviceTermName}</div></td>
+                <td style="text-align: center"><div>${serviceTermEffectiveDate}</div></td>
             </tr>
         `;
     });

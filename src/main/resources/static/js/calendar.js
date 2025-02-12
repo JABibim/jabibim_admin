@@ -118,9 +118,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log('서버 오류 발생:', xhr.status);  // HTTP 상태 코드
                 console.log('에러 메시지:', error);  // 에러 메시지
 
-                alert('일정 추가 중 오류가 발생했습니다.');
+
 
                 if (xhr.status === 401) {  // 401 체크
+                    alert('일정 추가 중 입니다.');
                     console.log(xhr.status + ' : 401 Unauthorized 오류 발생. 토큰 갱신 시도.');
                     getNewToken().then(() => {
                         submitEvent(); // 토큰 갱신 후 재요청
@@ -222,9 +223,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log('서버 오류 발생:', xhr.status);  // HTTP 상태 코드
                 console.log('에러 메시지:', error);  // 에러 메시지
 
-                alert('일정 수정 중 오류가 발생했습니다.');
+
 
                 if (xhr.status === 401) {  // 401 체크
+                    alert('일정 수정 중 입니다.');
                     console.log(xhr.status + ' : 401 Unauthorized 오류 발생. 토큰 갱신 시도.');
                     getNewToken().then(() => {
                         saveEvent(); // 토큰 갱신 후 재요청
@@ -266,9 +268,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log('서버 오류 발생:', xhr.status);  // HTTP 상태 코드
                     console.log('에러 메시지:', error);  // 에러 메시지
 
-                    alert('일정 삭제 중 오류가 발생했습니다.');
+
 
                     if (xhr.status === 401) {  // 401 체크
+                        alert('일정 삭제 중 입니다.');
                         console.log(xhr.status + ' : 401 Unauthorized 오류 발생. 토큰 갱신 시도.');
                         getNewToken().then(() => {
                             deleteEvent(); // 토큰 갱신 후 재요청
