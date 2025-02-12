@@ -57,9 +57,9 @@
       <foreach collection="searchField" item="data" separator="or">
         <if test="data != 'd'">
         <choose>
-          <when test="data == 'n'"> student_name</when>
-          <when test="data == 'e'"> student_email</when>
-          <when test="data == 'r'"> DATE_FORMAT(deleted_at, '%Y-%m-%d %H:%i:%s')</when>
+          <when test='data == "n"'> student_name</when>
+          <when test='data == "e"'> student_email</when>
+          <when test='data == "r"'> DATE_FORMAT(deleted_at, '%Y-%m-%d %H:%i:%s')</when>
         </choose>
             LIKE #{searchWord}
         </if>
