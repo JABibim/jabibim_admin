@@ -26,7 +26,7 @@ public class FFmpegServiceImpl implements FFmpegService {
 //                               + "static" + File.separator
 //                               + "temp" + File.separator
 //                               + "raw";
-        String saveDirectory =  "BOOT-INF/classes/static" + File.separator
+        String saveDirectory = System.getProperty("user.dir") + "/BOOT-INF/classes/static" + File.separator
                                + "temp" + File.separator
                                + "raw";
         System.out.println("🚀🚀 ==> saveDirectory : " + saveDirectory);
