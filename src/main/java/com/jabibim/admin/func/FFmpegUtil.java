@@ -85,6 +85,7 @@ public class FFmpegUtil {
         File[] files = new File(OUTPUT_DIR).listFiles();
         assert files != null;
         for (File f : files) {
+            System.out.println("📍📍 ==> f : " + f);
             amazonS3Client.putObject(new PutObjectRequest(
                     "jabibimbucket"
                     , uploadPathPrefix + File.separator + f.getName()
@@ -98,7 +99,16 @@ public class FFmpegUtil {
 
         // ==> uploadPathPrefix : cd1918cc-820d-4ac8-be7c-c46a5f943047/course/ba6ceecb-d7e6-40c9-87fa-fe00b343fde7/class/1d1b1098-928f-4ccf-b144-5a75b51e84a0/classFile/72b5fc7d-fd65-4766-a97b-a64d71b520e5
         String m3u8Path = uploadPathPrefix + File.separator + classFileId + ".m3u8";
-        String path = amazonS3Client.getUrl("jabibimbucket", m3u8Path).toString();
+        System.out.println("=======> 🚨 m3u8Path : " + m3u8Path);
+        String path = null;
+        try {
+            path = amazonS3Client.getUrl("jabibimbucket", m3u8Path).toString();
+            System.out.println("=======> 🚨 path : " + path);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e);
+        }
 
         return CompletableFuture.completedFuture(path); // 작업 완료 후 반환
     }
