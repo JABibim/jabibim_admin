@@ -97,7 +97,7 @@ public class FFmpegUtil {
 
     @Async
     public CompletableFuture<String> uploadEncodedFilesToS3(String uploadPathPrefix, String classFileId) {
-        File[] files = new File("/tmp/temp/encode/").listFiles();
+        File[] files = new File(ENCODE_TEMP_DIR).listFiles();
         assert files != null;
         for (File f : files) {
             amazonS3Client.putObject(new PutObjectRequest(
