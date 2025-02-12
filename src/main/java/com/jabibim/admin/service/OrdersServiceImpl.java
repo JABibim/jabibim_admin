@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -67,18 +68,16 @@ public class OrdersServiceImpl implements OrdersService {
   }
 
   @Override
-  public int getOrdersListCount(HashMap<String, String> searchMap, Authentication auth) {
-    AccountDto account = (AccountDto) auth.getPrincipal();
-    String academyId = account.getAcademyId();
+  public int getOrdersListCount(HashMap<String, String> searchMap, HttpSession session) {
+    String academyId = (String) session.getAttribute("aid");
     HashMap<String, Object> hm = getOrderDate(searchMap);
     hm.put("academyId", academyId);
     return dao.getOrdersListCount(hm);
   }
 
   @Override
-  public List<OrdersListVO> getOrdersList(int page, int limit, HashMap<String, String> searchMap, Authentication auth) {
-    AccountDto account = (AccountDto) auth.getPrincipal();
-    String academyId = account.getAcademyId();
+  public List<OrdersListVO> getOrdersList(int page, int limit, HashMap<String, String> searchMap, HttpSession session) {
+    String academyId = (String) session.getAttribute("aid");
     HashMap<String, Object> hm = getOrderDate(searchMap);
     hm.put("academyId", academyId);
     hm.put("offset", (page - 1) * limit);
@@ -88,9 +87,8 @@ public class OrdersServiceImpl implements OrdersService {
   }
 
   @Override
-  public OrdersDetailVO getOrdersDetail(String ordersId, Authentication auth) {
-    AccountDto account = (AccountDto) auth.getPrincipal();
-    String academyId = account.getAcademyId();
+  public OrdersDetailVO getOrdersDetail(String ordersId, HttpSession session) {
+    String academyId = (String) session.getAttribute("aid");
     return dao.getOrdersDetail(ordersId, academyId);
   }
 

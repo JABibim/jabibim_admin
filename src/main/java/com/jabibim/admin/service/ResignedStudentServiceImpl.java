@@ -4,6 +4,7 @@ import com.jabibim.admin.domain.Student;
 import com.jabibim.admin.dto.ResignListVO;
 import com.jabibim.admin.mybatis.mapper.ResignMapper;
 import com.jabibim.admin.security.dto.AccountDto;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,10 @@ public class ResignedStudentServiceImpl implements ResignedStudentService {
   private final ResignMapper dao;
 
   @Override
-  public int getResignedStudentCount(HashMap<String, String> hm, Authentication auth) {
+  public int getResignedStudentCount(HashMap<String, String> hm, HttpSession session) {
 
     HashMap<String, Object> map = searchMap(hm);
-    AccountDto user = (AccountDto) auth.getPrincipal();
-    String academyId = user.getAcademyId();
+    String academyId = (String) session.getAttribute("aid");
     map.put("academyId", academyId);
 
     return dao.getResignedStudentCount(map);
@@ -30,11 +30,10 @@ public class ResignedStudentServiceImpl implements ResignedStudentService {
   }
 
   @Override
-  public List<ResignListVO> getResignedStudentList(HashMap<String, String> hm, int page, int limit, Authentication auth) {
+  public List<ResignListVO> getResignedStudentList(HashMap<String, String> hm, int page, int limit, HttpSession session) {
     HashMap<String, Object> map = searchMap(hm);
 
-    AccountDto user = (AccountDto) auth.getPrincipal();
-    String academyId = user.getAcademyId();
+    String academyId = (String) session.getAttribute("aid");
     map.put("academyId", academyId);
     map.put("offset", (page - 1) * limit);  // offset
     map.put("limit", limit);         // limit
