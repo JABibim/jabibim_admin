@@ -39,8 +39,10 @@ public class FFmpegServiceImpl implements FFmpegService {
         File savedFile = new File(saveDirectory + "/" + fileName);
         System.out.println("🚀🚀 ==> savedFile : " + savedFile);
         try {
+            System.out.println("🚀🚀 ==> try 진입");
             file.transferTo(savedFile);
         } catch (Exception e) {
+            System.out.println("🚀🚀 ==> 예외 발생 : ");
             e.printStackTrace();
         }
 
