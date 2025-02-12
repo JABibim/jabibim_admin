@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,11 +26,13 @@ public class ContentServiceImpl implements ContentService {
     private final ContentMapper contentDao;
     private final S3Uploader s3Uploader;
     private final S3Deleter s3Deleter;
+    private final FFmpegService fFmpegService;
 
-    public ContentServiceImpl(ContentMapper contentDao, S3Uploader s3Uploader, S3Deleter s3Deleter) {
+    public ContentServiceImpl(ContentMapper contentDao, S3Uploader s3Uploader, S3Deleter s3Deleter, FFmpegService fFmpegService) {
         this.contentDao = contentDao;
         this.s3Uploader = s3Uploader;
         this.s3Deleter = s3Deleter;
+        this.fFmpegService = fFmpegService;
     }
 
     @Override
@@ -188,9 +191,20 @@ public class ContentServiceImpl implements ContentService {
             throw new IllegalArgumentException("file 또는 파일 이름이 null입니다.");
         }
         String fileName = classType + "." + getExtension(file.getOriginalFilename());
-        String uploadPath = "course/" + courseId + "/class/" + classId + "/classFile/" + newClassFileUUID + "/" + fileName;
+        String fileType = file.getContentType();
 
-        String uploadedPath = s3Uploader.uploadFileToS3(file, uploadPath);
+        String uploadPathPrefix = String.join(File.separator, academyId, "course", courseId, "class", classId, "classFile", newClassFileUUID);
+        String uploadedPath;
+        // 1️⃣ 동영상 파일이면 인코딩 후 업로드 ( 원본 파일도 같이 업로드함! )
+        if ( fileType != null && fileType.startsWith("video/")) {
+            fFmpegService.encoding(uploadPathPrefix, file);
+            uploadedPath = ""; // TODO m3u8 파일의 경로만 가져오면 됨!
+        }
+
+        // 2️⃣ 일반 파일이면 바로 S3에 업로드
+        else {
+            uploadedPath = s3Uploader.uploadFileToS3(file, uploadPathPrefix + File.separator + fileName);
+        }
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("classFileId", newClassFileUUID);
@@ -243,7 +257,7 @@ public class ContentServiceImpl implements ContentService {
 
     private String getExtension(String fileName) {
         int pos = fileName.lastIndexOf(".");
-        return fileName.substring(pos + 1);
+        return fileName.substring(pos + 1).toLowerCase();
     }
 
     private void setSearchCondition(HashMap<String, Object> map, boolean isAdmin, String academyId, SelectCourseListReqDto selectCourseListReqDto) {
