@@ -186,7 +186,6 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public void addNewClassFileInfo(String academyId, String teacherId, String courseId, String classId, String classType, MultipartFile file) {
-        System.out.println("🚀==> file : " + file);
         String newClassFileUUID = UUIDGenerator.getUUID();
         if (file.getOriginalFilename() == null) {
             throw new IllegalArgumentException("file 또는 파일 이름이 null입니다.");
@@ -196,10 +195,8 @@ public class ContentServiceImpl implements ContentService {
         String fileType = file.getContentType();
 
         String uploadPathPrefix = String.join(File.separator, academyId, "course", courseId, "class", classId, "classFile", newClassFileUUID);
-        System.out.println("🚀==> uploadPathPrefix : " + uploadPathPrefix);
 
         if (fileType != null && fileType.startsWith("video/")) {
-            System.out.println("🚀==> 비디오 파일이네요~!!");
             fFmpegService.encoding(uploadPathPrefix, file, newClassFileUUID).thenAccept(uploadedPath -> {
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("classFileId", newClassFileUUID);
