@@ -1,6 +1,7 @@
 package com.jabibim.admin.service;
 
 import com.jabibim.admin.func.FFmpegUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,6 +10,9 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 public class FFmpegServiceImpl implements FFmpegService {
+    @Value("${file.upload-raw-dir}")
+    private String ENCODE_RAW_DIR;
+
     private final FFmpegUtil ffmpegUtil;
 
     public FFmpegServiceImpl(FFmpegUtil ffmpegUtil) {
@@ -31,11 +35,10 @@ public class FFmpegServiceImpl implements FFmpegService {
 //                               + "temp" + File.separator
 //                               + "raw";
 
-        String saveDirectory = "/tmp/temp/raw";
-        System.out.println("🚀🚀 ==> saveDirectory : " + saveDirectory);
+        System.out.println("🚀🚀 ==> saveDirectory : " + ENCODE_RAW_DIR);
 
-        File directory = new File(saveDirectory);
-        if(!directory.exists()) {
+        File directory = new File(ENCODE_RAW_DIR);
+        if (!directory.exists()) {
             directory.mkdirs(); // 폴더 생성
         }
 
@@ -44,14 +47,10 @@ public class FFmpegServiceImpl implements FFmpegService {
         }
 
         String fileName = file.getOriginalFilename();
-        System.out.println("🚀🚀 ==> fileName : " + fileName);
-        File savedFile = new File(saveDirectory + "/" + fileName);
-        System.out.println("🚀🚀 ==> savedFile : " + savedFile);
+        File savedFile = new File(ENCODE_RAW_DIR + fileName);
         try {
-            System.out.println("🚀🚀 ==> try 진입");
             file.transferTo(savedFile);
         } catch (Exception e) {
-            System.out.println("🚀🚀 ==> 예외 발생 : ");
             e.printStackTrace();
         }
 

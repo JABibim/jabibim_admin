@@ -10,6 +10,7 @@ import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import net.bramp.ffmpeg.probe.FFmpegProbeResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,9 @@ import java.util.concurrent.CompletableFuture;
 @Component
 @RequiredArgsConstructor
 public class FFmpegUtil {
+    @Value("${file.upload-encode-dir}")
+    private String ENCODE_TEMP_DIR;
+
     private static final String OUTPUT_DIR = System.getProperty("user.dir") + File.separator
                                              + "src" + File.separator
                                              + "main" + File.separator
@@ -58,14 +62,10 @@ public class FFmpegUtil {
 
     @Async
     public CompletableFuture<Void> createM3U8Stream(String filePath, String classFileId) {
-        System.out.println("🚀🚀🚀 ==> createM3U8Stream() start!! ");
-        System.out.println("🚀🚀🚀 ==> filePath : " + filePath);
+        System.out.println("🚀🚀🚀 ==> outputDirectory : " + ENCODE_TEMP_DIR);
 
-        String encodeOutputDirectory = "/tmp/temp/encode/";
-        System.out.println("🚀🚀🚀 ==> outputDirectory : " + encodeOutputDirectory);
-
-        File directory = new File(encodeOutputDirectory);
-        if(!directory.exists()) {
+        File directory = new File(ENCODE_TEMP_DIR);
+        if (!directory.exists()) {
             directory.mkdirs(); // 폴더 생성
         }
 
@@ -73,7 +73,7 @@ public class FFmpegUtil {
             FFmpegBuilder builder = new FFmpegBuilder()
                     .setInput(filePath) // 원본 파일
                     .overrideOutputFiles(true)
-                    .addOutput(encodeOutputDirectory + classFileId + ".m3u8")
+                    .addOutput(ENCODE_TEMP_DIR + classFileId + ".m3u8")
                     .setFormat("hls")
                     .addExtraArgs("-codec", "copy")
                     .addExtraArgs("-crf", "28")
@@ -86,7 +86,7 @@ public class FFmpegUtil {
 
             // FFmpeg 실행 후 완료될 때까지 대기
             executor.createJob(builder).run();
-        } catch (Exception e ) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -100,7 +100,6 @@ public class FFmpegUtil {
         File[] files = new File("/tmp/temp/encode/").listFiles();
         assert files != null;
         for (File f : files) {
-            System.out.println("📍📍 ==> f : " + f);
             amazonS3Client.putObject(new PutObjectRequest(
                     "jabibimbucket"
                     , uploadPathPrefix + File.separator + f.getName()
@@ -114,11 +113,9 @@ public class FFmpegUtil {
 
         // ==> uploadPathPrefix : cd1918cc-820d-4ac8-be7c-c46a5f943047/course/ba6ceecb-d7e6-40c9-87fa-fe00b343fde7/class/1d1b1098-928f-4ccf-b144-5a75b51e84a0/classFile/72b5fc7d-fd65-4766-a97b-a64d71b520e5
         String m3u8Path = uploadPathPrefix + File.separator + classFileId + ".m3u8";
-        System.out.println("=======> 🚨 m3u8Path : " + m3u8Path);
         String path = null;
         try {
             path = amazonS3Client.getUrl("jabibimbucket", m3u8Path).toString();
-            System.out.println("=======> 🚨 path : " + path);
 
         } catch (Exception e) {
             e.printStackTrace();
