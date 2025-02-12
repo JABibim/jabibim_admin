@@ -26,13 +26,6 @@ public class FFmpegUtil {
     @Value("${file.upload-encode-dir}")
     private String ENCODE_TEMP_DIR;
 
-    private static final String OUTPUT_DIR = System.getProperty("user.dir") + File.separator
-                                             + "src" + File.separator
-                                             + "main" + File.separator
-                                             + "resources" + File.separator
-                                             + "static" + File.separator
-                                             + "temp" + File.separator
-                                             + "encode" + File.separator;
     private final FFmpeg ffmpeg;
 
     private final FFprobe ffprobe;
@@ -62,14 +55,15 @@ public class FFmpegUtil {
 
     @Async
     public CompletableFuture<Void> createM3U8Stream(String filePath, String classFileId) {
-        System.out.println("🚀🚀🚀 ==> outputDirectory : " + ENCODE_TEMP_DIR);
-
         File directory = new File(ENCODE_TEMP_DIR);
         if (!directory.exists()) {
             directory.mkdirs(); // 폴더 생성
         }
 
         try {
+            /**
+             * [chan] 인코딩 옵션이 다양해서 인터넷에 쳐보면 많이 나옴.
+             */
             FFmpegBuilder builder = new FFmpegBuilder()
                     .setInput(filePath) // 원본 파일
                     .overrideOutputFiles(true)
@@ -111,7 +105,6 @@ public class FFmpegUtil {
             }
         }
 
-        // ==> uploadPathPrefix : cd1918cc-820d-4ac8-be7c-c46a5f943047/course/ba6ceecb-d7e6-40c9-87fa-fe00b343fde7/class/1d1b1098-928f-4ccf-b144-5a75b51e84a0/classFile/72b5fc7d-fd65-4766-a97b-a64d71b520e5
         String m3u8Path = uploadPathPrefix + File.separator + classFileId + ".m3u8";
         String path = null;
         try {
@@ -127,6 +120,8 @@ public class FFmpegUtil {
 }
 
 /**
+ * [chan] backup 소스 ...
+ *
  * FFmpeg 명령어 빌드
  * -i : 입력 파일 경로
  * -codec copy : 비디오 및 오디오 스트림을 복사
