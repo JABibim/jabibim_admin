@@ -26,14 +26,23 @@ public class FFmpegServiceImpl implements FFmpegService {
 //                               + "static" + File.separator
 //                               + "temp" + File.separator
 //                               + "raw";
-        String saveDirectory = System.getProperty("user.dir") + "/BOOT-INF/classes/static" + File.separator
-                               + "temp" + File.separator
-                               + "raw";
+
+//        String saveDirectory = System.getProperty("user.dir") + "/BOOT-INF/classes/static" + File.separator
+//                               + "temp" + File.separator
+//                               + "raw";
+
+        String saveDirectory = "/tmp/temp/raw";
         System.out.println("🚀🚀 ==> saveDirectory : " + saveDirectory);
+
+        File directory = new File(saveDirectory);
+        if(!directory.exists()) {
+            directory.mkdirs(); // 폴더 생성
+        }
 
         if (file.getOriginalFilename() == null) {
             throw new IllegalArgumentException("file 또는 파일 이름이 null입니다.");
         }
+
         String fileName = file.getOriginalFilename();
         System.out.println("🚀🚀 ==> fileName : " + fileName);
         File savedFile = new File(saveDirectory + "/" + fileName);
