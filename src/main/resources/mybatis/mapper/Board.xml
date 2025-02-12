@@ -133,7 +133,8 @@
             board_file_origin_name  = #{boardFileOriginName},
             board_file_path         = #{boardFilePath},
             board_exposure_stat     = #{boardExposureStat},
-            board_notice            = #{boardNotice}
+            board_notice            = #{boardNotice},
+            updated_at = NOW()
         WHERE board_id = #{boardId}
     </update>
 

@@ -139,12 +139,12 @@ public class QnaController {
                                  HttpSession session,
                                  RedirectAttributes rAttr) throws Exception {
 
-        MultipartFile uploadfile = qna.getUploadfile();
-        if(!uploadfile.isEmpty()){
-            String fileDBName = qnaService.saveUploadedFile(uploadfile, saveFolder);
-            qna.setQnaFileName(fileDBName); //바뀐 파일명으로 저장
-            qna.setQnaFileOrigin(uploadfile.getOriginalFilename());//원래 파일명 저장
-        }
+//        MultipartFile uploadfile = qna.getUploadfile();
+//        if(!uploadfile.isEmpty()){
+//            String fileDBName = qnaService.saveUploadedFile(uploadfile, saveFolder);
+//            qna.setQnaFileName(fileDBName); //바뀐 파일명으로 저장
+//            qna.setQnaFileOrigin(uploadfile.getOriginalFilename());//원래 파일명 저장
+//        }
 
         String detailId = qna.getQnaId();
         Optional<Qna> data = qnaService.getQnaById(detailId);
@@ -196,28 +196,28 @@ public class QnaController {
         }
 
         String url = "";
-        MultipartFile uploadFile = qnaData.getUploadfile();
-        if (check != null && !check.equals("")) { // 기존 파일 그대로 사용하는 경우
-            logger.info("기존 파일 그대로 사용합니다.");
-
-            qnaData.setQnaFileOrigin(check);
-
-        } else {
-            if (uploadFile != null && !uploadFile.isEmpty()) {
-                logger.info("파일이 변경되었습니다.");
-
-                String fileDBName = qnaService.saveUploadedFile(uploadFile, saveFolder);
-
-                qnaData.setQnaFileName(fileDBName); // 바뀐 파일명으로 저장
-                qnaData.setQnaFileOrigin(uploadFile.getOriginalFilename()); // 원래 파일명 저장
-
-            } else {
-                logger.info("선택 파일이 없습니다.");
-
-                qnaData.setQnaFileName(""); // ""로 초기화합니다.
-                qnaData.setQnaFileOrigin(""); // ""로 초기화 합니다.
-            }
-        }
+//        MultipartFile uploadFile = qnaData.getUploadfile();
+//        if (check != null && !check.equals("")) { // 기존 파일 그대로 사용하는 경우
+//            logger.info("기존 파일 그대로 사용합니다.");
+//
+//            qnaData.setQnaFileOrigin(check);
+//
+//        } else {
+//            if (uploadFile != null && !uploadFile.isEmpty()) {
+//                logger.info("파일이 변경되었습니다.");
+//
+//                String fileDBName = qnaService.saveUploadedFile(uploadFile, saveFolder);
+//
+//                qnaData.setQnaFileName(fileDBName); // 바뀐 파일명으로 저장
+//                qnaData.setQnaFileOrigin(uploadFile.getOriginalFilename()); // 원래 파일명 저장
+//
+//            } else {
+//                logger.info("선택 파일이 없습니다.");
+//
+//                qnaData.setQnaFileName(""); // ""로 초기화합니다.
+//                qnaData.setQnaFileOrigin(""); // ""로 초기화 합니다.
+//            }
+//        }
 
         qnaData.setQnaId(updateId);
         // DAO에서 수정 메서드 호출하여 수정합니다.

@@ -15,7 +15,7 @@
         SELECT
             q.qna_id, q.created_at, q.qna_re_ref, q.qna_re_lev, q.qna_re_seq,
             q.qna_subject, q.qna_content, q.qna_readcount, q.qna_exposure_stat, q.qna_answer_status,
-            q.qna_file_name, q.qna_file_origin, q.teacher_id, t.teacher_name,
+            q.teacher_id, t.teacher_name,
             q.student_id, s.student_name, q.course_id, c.course_name,
             q.class_id, l.class_name
         FROM qna q
@@ -34,7 +34,7 @@
         SELECT *
         FROM ( SELECT ROW_NUMBER() OVER (ORDER BY q.created_at DESC) AS rnum, q.qna_id, q.created_at, q.qna_re_ref, q.qna_re_lev, q.qna_re_seq,
                       q.qna_subject, q.qna_content, q.qna_readcount, q.qna_exposure_stat, q.qna_answer_status,
-                      q.qna_file_name, q.qna_file_origin, q.teacher_id, t.teacher_name,
+                      q.teacher_id, t.teacher_name,
                       q.student_id, s.student_name, q.course_id, c.course_name,
                       q.class_id, l.class_name
                FROM qna q
@@ -93,12 +93,12 @@
         INSERT INTO qna
         (qna_id, created_at, qna_re_ref, qna_re_lev, qna_re_seq,
          qna_subject, qna_password ,qna_content, qna_readcount, qna_exposure_stat,
-         qna_answer_status, qna_file_name, qna_file_origin, teacher_id, course_id,
+         qna_answer_status, teacher_id, course_id,
          class_id, student_id, academy_id)
         VALUES
             (#{qnaId}, NOW(), #{qnaReRef}, #{qnaReLev}, 1,
              #{qnaSubject}, #{qnaPassword} ,#{qnaContent}, 0, #{qnaExposureStat},
-             #{qnaAnswerStatus}, #{qnaFileName}, #{qnaFileOrigin}, #{teacherId}, #{courseId},
+             #{qnaAnswerStatus}, #{teacherId}, #{courseId},
              #{classId}, #{studentId}, #{academyId})
     </insert>
 
@@ -130,9 +130,8 @@
         UPDATE qna
         SET qna_subject  = #{qnaSubject},
             qna_content  = #{qnaContent},
-            qna_file_name     = #{qnaFileName},
-            qna_file_origin = #{qnaFileOrigin},
-            qna_exposure_stat = #{qnaExposureStat}
+            qna_exposure_stat = #{qnaExposureStat},
+            updated_at = NOW()
         WHERE qna_id = #{qnaId}
     </update>
 
