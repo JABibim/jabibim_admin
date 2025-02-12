@@ -1,6 +1,5 @@
 package com.jabibim.admin.dto;
 
-import com.jabibim.admin.domain.Review;
 import lombok.*;
 
 import java.time.LocalDateTime;
