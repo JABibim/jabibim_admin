@@ -228,12 +228,52 @@
                     <td><a th:href="@{|detail?reviewid=${review.getReviewId()}|}">[[${review.getReviewSubject}]]</a></td>
                     <td th:text="${review.getStudentName()}">작성자</td>
                     <td th:text="${review.getStudentEmail()}">회원 Email</td>
-                    <td th:text="${review.getReviewRating()}">평점</td>
+                    <td>
+                    <th:block th:if="${review.getReviewRating() == 5 ? true : false}">
+                      <i class="bi bi-star-half"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i
+                        class="bi bi-star"></i>
+                    </th:block>
+                      <th:block th:if="${review.getReviewRating() == 10 ? true : false}">
+                      <i class="bi bi-star-fill"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i
+                        class="bi bi-star"></i>
+                    </th:block>
+                    <th:block th:if="${review.getReviewRating() == 15 ? true : false}">
+                      <i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i
+                        class="bi bi-star"></i>
+                    </th:block>
+                    <th:block th:if="${review.getReviewRating() == 20 ? true : false}">
+                      <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i><i class="bi bi-star"></i><i
+                        class="bi bi-star"></i>
+                    </th:block>
+                    <th:block th:if="${review.getReviewRating() == 25 ? true : false}">
+                      <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i><i
+                        class="bi bi-star"></i><i class="bi bi-star"></i>
+                    </th:block>
+                    <th:block th:if="${review.getReviewRating() == 30 ? true : false}">
+                      <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                        class="bi bi-star"></i><i class="bi bi-star"></i>
+                    </th:block>
+                    <th:block th:if="${review.getReviewRating() == 35 ? true : false}">
+                      <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"><i
+                          class="bi bi-star-half"></i></i><i class="bi bi-star"></i>
+                    </th:block>
+                    <th:block th:if="${review.getReviewRating() == 40 ? true : false}">
+                      <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                        class="bi bi-star-fill"></i><i class="bi bi-star"></i>
+                    </th:block>
+                    <th:block th:if="${review.getReviewRating() == 45 ? true : false}">
+                      <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                        class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                    </th:block>
+                    <th:block th:if="${review.getReviewRating() == 50 ? true : false}">
+                      <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                        class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                    </th:block>
+                    </td> 
                     <td th:text="${#temporals.format(review.getCreatedAt(),'yyyy.MM.dd HH:mm:ss')}">등록일</td>
                     <td th:text="${review.getTeacherName()}">담당 강사</td>
                     <td th:text="${review.getReplyStatus() > 0 ? '완료' : '미완료'}">답변 상태</td>
                     <td th:text="${review.getReviewExposureStat() == 0 ? '비공개' : '공개'}">공개 여부</td>
-                  </tr>
                 </th:block>
                 </tbody>
               </table>
