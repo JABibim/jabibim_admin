@@ -59,22 +59,30 @@ public class FFmpegUtil {
     @Async
     public CompletableFuture<Void> createM3U8Stream(String filePath, String classFileId) {
         System.out.println("🚀🚀🚀 ==> createM3U8Stream() start!! ");
-        FFmpegBuilder builder = new FFmpegBuilder()
-                .setInput(filePath) // 원본 파일
-                .overrideOutputFiles(true)
-                .addOutput("/tmp/temp/encode/" + classFileId + ".m3u8")
-                .setFormat("hls")
-                .addExtraArgs("-codec", "copy")
-                .addExtraArgs("-crf", "28")
-                .addExtraArgs("-hls_time", "10")
-                .addExtraArgs("-hls_list_size", "0")
-                .addExtraArgs("-threads", "2")
-                .done();
 
-        FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
+        String outputDirectory = "/tmp/temp/encode";
+        System.out.println("🚀🚀🚀 ==> outputDirectory : " + outputDirectory);
 
-        // FFmpeg 실행 후 완료될 때까지 대기
-        executor.createJob(builder).run();
+        try {
+            FFmpegBuilder builder = new FFmpegBuilder()
+                    .setInput(filePath) // 원본 파일
+                    .overrideOutputFiles(true)
+                    .addOutput(outputDirectory + classFileId + ".m3u8")
+                    .setFormat("hls")
+                    .addExtraArgs("-codec", "copy")
+                    .addExtraArgs("-crf", "28")
+                    .addExtraArgs("-hls_time", "10")
+                    .addExtraArgs("-hls_list_size", "0")
+                    .addExtraArgs("-threads", "2")
+                    .done();
+
+            FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
+
+            // FFmpeg 실행 후 완료될 때까지 대기
+            executor.createJob(builder).run();
+        } catch (Exception e ) {
+            e.printStackTrace();
+        }
 
         new File(filePath).delete();
 
