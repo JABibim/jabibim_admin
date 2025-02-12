@@ -7,7 +7,10 @@ import com.jabibim.admin.mybatis.mapper.ChatMapper;
 import com.jabibim.admin.mybatis.mapper.TeacherMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ChatServiceImpl implements ChatService{
@@ -72,9 +75,21 @@ public class ChatServiceImpl implements ChatService{
     }
 
     @Override
-    public int getUnreadMessageCount(String userId) {
-        return chatMapper.countUnreadMessages(userId);
+    public ChatMessage findLastMessage(String chatRoomId) {
+        return chatMapper.findLastMessage(chatRoomId);
     }
 
+    @Override
+    public Map<String, Integer> getUnreadMessagesByChatRoom(String userId) {
+        List<Map<String, Object>> unreadMessages = chatMapper.countUnreadMessagesByChatRoom(userId);
+
+        Map<String, Integer> unreadCountMap = new HashMap<>();
+
+        for(Map<String, Object> entry : unreadMessages) {
+            unreadCountMap.put((String) entry.get("chat_room_id"), ((Number) entry.get("unread_count")).intValue());
+        }
+
+        return unreadCountMap;
+    }
 
 }

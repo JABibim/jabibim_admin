@@ -35,14 +35,14 @@
                 <label class="col-sm-2 col-form-label">등록일</label>
                 <div class="col-sm-10" th:text="${#strings.substring(qnaData.createdAt, 0, 10)}"></div>
             </div>
-            <div th:if="${not #strings.isEmpty(qnaData.qnaFileName)}">
-                <label class="col-sm-2 col-form-label">업로드 파일</label>
-                <span>
-                            <img th:src="@{/img/down.png}" width="10px">
-                            <a th:href="@{'down?filename=' + ${qnaData.qnaFileName}}" th:text="${qnaData.qnaFileName}"></a>
-                        </span>
-            </div>
-            <div th:text="${qnaData.qnaFileName}"></div>
+<!--            <div th:if="${not #strings.isEmpty(qnaData.qnaFileName)}">-->
+<!--                <label class="col-sm-2 col-form-label">업로드 파일</label>-->
+<!--                <span>-->
+<!--                            <img th:src="@{/img/down.png}" width="10px">-->
+<!--                            <a th:href="@{'down?filename=' + ${qnaData.qnaFileName}}" th:text="${qnaData.qnaFileName}"></a>-->
+<!--                        </span>-->
+<!--            </div>-->
+<!--            <div th:text="${qnaData.qnaFileName}"></div>-->
 
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label" style="vertical-align: middle;">답변 상태</label>

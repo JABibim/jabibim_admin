@@ -115,10 +115,10 @@ public class BoardController {
     }
 
     @PostMapping(value = "/notice/add")
-    public String addNotice(Authentication authentication, Board notice, HttpServletRequest request) throws Exception {
-        AccountDto account = (AccountDto) authentication.getPrincipal();
-        String academyId = account.getAcademyId();
-        String teacherId = account.getId();
+    public String addNotice(Board notice, HttpSession session) throws Exception {
+        // 세션에서 academyId와 teacherId를 가져오기
+        String academyId = (String) session.getAttribute("aid");
+        String teacherId = (String) session.getAttribute("id");
 
         // 생성한 UUID를 Privacy 객체에 설정
         notice.setBoardId(UUIDGenerator.getUUID());
@@ -195,7 +195,7 @@ public class BoardController {
 
     @PostMapping("/notice/modifyAction")
     public String noticeModifyAction(
-            Authentication authentication,
+            HttpSession session,
             Board noticeData,
             String check,
             String pathValue,
@@ -203,9 +203,11 @@ public class BoardController {
             HttpServletRequest request,
             RedirectAttributes rAttr
     ) throws Exception {
-        AccountDto account = (AccountDto) authentication.getPrincipal();
-        System.out.println("Board ID: " + noticeData.getBoardId());
-        System.out.println("Board Password: " + noticeData.getBoardPassword());
+
+        // 세션에서 academyId와 teacherId를 가져오기
+        String academyId = (String) session.getAttribute("aid");
+        String teacherId = (String) session.getAttribute("id");
+
         boolean userCheck = boardService.isBoardWriter(noticeData.getBoardId(), noticeData.getBoardPassword());
 
         if (!userCheck) {
@@ -226,7 +228,7 @@ public class BoardController {
             if (uploadFile != null && !uploadFile.isEmpty()) {
                 logger.info("파일이 변경되었습니다.");
 
-                String newUploadedFilePath = boardService.changeFile(uploadFile, noticeData.getBoardId(), account.getAcademyId());
+                String newUploadedFilePath = boardService.changeFile(uploadFile, noticeData.getBoardId(), academyId);
 
                 noticeData.setBoardFileOriginName(uploadFile.getOriginalFilename());
                 noticeData.setBoardFilePath(newUploadedFilePath); // s3에 업로드 후 새로운 파일 경로를 set

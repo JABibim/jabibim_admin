@@ -42,16 +42,25 @@
     </update>
 
     <!-- 안 읽은 메시지 개수 구하기-->
-    <select id="countUnreadMessages" resultType="int">
-        SELECT COUNT(*)
+    <select id="countUnreadMessagesByChatRoom" resultType="map">
+        SELECT chat_room_id, COUNT(*) AS unread_count
         FROM chat_message
         WHERE chat_room_id IN (
-            SELECT chat_room_id
-            FROM chat_room
+            SELECT chat_room_id FROM chat_room
             WHERE teacher_1_id = #{userId} OR teacher_2_id = #{userId}
         )
           AND sender_id != #{userId}
-          AND is_read = FALSE;
+          AND is_read = 0
+        GROUP BY chat_room_id
     </select>
+
+    <select id="findLastMessage" resultType="com.jabibim.admin.domain.ChatMessage">
+        SELECT chat_message_id, chat_room_id, sender_id, chat_message, sent_at
+        FROM chat_message
+        WHERE chat_room_id = #{chatRoomId}
+        ORDER BY sent_at DESC
+        LIMIT 1
+    </select>
+
 
 </mapper>

@@ -64,6 +64,12 @@
             display: flex;
             flex-direction: column;
         }
+
+        /* 채팅방 미리보기용 텍스트 */
+        .text-muted {
+            color: #6c757d !important;
+            font-size: 0.85rem;
+        }
     </style>
 
     <script th:inline="javascript">
@@ -83,7 +89,7 @@
                 $.ajax({
                     url: "/setting/checkAdminPass",
                     method: "POST",
-                    data: { password: enteredPassword },
+                    data: {password: enteredPassword},
                     success: function (response) {
                         if (response) {
                             $('#passwordConfirmModal').modal('hide');
@@ -116,13 +122,26 @@
                     success: function (data) {
                         $('#teacherList').html(''); // 기존 리스트 초기화
                         data.forEach(teacher => {
+                            let lastMessage = teacher.lastMessage || "메시지가 없습니다.";
+
+                            if (lastMessage.length > 10) {
+                                lastMessage = lastMessage.substring(0, 10) + "...";
+                            }
+
                             $('#teacherList').append(`
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>${teacher.teacherName}</span>
-                                    <button class="teacherChat btn btn-primary btn-sm" id="${teacher.teacherId}">채팅하기</button>
-                                </div>
+                              <div class="list-group-item d-flex justify-content-between align-items-center">
+                                   <div>
+                                        <span class="fw-bold">${teacher.teacherName}</span>
+                                        <span class="unread-indicator" style="display: none;">🔴</span><br>
+                                        <span class="text-muted small last-message">${lastMessage}</span>
+                                   </div>
+                              <button class="teacherChat btn btn-primary btn-sm" id="${teacher.teacherId}">채팅하기</button>
+                              </div>
                             `);
                         });
+
+                        fetchUnreadMessageCount();
+
                         $('#chatTeacherListModal').modal('show'); // 모달 표시
                         isOpen = true;
                     },
@@ -136,12 +155,20 @@
             $('#chatTeacherListModal').on('click', 'button.teacherChat', function () {
                 isOpen = true;
                 let teacherId = $(this).attr("id"); // 선택한 선생님 ID
+                let chatRoomId = chatRoomIdMap[teacherId];
+
+                if(!chatRoomId) return;
+
+                // ✅ 해당 채팅방을 열었으므로, 읽음 처리 후 빨간 점 제거
+                markMessagesAsRead(chatRoomId, $("#loggedInUserId").val());
+
+                $(this).closest(".list-group-item").find(".unread-indicator").remove();
 
                 // AJAX로 채팅방 ID 가져오기
                 $.ajax({
                     url: "/chat/openChat",
                     method: "GET",
-                    data: { teacherId: teacherId },
+                    data: {teacherId: teacherId},
                     success: function (response) {
                         chatRoomId = response.chatRoomId; // 서버에서 받은 채팅방 ID 저장
                         senderId = response.senderId;
@@ -230,24 +257,29 @@
                     <li class="nav-item dropdown pe-1 d-flex align-items-center">
                         <!-- 관리자 메뉴 버튼 (ROLE_ADMIN) -->
                         <th:block sec:authorize="hasAnyRole('ROLE_ADMIN')">
-                            <a class="nav-link nav-icon ms-5" href="#" id="adminMenuBtn" data-bs-toggle="modal" data-bs-target="#passwordConfirmModal">
+                            <a class="nav-link nav-icon ms-5" href="#" id="adminMenuBtn" data-bs-toggle="modal"
+                               data-bs-target="#passwordConfirmModal">
                                 <i class="bi bi-tools"></i>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages" id="adminMenuDropdown">
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages"
+                                id="adminMenuDropdown">
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" th:href="@{/setting/manageAcademy}">
+                                    <a class="dropdown-item d-flex align-items-center"
+                                       th:href="@{/setting/manageAcademy}">
                                         <i class="bi bi-building-add"></i>
                                         <span>학원 추가하기</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" th:href="@{/setting/manageTeacher}">
+                                    <a class="dropdown-item d-flex align-items-center"
+                                       th:href="@{/setting/manageTeacher}">
                                         <i class="bi bi-person-add"></i>
                                         <span>강사 추가하기</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" th:href="@{/setting/manageSystemNotice}">
+                                    <a class="dropdown-item d-flex align-items-center"
+                                       th:href="@{/setting/manageSystemNotice}">
                                         <i class="bi bi-bell"></i>
                                         <span>시스템 공지사항 관리</span>
                                     </a>
@@ -257,7 +289,8 @@
 
                         <!-- 채팅 시작 아이콘 (ROLE_LECTURER, ROLE_MANAGER) -->
                         <th:block sec:authorize="hasAnyRole('ROLE_LECTURER', 'ROLE_MANAGER')">
-                            <a class="nav-link d-flex align-items-center me-3 position-relative" href="#" id="chatStartBtn">
+                            <a class="nav-link d-flex align-items-center me-3 position-relative" href="#"
+                               id="chatStartBtn">
                                 <i class="bi bi-chat-dots" style="font-size: 1.5rem;"></i>
                                 <span id="chatNotificationBadge"
                                       class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -311,7 +344,8 @@
     </header>
 
     <!-- 채팅 선생님 리스트 모달 -->
-    <div class="modal fade" id="chatTeacherListModal" tabindex="-1" aria-labelledby="chatTeacherListModalLabel" aria-hidden="true">
+    <div class="modal fade" id="chatTeacherListModal" tabindex="-1" aria-labelledby="chatTeacherListModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -352,7 +386,8 @@
     </div>
 
     <!-- 관리자 비밀번호 확인 모달 -->
-    <div class="modal fade" id="passwordConfirmModal" tabindex="-1" aria-labelledby="passwordConfirmModalLabel" aria-hidden="true">
+    <div class="modal fade" id="passwordConfirmModal" tabindex="-1" aria-labelledby="passwordConfirmModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

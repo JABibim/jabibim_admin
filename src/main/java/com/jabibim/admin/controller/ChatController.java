@@ -33,7 +33,7 @@ public class ChatController {
      * 학원 내에서 채팅 가능한 선생님 목록 조회
      */
     @GetMapping(value = "/teacherList")
-    public ResponseEntity<List<Teacher>> getTeacherList(Authentication auth) {
+    public ResponseEntity<List<Map<String, Object>>> getTeacherList(Authentication auth) {
         AccountDto account = (AccountDto) auth.getPrincipal();
         String academyId = account.getAcademyId();
         String loggedInTeacherId = account.getId(); // 현재 로그인한 선생의 teacherId
@@ -45,7 +45,30 @@ public class ChatController {
                 .filter(teacher -> !teacher.getTeacherId().equals(loggedInTeacherId))
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(filteredTeacherList);
+        // 선생님 목록 + 최신 메시지를 포함한 응답 데이터 생성
+        List<Map<String, Object>> responseList = filteredTeacherList.stream().map(teacher -> {
+                    Map<String, Object> teacherData = new HashMap<>();
+                    teacherData.put("teacherId", teacher.getTeacherId());
+                    teacherData.put("teacherName", teacher.getTeacherName());
+
+            // 각 선생님과의 최근 메시지 가져오기
+            String chatRoomId = chatService.getOrCreateChatRoom(loggedInTeacherId, teacher.getTeacherId());
+            ChatMessage lastMessage = chatService.findLastMessage(chatRoomId);
+
+            // 최근 메시지 추가 (없으면 기본 메시지 설정)
+            if (lastMessage != null) {
+                String trimmedMessage = lastMessage.getChatMessage().length() > 10
+                        ? lastMessage.getChatMessage().substring(0, 10) + "..."
+                        : lastMessage.getChatMessage();
+                teacherData.put("lastMessage", trimmedMessage);
+            } else {
+                teacherData.put("lastMessage", "메시지가 없습니다.");
+            }
+
+            return teacherData;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(responseList);
     }
 
     /**
@@ -120,15 +143,32 @@ public class ChatController {
     }
 
     //안읽은 메시지 조회용 API
-    @GetMapping("/unreadCount")
-    public ResponseEntity<Map<String, Integer>> getUnreadMessageCount(Authentication auth) {
-        System.out.println("여기까지 왔따......");
+    @GetMapping("/unreadMessagesByChatRoom")
+    public ResponseEntity<Map<String, Integer>> getUnreadMessagesByChatRoom(Authentication auth) {
         AccountDto account = (AccountDto) auth.getPrincipal();
-        int unreadCount = chatService.getUnreadMessageCount(account.getId());
+        String loggedInTeacherId = account.getId();
 
-        Map<String, Integer> response = new HashMap<>();
-        response.put("unreadCount", unreadCount);
+        Map<String, Integer> unreadCounts = chatService.getUnreadMessagesByChatRoom(loggedInTeacherId);
+        System.out.println("unreadCounts 는요!!!!!!!!!!!!!!!!!!!!" + unreadCounts);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(unreadCounts);
+    }
+
+    @GetMapping("/getChatRoomIds")
+    public ResponseEntity<Map<String, String>> getChatRoomIds(Authentication auth) {
+        AccountDto account = (AccountDto) auth.getPrincipal();
+        String loggedInTeacherId = account.getId();
+
+        List<Teacher> teacherList = chatService.getChatableTeacher(account.getAcademyId());
+
+        Map<String, String> chatRoomIdMap = new HashMap<>();
+        for (Teacher teacher : teacherList) {
+            if (!teacher.getTeacherId().equals(loggedInTeacherId)) {
+                String chatRoomId = chatService.getOrCreateChatRoom(loggedInTeacherId, teacher.getTeacherId());
+                chatRoomIdMap.put(teacher.getTeacherId(), chatRoomId);
+            }
+        }
+
+        return ResponseEntity.ok(chatRoomIdMap);
     }
 }
