@@ -3,6 +3,9 @@ package com.jabibim.admin.service;
 import java.util.HashMap;
 import java.util.List;
 
+import com.jabibim.admin.security.dto.AccountDto;
+import org.apache.http.auth.AUTH;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.jabibim.admin.domain.LoginHistory;
@@ -18,26 +21,26 @@ public class LoginHistoryServiceImpl implements LoginHistoryService {
   private final LoginHistoryMapper dao;
 
   @Override
-  public int getLoginHistCount(HashMap<String, String> hm) {
+  public int getLoginHistCount(HashMap<String, String> hm, Authentication auth) {
     HashMap<String, Object> map = searchMap(hm);
-
-//    String teacherEmail = securityUtil.getCurrentUsername();
-//    String academyId = dao.getAcademyId(teacherEmail);
-    map.put("academyId", "f236923c-4746-4b5a-8377-e7c5b53799c2");
+    AccountDto user = (AccountDto) auth.getPrincipal();
+    String academyId = user.getAcademyId();
+    map.put("academyId", academyId);
 
     return dao.getLoginHistCount(map);
   }
 
   @Override
-  public List<LoginHistListVO> getLoginHistList(HashMap<String, String> hm, int page, int limit) {
+  public List<LoginHistListVO> getLoginHistList(HashMap<String, String> hm, int page, int limit, Authentication auth) {
     HashMap<String, Object> map = searchMap(hm);
 
-//    String teacherEmail = securityUtil.getCurrentUsername();
-//    String academyId = dao.getAcademyId(teacherEmail);
-    map.put("academyId", "f236923c-4746-4b5a-8377-e7c5b53799c2");
+    AccountDto user = (AccountDto) auth.getPrincipal();
+    String academyId = user.getAcademyId();
+
 
     map.put("limit", limit);
     map.put("offset", (page - 1) * limit);
+    map.put("academyId", academyId);
 
     return dao.getLoginHistList(map);
   }
