@@ -17,22 +17,32 @@ public class FFmpegServiceImpl implements FFmpegService {
 
     @Override
     public CompletableFuture<String> encoding(String uploadPathPrefix, MultipartFile file, String classFileId) {
+        System.out.println("🚀🚀 ==> encoding() start");
         // 파일 인코딩을 위한 전처리 작업으로 원본 파일을 임시파일로 저장 ( 서버 내에 저장됨, s3가 아님 )
-        String saveDirectory = System.getProperty("user.dir") + File.separator
-                               + "src" + File.separator
-                               + "main" + File.separator
-                               + "resources" + File.separator
-                               + "static" + File.separator
+//        String saveDirectory = System.getProperty("user.dir") + File.separator
+//                               + "src" + File.separator
+//                               + "main" + File.separator
+//                               + "resources" + File.separator
+//                               + "static" + File.separator
+//                               + "temp" + File.separator
+//                               + "raw";
+        String saveDirectory = System.getProperty("user.dir") + "/BOOT-INF/classes/static" + File.separator
                                + "temp" + File.separator
                                + "raw";
+        System.out.println("🚀🚀 ==> saveDirectory : " + saveDirectory);
+
         if (file.getOriginalFilename() == null) {
             throw new IllegalArgumentException("file 또는 파일 이름이 null입니다.");
         }
         String fileName = file.getOriginalFilename();
+        System.out.println("🚀🚀 ==> fileName : " + fileName);
         File savedFile = new File(saveDirectory + "/" + fileName);
+        System.out.println("🚀🚀 ==> savedFile : " + savedFile);
         try {
+            System.out.println("🚀🚀 ==> try 진입");
             file.transferTo(savedFile);
         } catch (Exception e) {
+            System.out.println("🚀🚀 ==> 예외 발생 : ");
             e.printStackTrace();
         }
 

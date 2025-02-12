@@ -58,6 +58,7 @@ public class FFmpegUtil {
 
     @Async
     public CompletableFuture<Void> createM3U8Stream(String filePath, String classFileId) {
+        System.out.println("🚀🚀🚀 ==> createM3U8Stream() start!! ");
         FFmpegBuilder builder = new FFmpegBuilder()
                 .setInput(filePath) // 원본 파일
                 .overrideOutputFiles(true)
