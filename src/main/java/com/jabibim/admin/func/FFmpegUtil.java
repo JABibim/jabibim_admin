@@ -59,15 +59,21 @@ public class FFmpegUtil {
     @Async
     public CompletableFuture<Void> createM3U8Stream(String filePath, String classFileId) {
         System.out.println("🚀🚀🚀 ==> createM3U8Stream() start!! ");
+        System.out.println("🚀🚀🚀 ==> filePath : " + filePath);
 
-        String outputDirectory = "/tmp/temp/encode/";
-        System.out.println("🚀🚀🚀 ==> outputDirectory : " + outputDirectory);
+        String encodeOutputDirectory = "/tmp/temp/encode/";
+        System.out.println("🚀🚀🚀 ==> outputDirectory : " + encodeOutputDirectory);
+
+        File directory = new File(encodeOutputDirectory);
+        if(!directory.exists()) {
+            directory.mkdirs(); // 폴더 생성
+        }
 
         try {
             FFmpegBuilder builder = new FFmpegBuilder()
                     .setInput(filePath) // 원본 파일
                     .overrideOutputFiles(true)
-                    .addOutput(outputDirectory + classFileId + ".m3u8")
+                    .addOutput(encodeOutputDirectory + classFileId + ".m3u8")
                     .setFormat("hls")
                     .addExtraArgs("-codec", "copy")
                     .addExtraArgs("-crf", "28")
