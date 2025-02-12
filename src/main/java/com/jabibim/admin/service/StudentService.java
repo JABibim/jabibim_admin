@@ -17,7 +17,7 @@ public interface StudentService {
 
     List<Student> getStudentAdList(int page, int limit, String academyId, boolean isAdmin, String search_field, String search_word);
 
-    void replaceGrade(DeleteGradeDTO deleteGradeDTO);
+    int replaceGrade(DeleteGradeDTO deleteGradeDTO);
 
     boolean insertStudent(Student student);
 
