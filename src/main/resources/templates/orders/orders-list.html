@@ -123,41 +123,41 @@
                     <div class="form-group d-flex">
                       <div class="form-check my-auto mx-1">
                         <label for="payment_status_all">
-                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_status"
+                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="paymentStatus"
                                  id="payment_status_all" value="all"
-                                 th:checked="${payment_status == 'all' ? true : false}">
+                                 th:checked="${paymentStatus == 'all' ? true : false}">
                           전체
                         </label>
                       </div>
                       <div class="form-check my-auto mx-1">
                         <label for="payment_status_success">
-                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_status"
-                                 id="payment_status_success" value="s"
-                                 th:checked="${payment_status == 's' ? true : false}">
+                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="paymentStatus"
+                                 id="payment_status_success" value="success"
+                                 th:checked="${paymentStatus == 'susccess' ? true : false}">
                           결제 완료
                         </label>
                         <div class="form-check my-auto mx-1">
                           <label for="payment_status_pending">
-                            <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_status"
+                            <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="paymentStatus"
                                    id="payment_status_pending"
-                                   value="p" th:checked="${payment_status == 'p' ? true : false}">
+                                   value="pending" th:checked="${paymentStatus == 'pending' ? true : false}">
                             결제 확인 중
                           </label>
                         </div>
                       </div>
                       <div class="form-check my-auto mx-1">
                         <label for="payment_status_failed">
-                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_status"
-                                 id="payment_status_failed" value="f"
-                                 th:checked="${payment_status == 'f' ? true : false}">
+                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="paymentStatus"
+                                 id="payment_status_failed" value="failed"
+                                 th:checked="${paymentStatus == 'failed' ? true : false}">
                           결제 실패
                         </label>
                       </div>
                       <div class="form-check my-auto mx-1">
                         <label for="payment_status_cancelled">
-                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_status"
-                                 id="payment_status_cancelled" value="c"
-                                 th:checked="${payment_status == 'c' ? true : false}">
+                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="paymentStatus"
+                                 id="payment_status_cancelled" value="cancelled"
+                                 th:checked="${paymentStatus == 'cancelled' ? true : false}">
                           결제 취소
                         </label>
                       </div>
@@ -172,25 +172,25 @@
                     <div class="form-group d-flex">
                       <div class="form-check my-auto mx-1">
                         <label for="payment_method_all">
-                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_method"
+                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="paymentMethod"
                                  id="payment_method_all" value="all"
-                                 th:checked="${payment_method == 'all' ? true : false}">
+                                 th:checked="${paymentMethod == 'all' ? true : false}">
                           전체
                         </label>
                       </div>
                       <div class="form-check my-auto mx-1">
                         <label for="payment_method_card">
-                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_method"
-                                 id="payment_method_card" value="c"
-                                 th:checked="${payment_method == 'c' ? true : false}">
+                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="paymentMethod"
+                                 id="payment_method_card" value="card"
+                                 th:checked="${paymentMethod == 'card' ? true : false}">
                           카드
                         </label>
                       </div>
                       <div class="form-check my-auto mx-1">
                         <label for="payment_method_transfer">
-                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_method"
-                                 id="payment_method_transfer" value="t"
-                                 th:checked="${payment_method == 't' ? true : false}">
+                          <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="paymentMethod"
+                                 id="payment_method_transfer" value="transfer"
+                                 th:checked="${paymentMethod == 'transfer' ? true : false}">
                           계좌이체
                         </label>
                       </div>

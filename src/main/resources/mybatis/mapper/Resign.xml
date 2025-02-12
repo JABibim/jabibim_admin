@@ -44,22 +44,22 @@
     </if>
 
     <if test="resignDate2 != null">
-      <if test='dateField == "withdrawal"'>
+      <if test="dateField == 'withdrawal'">
         AND DATE(deleted_at) &lt;= #{resignDate2}
       </if>
-      <if test='dateField == "deletionDue"'>
+      <if test="dateField == 'deletionDue'">
         AND DATE(deletion_date) &lt;= #{resignDate2}
       </if>
     </if>
 
-    <if test='searchWord != null and searchField != null and dateField == "withdrawal"'>
+    <if test="searchWord != null and searchField != null and dateField == 'withdrawal'">
       AND (
       <foreach collection="searchField" item="data" separator="or">
-        <if test='data != "d"'>
+        <if test="data != 'd'">
         <choose>
-          <when test='data == "n"'> student_name</when>
-          <when test='data == "e"'> student_email</when>
-          <when test='data == "r"'> DATE_FORMAT(deleted_at, '%Y-%m-%d %H:%i:%s')</when>
+          <when test="data == 'n'"> student_name</when>
+          <when test="data == 'e'"> student_email</when>
+          <when test="data == 'r'"> DATE_FORMAT(deleted_at, '%Y-%m-%d %H:%i:%s')</when>
         </choose>
             LIKE #{searchWord}
         </if>
@@ -67,7 +67,7 @@
       )
     </if>
 
-    <if test='searchWord != null and searchField != null and dateField == "deletionDue"'>
+    <if test="searchWord != null and searchField != null and dateField == 'deletionDue'">
       AND (
       <foreach collection="searchField" item="data" separator="or">
       <if test='data != "r"'>
