@@ -6,7 +6,6 @@ import com.jabibim.admin.domain.Student;
 import com.jabibim.admin.dto.DeleteGradeDTO;
 import com.jabibim.admin.dto.GetStudentGradesDTO;
 import com.jabibim.admin.func.UUIDGenerator;
-import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.service.GradeService;
 import com.jabibim.admin.service.StudentService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +49,6 @@ public class StudentController {
             @RequestParam(defaultValue = "") String search_word,
             Model model,
             HttpSession session, HttpServletRequest request) {
-
-        System.out.println("authentication==========:" + authentication.getPrincipal().toString());
 
         logger.info("---------->>>>> page: {}, limit: {}, state: {}, startDate: {}, endDate: {}, studentGrade:{}, search_field: {}, search_word: {}",
                 page, limit, state, startDate, endDate, studentGrade, search_field, search_word);
@@ -131,9 +127,8 @@ public class StudentController {
 
     //등급관리 클릭시 나오는 페이지, DB 에서 등급 리스트 불러와 뿌려줘야함
     @GetMapping("/grade")
-    public String studentGrade(Model model, Authentication auth) {
-        AccountDto account = (AccountDto) auth.getPrincipal();
-        String academyId = account.getAcademyId();
+    public String studentGrade(Model model, HttpSession session) {
+        String academyId = (String) session.getAttribute("aid");
 
         List<GetStudentGradesDTO> grades = gradeService.getStudentGrades(academyId);
         model.addAttribute("gradeList", grades);
@@ -142,11 +137,10 @@ public class StudentController {
 
     @PostMapping(value = "/grade/addGrade")
     @ResponseBody
-    public ResponseEntity<?> addGrade(@RequestBody Grade grade, Authentication auth) {
+    public ResponseEntity<?> addGrade(@RequestBody Grade grade, HttpSession session) {
         try {
             //필요한 정보 선언
-            AccountDto account = (AccountDto) auth.getPrincipal();
-            String academyId = account.getAcademyId();
+            String academyId = (String) session.getAttribute("aid");
             String gradeId = UUIDGenerator.getUUID();
 
             gradeService.addGrade(grade, academyId, gradeId);
@@ -165,10 +159,9 @@ public class StudentController {
 
     @PostMapping(value = "/grade/modifyGradeInfo")
     @ResponseBody
-    public ResponseEntity<?> modifyGradeInfo(@RequestBody Grade grade, Authentication auth) {
+    public ResponseEntity<?> modifyGradeInfo(@RequestBody Grade grade, HttpSession session) {
         try {
-            AccountDto account = (AccountDto) auth.getPrincipal();
-            String academyId = account.getAcademyId();
+            String academyId = (String) session.getAttribute("aid");
 
             gradeService.modifyGrade(grade, academyId);
             return ResponseEntity.ok(Map.of(
@@ -218,17 +211,16 @@ public class StudentController {
         try {
             DeleteGradeDTO deleteGradeDTO = new DeleteGradeDTO(academyId, gradeId, newGradeId);
             gradeService.deleteGrade(deleteGradeDTO);
-            studentService.replaceGrade(deleteGradeDTO);
+            int effectedRow = studentService.replaceGrade(deleteGradeDTO);
 
             return ResponseEntity.ok(Map.of(
-                    "status", "success",
-                    "message", "등급의 삭제/조정이 완료되었습니다."
+                    "deleteResult", true,
+                    "effectedRow", effectedRow
             ));
         } catch (Exception e) {
             logger.error("등급 삭제/조정 수행중 에러 발생 : ", e);
             return ResponseEntity.ok(Map.of(
-                    "status", "fail",
-                    "message", "등급 삭제/조정에 실패하였습니다."
+                    "deleteResult", false
             ));
         }
     }

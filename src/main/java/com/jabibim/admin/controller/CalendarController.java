@@ -10,9 +10,7 @@ import com.jabibim.admin.dto.common.ApiResponse;
 import com.jabibim.admin.dto.calendar.response.SelectTeacherCalInfoReqDto;
 import com.jabibim.admin.func.GoogleCalendarServiceFactory;
 import com.jabibim.admin.func.UUIDGenerator;
-import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.service.CalendarService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.json.simple.JSONObject;
@@ -21,12 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -45,7 +40,6 @@ public class CalendarController {
 
     @GetMapping(value = "")
     public ModelAndView calendarList(
-            Authentication authentication,
             HttpSession session
     ) {
         // 세션에서 academyId와 teacherId를 가져오기
