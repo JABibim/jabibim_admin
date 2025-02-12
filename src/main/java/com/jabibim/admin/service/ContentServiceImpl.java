@@ -194,30 +194,37 @@ public class ContentServiceImpl implements ContentService {
         String fileType = file.getContentType();
 
         String uploadPathPrefix = String.join(File.separator, academyId, "course", courseId, "class", classId, "classFile", newClassFileUUID);
-        String uploadedPath;
-        // 1️⃣ 동영상 파일이면 인코딩 후 업로드 ( 원본 파일도 같이 업로드함! )
-        if ( fileType != null && fileType.startsWith("video/")) {
-            fFmpegService.encoding(uploadPathPrefix, file);
-            uploadedPath = ""; // TODO m3u8 파일의 경로만 가져오면 됨!
+
+        if (fileType != null && fileType.startsWith("video/")) {
+            fFmpegService.encoding(uploadPathPrefix, file, newClassFileUUID).thenAccept(uploadedPath -> {
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("classFileId", newClassFileUUID);
+                map.put("classFileOriginName", file.getOriginalFilename());
+                map.put("classFilePath", uploadedPath);
+                map.put("classFileType", file.getContentType());
+                map.put("classFileSize", file.getSize());
+                map.put("academyId", academyId);
+                map.put("teacherId", teacherId);
+                map.put("courseId", courseId);
+                map.put("classId", classId);
+
+                contentDao.addNewClassFileInfo(map);
+            });
+        } else {
+            String uploadedPath = s3Uploader.uploadFileToS3(file, uploadPathPrefix + File.separator + fileName);
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("classFileId", newClassFileUUID);
+            map.put("classFileOriginName", file.getOriginalFilename());
+            map.put("classFilePath", uploadedPath);
+            map.put("classFileType", file.getContentType());
+            map.put("classFileSize", file.getSize());
+            map.put("academyId", academyId);
+            map.put("teacherId", teacherId);
+            map.put("courseId", courseId);
+            map.put("classId", classId);
+
+            contentDao.addNewClassFileInfo(map);
         }
-
-        // 2️⃣ 일반 파일이면 바로 S3에 업로드
-        else {
-            uploadedPath = s3Uploader.uploadFileToS3(file, uploadPathPrefix + File.separator + fileName);
-        }
-
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("classFileId", newClassFileUUID);
-        map.put("classFileOriginName", file.getOriginalFilename()); // 파일 원본 이름
-        map.put("classFilePath", uploadedPath); // 파일 경로
-        map.put("classFileType", file.getContentType()); // 파일 유형
-        map.put("classFileSize", file.getSize()); // 파일 크기(바이트)
-        map.put("academyId", academyId);
-        map.put("teacherId", teacherId);
-        map.put("courseId", courseId);
-        map.put("classId", classId);
-
-        contentDao.addNewClassFileInfo(map);
     }
 
     @Override

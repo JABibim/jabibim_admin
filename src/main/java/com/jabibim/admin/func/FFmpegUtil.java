@@ -57,14 +57,11 @@ public class FFmpegUtil {
     }
 
     @Async
-    public CompletableFuture<Void> createM3U8Stream(String filePath) {
-        System.out.println("🚀🚀 createM3U8Stream called!() ");
-        System.out.println("==> filePath : " + filePath);
-
+    public CompletableFuture<Void> createM3U8Stream(String filePath, String classFileId) {
         FFmpegBuilder builder = new FFmpegBuilder()
-                .setInput(filePath)
+                .setInput(filePath) // 원본 파일
                 .overrideOutputFiles(true)
-                .addOutput(OUTPUT_DIR + "output.m3u8")
+                .addOutput(OUTPUT_DIR + classFileId + ".m3u8")
                 .setFormat("hls")
                 .addExtraArgs("-codec", "copy")
                 .addExtraArgs("-crf", "28")
@@ -78,17 +75,14 @@ public class FFmpegUtil {
         // FFmpeg 실행 후 완료될 때까지 대기
         executor.createJob(builder).run();
 
+        new File(filePath).delete();
+
         return CompletableFuture.completedFuture(null); // 작업 완료 후 반환
     }
 
     @Async
-    public CompletableFuture<Void> uploadEncodedFilesToS3(String uploadPathPrefix) {
-        System.out.println("🚀🚀 uploadEncodedFilesToS3 called!() ");
-        System.out.println("==> uploadPathPrefix : " + uploadPathPrefix);
-
+    public CompletableFuture<String> uploadEncodedFilesToS3(String uploadPathPrefix, String classFileId) {
         File[] files = new File(OUTPUT_DIR).listFiles();
-        System.out.println("==> file size : " + (files != null ? files.length : 0));
-
         assert files != null;
         for (File f : files) {
             amazonS3Client.putObject(new PutObjectRequest(
@@ -96,9 +90,17 @@ public class FFmpegUtil {
                     , uploadPathPrefix + File.separator + f.getName()
                     , f)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
+
+            if (f.exists() && !f.getName().contains("README")) {
+                f.delete();
+            }
         }
 
-        return CompletableFuture.completedFuture(null); // 작업 완료 후 반환
+        // ==> uploadPathPrefix : cd1918cc-820d-4ac8-be7c-c46a5f943047/course/ba6ceecb-d7e6-40c9-87fa-fe00b343fde7/class/1d1b1098-928f-4ccf-b144-5a75b51e84a0/classFile/72b5fc7d-fd65-4766-a97b-a64d71b520e5
+        String m3u8Path = uploadPathPrefix + File.separator + classFileId + ".m3u8";
+        String path = amazonS3Client.getUrl("jabibimbucket", m3u8Path).toString();
+
+        return CompletableFuture.completedFuture(path); // 작업 완료 후 반환
     }
 }
 
