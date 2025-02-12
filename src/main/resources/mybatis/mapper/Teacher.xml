@@ -8,12 +8,16 @@
         FROM teacher t
         INNER JOIN academy a ON t.academy_id = a.academy_id
         <where>
-            <if test="state != 'option1'">
-                t.DELETED_AT IS
-                <choose>
-                    <when test="state == 'option2'">NULL</when>
-                    <otherwise>NOT NULL</otherwise>
-                </choose>
+            <!-- 상태에 따른 조건 -->
+            <if test="state == 'option2'">
+                t.deleted_at IS NULL
+            </if>
+            <if test="state == 'option3'">
+                t.deleted_at IS NOT NULL
+            </if>
+            <!-- 관리자 여부에 따른 조건 -->
+            <if test="!isAdmin">
+                AND t.academy_id = #{academyId}
             </if>
             <if test='search_field == "0"'>
                 AND (t.teacher_name LIKE concat('%', #{search_word}, '%')

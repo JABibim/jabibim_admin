@@ -26,9 +26,10 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public int getTeacherCount(String academyId, String state, String search_field, String search_word) {
+    public int getTeacherCount(String academyId, boolean isAdmin, String state, String search_field, String search_word) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("academyId", academyId);
+        params.put("isAdmin", isAdmin);
         params.put("state", state);
         params.put("search_field", search_field);
         params.put("search_word", search_word);
