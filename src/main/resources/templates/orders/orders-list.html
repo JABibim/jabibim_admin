@@ -6,74 +6,76 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>중앙비빔 Admin</title> 
-    <style>
-      #orderlist-body .badge {
-        font-size: 16px;
-      }
-    
-      .form-switch {
-        padding-left: 70px;
-      }
-    
-      #orderlist-body tr {
-        cursor: pointer;
-      }
-    
-      #order_content {
-        border: none;
-      }
+  <title>중앙비빔 Admin</title>
+  <style>
+    #orderlist-body .badge {
+      font-size: 16px;
+    }
 
-      /* 테이블 헤더 회전 방지 및 줄바꿈 처리 */
-      .table th {
-          white-space: nowrap;        /* 텍스트 줄바꿈 방지 */
-          min-width: 80px;           /* 최소 너비 설정 */
-          padding: 8px 4px;          /* 좌우 패딩 축소 */
-      }
+    .form-switch {
+      padding-left: 70px;
+    }
 
-      /* 특정 컬럼 너비 조정 */
-      .table th.order-number {
-          min-width: 120px;
-      }
-      .table th.course-name {
-          min-width: 200px;
-      }
-      .table th.datetime {
-          min-width: 150px;
-      }
-      
-      /* 테이블 가로 스크롤 설정 */
-      .table-responsive {
-          overflow-x: auto;
-          margin-bottom: 1rem;
-      }
+    #orderlist-body tr {
+      cursor: pointer;
+    }
 
-      /* 주문번호 셀 스타일 */
-      .truncate-text {
-          max-width: 150px;          /* 최대 너비 설정 */
-          white-space: nowrap;       /* 줄바꿈 방지 */
-          overflow: hidden;          /* 넘치는 텍스트 숨김 */
-          text-overflow: ellipsis;   /* 말줄임표(...) 표시 */
-          display: inline-block;     /* 인라인 블록으로 설정 */
-      }
-    </style>
+    #order_content {
+      border: none;
+    }
+
+    /* 테이블 헤더 회전 방지 및 줄바꿈 처리 */
+    .table th {
+      white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+      min-width: 80px; /* 최소 너비 설정 */
+      padding: 8px 4px; /* 좌우 패딩 축소 */
+    }
+
+    /* 특정 컬럼 너비 조정 */
+    .table th.order-number {
+      min-width: 120px;
+    }
+
+    .table th.course-name {
+      min-width: 200px;
+    }
+
+    .table th.datetime {
+      min-width: 150px;
+    }
+
+    /* 테이블 가로 스크롤 설정 */
+    .table-responsive {
+      overflow-x: auto;
+      margin-bottom: 1rem;
+    }
+
+    /* 주문번호 셀 스타일 */
+    .truncate-text {
+      max-width: 150px; /* 최대 너비 설정 */
+      white-space: nowrap; /* 줄바꿈 방지 */
+      overflow: hidden; /* 넘치는 텍스트 숨김 */
+      text-overflow: ellipsis; /* 말줄임표(...) 표시 */
+      display: inline-block; /* 인라인 블록으로 설정 */
+    }
+  </style>
 </head>
 
 <div layout:fragment="content">
-    <main id="main" class="main">
-      <div class="pagetitle">
-        <h1>주문 관리</h1>
+  <main id="main" class="main">
+    <div class="pagetitle">
+      <h1>주문 관리</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a th:href="@{/orders/list}">주문 목록</a></li>
         </ol>
       </nav>
-      </div><!-- End Page Title -->
+    </div><!-- End Page Title -->
 
-  <div class="container-fluid">
-    <div class="card" id="order-card">
-      <div class="card-body">
-        <!-- 상세 검색 폼 -->
+    <div class="container-fluid">
+      <div class="card" id="order-card">
+        <div class="card-body">
+          <!-- 상세 검색 폼 -->
           <div style="margin-top: 30px;">
             <div class="form_container container">
               <form type='get' th:action='@{list}'>
@@ -84,13 +86,13 @@
                     <div class="col-3 col-md-4">
                       <label for='orderDate1' hidden></label>
                       <input type="date" id='orderDate1' name='orderDate1' class="form-control start_date"
-                        th:value="${orderDate1 != '' ? #dates.format(orderDate1, 'yyyy-MM-dd') : ''}">
+                             th:value="${orderDate1 != '' ? #dates.format(orderDate1, 'yyyy-MM-dd') : ''}">
                     </div>
                     <b class="col-auto my-1 mx-1 px-2 text-middle">-</b>
                     <div class="col-3 col-md-4">
                       <label for='orderDate2' hidden></label>
                       <input type="date" id='orderDate2' name='orderDate2' class="form-control end_date"
-                        th:value="${orderDate2 != '' ? #dates.format(orderDate2, 'yyyy-MM-dd') : ''}">
+                             th:value="${orderDate2 != '' ? #dates.format(orderDate2, 'yyyy-MM-dd') : ''}">
                     </div>
                   </div>
                 </div>
@@ -102,18 +104,18 @@
                     <div class="col-3 col-md-4">
                       <label for='paymentDate1' hidden></label>
                       <input type="date" id='paymentDate1' name='paymentDate1' class="form-control start_date"
-                        th:value="${paymentDate1 != '' ? #dates.format(paymentDate1, 'yyyy-MM-dd') : ''}">
+                             th:value="${paymentDate1 != '' ? #dates.format(paymentDate1, 'yyyy-MM-dd') : ''}">
                     </div>
                     <b class="col-auto my-1 mx-1 px-2 text-middle">-</b>
                     <div class="col-3 col-md-4">
                       <label for='paymentDate2' hidden></label>
                       <input type="date" id='paymentDate2' name='paymentDate2' class="form-control end_date"
-                        th:value="${paymentDate2 != '' ? #dates.format(paymentDate2, 'yyyy-MM-dd') : ''}">
+                             th:value="${paymentDate2 != '' ? #dates.format(paymentDate2, 'yyyy-MM-dd') : ''}">
                     </div>
                   </div>
                 </div>
 
-        
+
                 <!-- 결제 상태 -->
                 <div class="form-row h-33 border d-flex text-center">
                   <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">결제 상태</div>
@@ -122,21 +124,23 @@
                       <div class="form-check my-auto mx-1">
                         <label for="payment_status_all">
                           <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_status"
-                            id="payment_status_all" value="all" th:checked="${payment_status == 'all' ? true : false}">
+                                 id="payment_status_all" value="all"
+                                 th:checked="${payment_status == 'all' ? true : false}">
                           전체
                         </label>
                       </div>
                       <div class="form-check my-auto mx-1">
                         <label for="payment_status_success">
                           <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_status"
-                            id="payment_status_success" value="s"
-                            th:checked="${payment_status == 's' ? true : false}">
+                                 id="payment_status_success" value="s"
+                                 th:checked="${payment_status == 's' ? true : false}">
                           결제 완료
                         </label>
                         <div class="form-check my-auto mx-1">
                           <label for="payment_status_pending">
-                            <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_status" id="payment_status_pending"
-                              value="p" th:checked="${payment_status == 'p' ? true : false}">
+                            <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_status"
+                                   id="payment_status_pending"
+                                   value="p" th:checked="${payment_status == 'p' ? true : false}">
                             결제 확인 중
                           </label>
                         </div>
@@ -144,22 +148,23 @@
                       <div class="form-check my-auto mx-1">
                         <label for="payment_status_failed">
                           <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_status"
-                            id="payment_status_failed" value="f" th:checked="${payment_status == 'FAILED' ? true : false}">
+                                 id="payment_status_failed" value="f"
+                                 th:checked="${payment_status == 'f' ? true : false}">
                           결제 실패
                         </label>
                       </div>
                       <div class="form-check my-auto mx-1">
                         <label for="payment_status_cancelled">
                           <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_status"
-                            id="payment_status_cancelled" value="c"
-                            th:checked="${payment_status == 'c' ? true : false}">
+                                 id="payment_status_cancelled" value="c"
+                                 th:checked="${payment_status == 'c' ? true : false}">
                           결제 취소
                         </label>
                       </div>
                     </div>
                   </div>
                 </div>
-        
+
                 <!-- 결제 수단 -->
                 <div class="form-row h-33 border d-flex text-center">
                   <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">결제 수단</div>
@@ -168,29 +173,31 @@
                       <div class="form-check my-auto mx-1">
                         <label for="payment_method_all">
                           <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_method"
-                            id="payment_method_all" value="all" th:checked="${payment_method == 'all' ? true : false}">
+                                 id="payment_method_all" value="all"
+                                 th:checked="${payment_method == 'all' ? true : false}">
                           전체
                         </label>
                       </div>
                       <div class="form-check my-auto mx-1">
                         <label for="payment_method_card">
                           <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_method"
-                            id="payment_method_card" value="c" th:checked="${payment_method == 'c' ? true : false}">
+                                 id="payment_method_card" value="c"
+                                 th:checked="${payment_method == 'c' ? true : false}">
                           카드
                         </label>
                       </div>
                       <div class="form-check my-auto mx-1">
                         <label for="payment_method_transfer">
                           <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="payment_method"
-                            id="payment_method_transfer" value="t"
-                            th:checked="${payment_method == 't' ? true : false}">
+                                 id="payment_method_transfer" value="t"
+                                 th:checked="${payment_method == 't' ? true : false}">
                           계좌이체
                         </label>
                       </div>
                     </div>
                   </div>
                 </div>
-        
+
                 <!-- 검색어 -->
                 <div class="form-row h-33 d-flex text-center border">
                   <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">검색</div>
@@ -205,7 +212,8 @@
                       </select>
                     </div>
                     <div class="form-group col-4 flex-fill">
-                      <input type="text" id='searchWord' name='searchWord' class="form-control" th:value="${searchWord}">
+                      <input type="text" id='searchWord' name='searchWord' class="form-control"
+                             th:value="${searchWord}">
                     </div>
                     <div class="form-group col-auto col-md-auto">
                       <button type="submit" class="btn btn-success">검색하기</button>
@@ -216,84 +224,87 @@
               </form>
             </div>
 
-        <!-- 페이지당 게시물 수 선택 -->
-         <div style="margin-top: 30px;">
-          <div style="display: flex; align-items: center; margin-bottom: 10px;">
-            <span>Total: [[${listcount}]]건 </span>
-            <select id="itemsPerPage" name="limit" style="margin-left: 10px;" th:onchange="limitChanged(this.options[selectedIndex].text)">
-              <option value="5" th:selected="${limit == 5 ? true : false}">5</option>
-              <option value="10" th:selected="${limit == 10 ? true : false}">10</option>
-              <option value="15" th:selected="${limit == 15 ? true : false}">15</option>
-            </select>
-            <span style="margin-left: 5px;">건 씩 보기</span>
-          </div>
-        </div>
+            <!-- 페이지당 게시물 수 선택 -->
+            <div style="margin-top: 30px;">
+              <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <span>Total: [[${listcount}]]건 </span>
+                <select id="itemsPerPage" name="limit" style="margin-left: 10px;"
+                        th:onchange="limitChanged(this.options[selectedIndex].text)">
+                  <option value="5" th:selected="${limit == 5 ? true : false}">5</option>
+                  <option value="10" th:selected="${limit == 10 ? true : false}">10</option>
+                  <option value="15" th:selected="${limit == 15 ? true : false}">15</option>
+                </select>
+                <span style="margin-left: 5px;">건 씩 보기</span>
+              </div>
+            </div>
 
-        <!-- 주문 목록 테이블 -->
-        <div class="table-responsive">
-            <table class="table table-striped text-center" th:if="${listcount > 0}">
+            <!-- 주문 목록 테이블 -->
+            <div class="table-responsive">
+              <table class="table table-striped text-center" th:if="${listcount > 0}">
                 <thead>
-                    <tr>
-                        <th class="order-number">주문 번호</th>
-                        <th>학생 이름</th>
-                        <th class="course-name">과정명</th>
-                        <th>과정 금액</th>
-                        <th>결제 금액</th>
-                        <th>결제 수단</th>
-                        <th>결제 상태</th>
-                        <th class="datetime">주문 일</th>
-                        <th class="datetime">결제 일</th>
-                        <th>상세 보기</th>
-                    </tr>
+                <tr>
+                  <th class="order-number">주문 번호</th>
+                  <th>학생 이름</th>
+                  <th class="course-name">과정명</th>
+                  <th>과정 금액</th>
+                  <th>결제 금액</th>
+                  <th>결제 수단</th>
+                  <th>결제 상태</th>
+                  <th class="datetime">주문 일</th>
+                  <th class="datetime">결제 일</th>
+                  <th>상세 보기</th>
+                </tr>
                 </thead>
                 <tbody id="orderlist-body">
-                    <tr th:each="orders : ${ordersList}">
-                        <td>
-                            <span class="truncate-text" 
+                <tr th:each="orders : ${ordersList}">
+                  <td>
+                            <span class="truncate-text"
                                   th:text="${orders.ordersNumber}"
                                   th:title="${orders.ordersNumber}">
                             </span>
-                        </td>
-                        <td th:text="${orders.studentName}"></td>
-                        <td th:text="${orders.courseName}"></td>
-                        <td th:text="${#numbers.formatInteger(orders.totalPrice, 0, 'COMMA')} + '원'"></td>
-                        <td th:text="${#numbers.formatInteger(orders.paymentAmount, 0, 'COMMA')} + '원'"></td>
-                        <td th:text="${orders.paymentMethod == 'PaymentMethodCard' ? '카드' : '계좌이체'}"></td>
-                        <td>
+                  </td>
+                  <td th:text="${orders.studentName}"></td>
+                  <td th:text="${orders.courseName}"></td>
+                  <td th:text="${#numbers.formatInteger(orders.totalPrice, 0, 'COMMA')} + '원'"></td>
+                  <td th:text="${#numbers.formatInteger(orders.paymentAmount, 0, 'COMMA')} + '원'"></td>
+                  <td th:text="${orders.paymentMethod == 'PaymentMethodCard' ? '카드' : '계좌이체'}"></td>
+                  <td>
                           <span th:class="${'badge ' + 
                                         (orders.paymentStatus == 'PAID' ? 'bg-success' : 
                                         (orders.paymentStatus == 'FAILED' ? 'bg-danger' : 
                                         (orders.paymentStatus == 'PENDING' ? 'bg-secondary' : 'bg-warning')))}"
-                            th:text="${orders.paymentStatus}">
+                                th:text="${orders.paymentStatus}">
                           </span>
-                        </td>
-                        <td th:text="${#temporals.format(orders.createdAt, 'yyyy-MM-dd')}"></td>
-                        <td th:text="${orders.paidAt.substring(0, 10)}"></td>
-                        <td>
-                          <a th:href="@{/orders/detail(id=${orders.ordersId})}">
-                          <button type="button" class="btn btn-secondary btn-sm rounded-pill payment-detail"
-                            th:data-orders-id="${orders.ordersId}">
-                            상세 보기
-                          </button>
-                          </a>
-                        </td>
-                    </tr>
+                  </td>
+                  <td th:text="${#temporals.format(orders.createdAt, 'yyyy-MM-dd')}"></td>
+                  <td th:text="${orders.paidAt.substring(0, 10)}"></td>
+                  <td>
+                    <a th:href="@{/orders/detail(id=${orders.ordersId})}">
+                      <button type="button" class="btn btn-secondary btn-sm rounded-pill payment-detail"
+                              th:data-orders-id="${orders.ordersId}">
+                        상세 보기
+                      </button>
+                    </a>
+                  </td>
+                </tr>
                 </tbody>
-            </table>
+              </table>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    <th:block th:if="${listcount == 0}">
-      <div class="text-center">주문 내역이 없습니다.</div>
-    </th:block>
+        <th:block th:if="${listcount == 0}">
+          <div class="text-center">주문 내역이 없습니다.</div>
+        </th:block>
 
         <!-- 페이지네이션 -->
-         <th:block th:if="${listcount > 0}">
+        <th:block th:if="${listcount > 0}">
           <!-- 페이징 fragment 사용 -->
           <th:block th:replace="~{fragments/paging :: paging('list',
                 |&limit=${limit}&orderDate1=${orderDate1 != '' ? #dates.format(orderDate1, 'yyyy-MM-dd') : ''}&orderDate2=${orderDate2 != '' ? #dates.format(orderDate2, 'yyyy-MM-dd') : ''}&paymentDate1=${paymentDate1 != '' ? #dates.format(paymentDate1, 'yyyy-MM-dd') : ''}&paymentDate2=${paymentDate2 != '' ? #dates.format(paymentDate2, 'yyyy-MM-dd') : ''}&paymentStatus=${paymentStatus}&paymentMethod=${paymentMethod}&searchField=${searchField}&searchWord=${searchWord}|)}"/>
-          </th:block>
-  </div>
-</div>
+        </th:block>
+      </div>
 
+    </div>
+  </main>
+</div>
 </html>

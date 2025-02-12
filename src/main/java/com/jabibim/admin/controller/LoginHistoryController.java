@@ -84,7 +84,7 @@ public class LoginHistoryController {
     mv.addObject("logStatus", logStatus);
     mv.addObject("searchField", searchField);
     mv.addObject("searchWord", searchWord);
-    mv.setViewName("/students/studentsignhist");
+    mv.setViewName("students/studentsignhist");
 
     return mv;
   }
