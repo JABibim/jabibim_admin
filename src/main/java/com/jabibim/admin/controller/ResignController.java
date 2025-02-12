@@ -6,6 +6,7 @@ import com.jabibim.admin.service.ResignedStudentService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +38,8 @@ public class ResignController {
       , @RequestParam(defaultValue="") String resignDate2
       , @RequestParam(defaultValue="withdrawal") String dateField
       , @RequestParam(defaultValue="nerd") String searchField
-      , @RequestParam(defaultValue="") String searchWord) {
+      , @RequestParam(defaultValue="") String searchWord
+      , Authentication auth) {
 
     HashMap<String,String> hm = new HashMap<>();
     hm.put("resignDate1", resignDate1);
@@ -46,11 +48,11 @@ public class ResignController {
     hm.put("searchField", searchField);
     hm.put("searchWord", searchWord);
 
-    int listcount = studentResignService.getResignedStudentCount(hm);
+    int listcount = studentResignService.getResignedStudentCount(hm, auth);
 
     logger.info("listcount: " + listcount);
 
-    List<ResignListVO> list = studentResignService.getResignedStudentList(hm, page, limit);
+    List<ResignListVO> list = studentResignService.getResignedStudentList(hm, page, limit, auth);
 
     for (ResignListVO resignListVO : list) {
       logger.info("resignListVO: " + resignListVO.toString());

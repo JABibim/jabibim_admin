@@ -21,25 +21,29 @@
    <!-- 주문 목록 총 개수 조회 -->
   <select id="getOrdersListCount" resultType="int">
     SELECT COUNT(*)
-    FROM (SELECT DISTINCT o.*, c.course_name, s.student_name, p.payment_amount, p.payment_status, p.payment_method, p.paid_at 
-          FROM (SELECT * FROM orders WHERE academy_id = #{academyId}) o
-          INNER JOIN (SELECT course_id, course_name FROM course WHERE academy_id = #{academyId}) c
-          ON o.course_id = c.course_id
-          INNER JOIN (SELECT student_id, student_name FROM student WHERE academy_id = #{academyId}) s
-          ON o.student_id = s.student_id
-          LEFT OUTER JOIN (SELECT payment_id, payment_amount, payment_status, payment_method, paid_at, course_id, orders_id
-                          FROM payment WHERE academy_id = #{academyId}) p
-          ON o.payment_id = p.payment_id AND o.orders_id = p.orders_id AND o.course_id = p.course_id
+    FROM (SELECT *
+            FROM (SELECT DISTINCT o.*, c.course_name, s.student_name, p.payment_amount, p.payment_status, p.payment_method, p.paid_at
+                  FROM (SELECT * FROM orders WHERE academy_id = #{academyId}) o
+                  INNER JOIN (SELECT course_id, course_name FROM course WHERE academy_id = #{academyId}) c
+                  ON o.course_id = c.course_id
+                  INNER JOIN (SELECT student_id, student_name FROM student WHERE academy_id = #{academyId}) s
+                  ON o.student_id = s.student_id
+                  LEFT OUTER JOIN (SELECT payment_id, payment_amount, payment_status, payment_method, paid_at, course_id, orders_id
+                                  FROM payment WHERE academy_id = #{academyId}) p
+                  ON o.payment_id = p.payment_id AND o.orders_id = p.orders_id AND o.course_id = p.course_id
     ) j
     <where>
       <include refid="_search"/>
     </where>
+    ) d
   </select>
 
   <!-- 주문 목록 조회 -->
   <select id="getOrdersList" resultType="ordersListVO">
-    SELECT * 
-    FROM (SELECT DISTINCT o.*, c.course_name, s.student_name, p.payment_amount, p.payment_status, p.payment_method, p.paid_at 
+SELECT *
+FROM (
+    SELECT *
+    FROM (SELECT DISTINCT o.*, c.course_name, s.student_name, p.payment_amount, p.payment_status, p.payment_method, p.paid_at
           		FROM (SELECT * FROM orders WHERE academy_id = #{academyId}) o
           		INNER JOIN (SELECT course_id, course_name FROM course WHERE academy_id = #{academyId}) c
           		ON o.course_id = c.course_id
@@ -52,7 +56,9 @@
           <where>
             <include refid="_search"/>
           </where>
-          LIMIT #{limit} OFFSET #{offset}
+
+          )d
+    LIMIT #{limit} OFFSET #{offset}
   </select>
 
 
@@ -72,27 +78,27 @@
     </if>
 
     <if test="paymentStatus != null">
-      <if test="paymentStatus == 's'">
+      <if test="paymentStatus == 'success'">
         AND payment_status = 'PAID'
       </if>
-      <if test="paymentStatus == 'f'">
+      <if test="paymentStatus == 'failed'">
         AND payment_status = 'FAILED'
       </if>
-      <if test="paymentStatus == 'c'">
+      <if test="paymentStatus == 'cancelled'">
         AND payment_status = 'CANCELLED'
       </if>
-      <if test="paymentStatus == 'p'">
+      <if test="paymentStatus == 'pending'">
         AND payment_status = 'PENDING'
       </if>
     </if>
 
     <if test="paymentMethod != null">
-      <if test="paymentMethod == 'c'">
+      <if test="paymentMethod == 'card'">
         <!-- 카드 -->
         AND payment_method = 'PaymentMethodCard'
       </if>
       <!-- 통장입금 -->
-      <if test="paymentMethod == 't'">
+      <if test="paymentMethod == 'transfer'">
         AND payment_method = 'PaymentMethodTransfer'
       </if>
     </if>
