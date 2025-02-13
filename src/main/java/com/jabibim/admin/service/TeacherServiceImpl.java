@@ -37,13 +37,14 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public List<Teacher> getTeacherList(int page, int limit, String academyId, boolean isAdmin, String state, String search_field, String search_word) {
+    public List<Teacher> getTeacherList(int page, int limit, String teacherId,String academyId, boolean isAdmin, String state, String search_field, String search_word) {
         int startrow = (page - 1) * limit + 1;
         int endrow = startrow + limit - 1;
 
         HashMap<String, Object> params = new HashMap<>();
         params.put("start", startrow);
         params.put("end", endrow);
+        params.put("teacherId", teacherId);
         params.put("academyId", academyId);
         params.put("isAdmin", isAdmin);
         params.put("state", state);
