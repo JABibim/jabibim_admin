@@ -175,10 +175,11 @@
         WHERE rnum BETWEEN #{start} AND #{end}
     </select>
 
-    <update id="replaceGrade">
+    <update id="replaceGrade" parameterType="DeleteGradeDTO">
         UPDATE student
         SET grade_id = #{newGradeId}
         WHERE grade_id = #{gradeId}
+        and academy_id = #{academyId}
     </update>
 
     <select id="getStudentGrades" resultType="GetStudentGradesDTO">

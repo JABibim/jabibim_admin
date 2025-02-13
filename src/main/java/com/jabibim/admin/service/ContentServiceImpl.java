@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,11 +26,13 @@ public class ContentServiceImpl implements ContentService {
     private final ContentMapper contentDao;
     private final S3Uploader s3Uploader;
     private final S3Deleter s3Deleter;
+    private final FFmpegService fFmpegService;
 
-    public ContentServiceImpl(ContentMapper contentDao, S3Uploader s3Uploader, S3Deleter s3Deleter) {
+    public ContentServiceImpl(ContentMapper contentDao, S3Uploader s3Uploader, S3Deleter s3Deleter, FFmpegService fFmpegService) {
         this.contentDao = contentDao;
         this.s3Uploader = s3Uploader;
         this.s3Deleter = s3Deleter;
+        this.fFmpegService = fFmpegService;
     }
 
     @Override
@@ -187,23 +190,42 @@ public class ContentServiceImpl implements ContentService {
         if (file.getOriginalFilename() == null) {
             throw new IllegalArgumentException("file 또는 파일 이름이 null입니다.");
         }
+
         String fileName = classType + "." + getExtension(file.getOriginalFilename());
-        String uploadPath = "course/" + courseId + "/class/" + classId + "/classFile/" + newClassFileUUID + "/" + fileName;
+        String fileType = file.getContentType();
 
-        String uploadedPath = s3Uploader.uploadFileToS3(file, uploadPath);
+        String uploadPathPrefix = String.join(File.separator, academyId, "course", courseId, "class", classId, "classFile", newClassFileUUID);
 
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("classFileId", newClassFileUUID);
-        map.put("classFileOriginName", file.getOriginalFilename()); // 파일 원본 이름
-        map.put("classFilePath", uploadedPath); // 파일 경로
-        map.put("classFileType", file.getContentType()); // 파일 유형
-        map.put("classFileSize", file.getSize()); // 파일 크기(바이트)
-        map.put("academyId", academyId);
-        map.put("teacherId", teacherId);
-        map.put("courseId", courseId);
-        map.put("classId", classId);
+        if (fileType != null && fileType.startsWith("video/")) {
+            fFmpegService.encoding(uploadPathPrefix, file, newClassFileUUID).thenAccept(uploadedPath -> {
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("classFileId", newClassFileUUID);
+                map.put("classFileOriginName", file.getOriginalFilename());
+                map.put("classFilePath", uploadedPath);
+                map.put("classFileType", file.getContentType());
+                map.put("classFileSize", file.getSize());
+                map.put("academyId", academyId);
+                map.put("teacherId", teacherId);
+                map.put("courseId", courseId);
+                map.put("classId", classId);
 
-        contentDao.addNewClassFileInfo(map);
+                contentDao.addNewClassFileInfo(map);
+            });
+        } else {
+            String uploadedPath = s3Uploader.uploadFileToS3(file, uploadPathPrefix + File.separator + fileName);
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("classFileId", newClassFileUUID);
+            map.put("classFileOriginName", file.getOriginalFilename());
+            map.put("classFilePath", uploadedPath);
+            map.put("classFileType", file.getContentType());
+            map.put("classFileSize", file.getSize());
+            map.put("academyId", academyId);
+            map.put("teacherId", teacherId);
+            map.put("courseId", courseId);
+            map.put("classId", classId);
+
+            contentDao.addNewClassFileInfo(map);
+        }
     }
 
     @Override
@@ -243,7 +265,7 @@ public class ContentServiceImpl implements ContentService {
 
     private String getExtension(String fileName) {
         int pos = fileName.lastIndexOf(".");
-        return fileName.substring(pos + 1);
+        return fileName.substring(pos + 1).toLowerCase();
     }
 
     private void setSearchCondition(HashMap<String, Object> map, boolean isAdmin, String academyId, SelectCourseListReqDto selectCourseListReqDto) {
