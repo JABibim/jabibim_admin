@@ -33,7 +33,7 @@ public class ChatController {
      * 학원 내에서 채팅 가능한 선생님 목록 조회
      */
     @GetMapping(value = "/teacherList")
-    public ResponseEntity<List<Map<String, Object>>> getTeacherList(HttpSession session) {
+    public ResponseEntity<Map<String, Object>> getTeacherList(HttpSession session) {
         String academyId = (String) session.getAttribute("aid");
         String loggedInTeacherId = (String) session.getAttribute("id"); // 현재 로그인한 선생의 teacherId
 
@@ -67,7 +67,12 @@ public class ChatController {
             return teacherData;
         }).collect(Collectors.toList());
 
-        return ResponseEntity.ok(responseList);
+        Map<String, Integer> unreadCounts = chatService.getUnreadMessagesByChatRoom(loggedInTeacherId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("teacherList", responseList);
+        response.put("unreadCounts",unreadCounts );
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -100,8 +105,6 @@ public class ChatController {
         String senderId = (String) payload.get("senderId");
         String chatMessage = (String) payload.get("chatMessage");
         String senderName = (String) payload.get("senderName");
-
-        System.out.println("senderName=====================" + senderName);
         LocalDateTime sentAt = LocalDateTime.now();
 
         if (chatRoomId == null || chatRoomId.isEmpty()) {

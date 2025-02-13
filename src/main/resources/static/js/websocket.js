@@ -15,7 +15,7 @@ stompClient.connect({}, function () {
         const msg = JSON.parse(message.body);
 
         // 안 읽은 메시지 개수 갱신
-        fetchUnreadMessagesByChatRoom();
+        fetchUnreadMessageCount();
 
         //채팅방이 열려있지 않아도, teacherList 에서 LastMessage 업데이트
         updateLastMessage(msg.chatRoomId, msg.senderName, msg.chatMessage);
@@ -68,10 +68,10 @@ function sendMessage(chatRoomId, senderId, chatMessage, senderName) {
 
 
 $(document).ready(function () {
+
     fetchChatRoomIds();
 
     fetchUnreadMessageCount();
-
 
     // ✅ 채팅 모달이 열리면 안 읽은 메시지를 읽음 처리
     $('#chatModal').on('shown.bs.modal', function () {
@@ -166,8 +166,10 @@ function fetchUnreadMessageCount() {
         url: "/chat/unreadMessagesByChatRoom",
         type: "GET",
         success: function (response) {
-            updateUnreadIndicators(response);
+            console.log("unread~ByChatRoom 메서드 발동!!!!!!");
+            // updateUnreadIndicators(response);
             updateUnreadMessageBadge(response);
+
         },
         error: function () {
             console.error("🚨 안 읽은 메시지 개수 불러오기 실패");
@@ -180,6 +182,7 @@ function updateUnreadMessageBadge(response) {
     const badgeElement = $("#chatNotificationBadge");
 
     let totalUnreadCount = Object.values(response).reduce((sum, count) => sum + count, 0); // 전체 개수 합산
+    console.log("totalUnreadCount는요!!!!", totalUnreadCount);
 
     if (badgeElement.length) {
         if (totalUnreadCount > 0) {
@@ -218,19 +221,6 @@ function fetchChatRoomIds() {
         },
         error: function () {
             console.error("🚨 채팅방 ID 매핑 가져오기 실패!");
-        }
-    });
-}
-
-function fetchUnreadMessagesByChatRoom() {
-    $.ajax({
-        url: "/chat/unreadMessagesByChatRoom",
-        type: "GET",
-        success: function (response) {
-            updateUnreadIndicators(response);
-        },
-        error: function () {
-            console.error("🚨 안 읽은 메시지 개수 가져오기 실패!");
         }
     });
 }
