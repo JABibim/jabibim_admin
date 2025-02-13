@@ -12,7 +12,7 @@ public interface TeacherService {
 
     int getTeacherCount(String academyId, boolean isAdmin, String state, String search_field, String search_word);
 
-    List<Teacher> getTeacherList(int page, int limit, String academyId, boolean isAdmin, String state, String search_field, String search_word);
+    List<Teacher> getTeacherList(int page, int limit, String teacherId, String academyId, boolean isAdmin, String state, String search_field, String search_word);
 
     TeacherProfileDTO teacherInfo(String id);
 
