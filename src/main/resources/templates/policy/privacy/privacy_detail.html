@@ -22,24 +22,22 @@
     <div class="container">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">개인정보처리방침</h5>
-
 
             <form>
                 <div class="row mb-3">
-                    <label class="col-sm-2 col-form-label">작성자</label>
+                    <label class="col-sm-2 col-form-label fw-bold">작성자</label>
                     <div class="col-sm-10" th:text="${privacyData.privacyTermName}"></div>
                 </div>
                 <div class="row mb-3">
-                    <label class="col-sm-2 col-form-label">제목</label>
+                    <label class="col-sm-2 col-form-label fw-bold">제목</label>
                     <div class="col-sm-10" th:text="${privacyData.privacyTermSubject}"></div>
                 </div>
                 <div class="row mb-3">
-                    <label class="col-sm-2 col-form-label">시행 일자</label>
+                    <label class="col-sm-2 col-form-label fw-bold">시행 일자</label>
                     <div class="col-sm-10" th:text="${privacyData.privacyTermEffectiveDate}"></div>
                 </div>
                 <div class="row mb-3">
-                    <label class="col-sm-2 col-form-label">상실 일자</label>
+                    <label class="col-sm-2 col-form-label fw-bold">상실 일자</label>
                     <div class="col-sm-10" th:text="${privacyData.privacyTermExpirationDate}"></div>
                 </div>
                 <div class="row mb-3">
@@ -50,7 +48,7 @@
                         </th:block>
                     </div>
                     <br><br>
-                    <label class="col-sm-2 col-form-label">내용</label>
+                    <label class="col-sm-2 col-form-label fw-bold">내용</label>
 
                     <div class="col-sm-10 pb-5">
                         <div id="editor" th:utext="${privacyData.privacyTermContent}"></div>

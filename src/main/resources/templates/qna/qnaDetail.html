@@ -2,37 +2,37 @@
 <div class="container">
 <div class="card">
     <div class="card-body">
-        <h3 class="card-title">QnA 상세보기</h3>
+        <br><br>
         <form>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">제목</label>
+                <label class="col-sm-2 col-form-label fw-bold">제목</label>
                 <div class="col-sm-10" th:text="${qnaData.qnaSubject}"></div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">작성자</label>
+                <label class="col-sm-2 col-form-label fw-bold">작성자</label>
                 <div class="col-sm-10" th:text="${qnaData.studentName}"></div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">과목명</label>
+                <label class="col-sm-2 col-form-label fw-bold">과목명</label>
                 <div class="col-sm-10" th:text="${qnaData.className }"></div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">과정명</label>
+                <label class="col-sm-2 col-form-label fw-bold">과정명</label>
                 <div class="col-sm-10" th:text="${qnaData.courseName}"></div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">내용</label>
+                <label class="col-sm-2 col-form-label fw-bold">내용</label>
                 <div class="col-sm-10 pb-5">
                     <div th:utext="${qnaData.qnaContent}"></div>
                     <input type="hidden" name="qnaContent" id="qnaContents" readonly>
                 </div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">조회수</label>
+                <label class="col-sm-2 col-form-label fw-bold">조회수</label>
                 <div class="col-sm-10" th:text="${qnaData.qnaReadCount}"></div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">등록일</label>
+                <label class="col-sm-2 col-form-label fw-bold">등록일</label>
                 <div class="col-sm-10" th:text="${#strings.substring(qnaData.createdAt, 0, 10)}"></div>
             </div>
 <!--            <div th:if="${not #strings.isEmpty(qnaData.qnaFileName)}">-->
@@ -45,7 +45,7 @@
 <!--            <div th:text="${qnaData.qnaFileName}"></div>-->
 
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label" style="vertical-align: middle;">답변 상태</label>
+                <label class="col-sm-2 col-form-label fw-bold " style="vertical-align: middle;">답변 상태</label>
                 <div class="col-sm-10 d-flex align-items-center">
                                 <span class="badge bg-primary" style="font-size: 0.75rem;"
                                       th:if="${qnaData.qnaAnswerStatus == 1}">답변 완료</span>
@@ -55,7 +55,7 @@
             </div>
 
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label" style="vertical-align: middle;">노출</label>
+                <label class="col-sm-2 col-form-label fw-bold" style="vertical-align: middle;">노출</label>
                 <div class="col-sm-10 d-flex align-items-center">
                                 <span class="badge bg-primary" style="font-size: 0.75rem;"
                                       th:if="${qnaData.qnaExposureStat == 1}">노출</span>
