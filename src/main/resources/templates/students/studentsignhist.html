@@ -6,6 +6,12 @@
       layout:decorate="~{layouts/default}">
 <head>
   <title>수강생 관리> 접속이력 관리</title>
+  <style>
+    #histField {
+      width: 140px;
+      height: 57px;
+    }
+  </style>
 
   <script>
     function limitChanged(limit) {
@@ -110,10 +116,10 @@
                   </div>
                 </div>
 
-                <div class="form-row h-33 d-flex text-center border">
-                  <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">검색</div>
+                <div class="form-row h-33 d-flex text-center border h-auto">
+                  <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border p-3">검색</div>
                   <div class="input-group align-self-center">
-                    <div class="form-group col-3 col-md-auto mx-2">
+                    <div class="form-group col-3 col-md-auto align-self-center mx-1">
                       <select name="searchField" class="form-select" id="histField" aria-label="Default select">
                         <option value="enboit" th:selected="${searchField == 'enboit' ? true : false}">전체</option>
                         <option value="e" th:selected="${searchField == 'e' ? true : false}">회원 메일</option>
@@ -128,8 +134,8 @@
                       <input type="text" id='search_word' name='searchWord' class="form-control" th:value="${searchWord}">
                       <label for="search_word">검색어</label>
                     </div>
-                    <div class="form-group col-auto col-md-auto">
-                      <button type="submit" class="btn btn-success">검색하기</button>
+                    <div class="form-group col-auto col-md-auto align-self-center">
+                      <button type="submit" class="btn btn-success my-2">검색하기</button>
                       <input type="hidden" th:value="${limit}" name="limit" id="limit">
                     </div>
                   </div>

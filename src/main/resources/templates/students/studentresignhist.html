@@ -29,6 +29,21 @@
       font-size: 14px; /* 본문 폰트 크기 */
       color: #333; /* 텍스트 색상 */
     }
+
+
+    #searchCol1 {
+      height: 44px;
+    }
+
+    #searchCol2  {
+      height: 59px;
+      line-height: 45px;
+    }
+
+    #searchField {
+      height: 57px;
+      margin-right: 5px;
+    }
   </style>
   <script>
     function limitChanged(limit) {
@@ -67,17 +82,17 @@
 
             <form th:action="@{list}" method="get">
               <div class="form-row h-33 text-center d-flex border">
-                <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">날짜 검색</div>
+                <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border" id="searchCol1">날짜 검색</div>
                 <div class="input-group align-self-center">
                   <div class="col-3 col-md-4">
                     <label for='Date1' hidden></label><input type="date" id='Date1' name='resignDate1'
-                                                                   class="form-control start_date"
+                                                                   class="form-control start_date align-self-center my-1"
                                                                    th:value="${resignDate1 != '' ? #dates.format(resignDate1, 'yyyy-MM-dd') : ''}">
                   </div>
-                  <b class="col-auto my-1 mx-1 px-2 text-middle">-</b>
+                  <b class="col-auto my-1 mx-1 px-2 align-self-center">-</b>
                   <div class="col-3 col-md-4">
                     <label for='Date2' hidden></label><input type="date" id='Date2' name='resignDate2'
-                                                                   class="form-control end_date"
+                                                                   class="form-control end_date align-self-center my-1"
                                                                    th:value="${resignDate2 != '' ? #dates.format(resignDate2, 'yyyy-MM-dd') : ''}">
                   </div>
                   <div class="col-3 col-md-2">
@@ -94,9 +109,9 @@
               </div>
 
               <div class="form-row h-33 d-flex text-center border">
-                <div class="col-form-label align-self-center col-auto col-md-2 fw-bold border">검색</div>
+                <div class="col-form-label col-auto col-md-2 fw-bold border" id="searchCol2">검색</div>
                 <div class="input-group align-self-center">
-                  <div class="form-group col-3 col-md-auto mx-2">
+                  <div class="form-group col-3 col-md-auto">
                     <select class="form-select" name="searchField" id="searchField" aria-label="Default select">
                       <option value="nerd" th:selected="${searchField == 'nerd'}">전체</option>
                       <option value="n" th:selected="${searchField == 'n'}">회원 이름</option>
@@ -111,7 +126,7 @@
                   </div>
                 </div>
                 <div class="form-group col-auto col-md-auto">
-                  <button type="submit" class="btn btn-success">검색하기</button>
+                  <button type="submit" class="btn btn-success my-2">검색하기</button>
                   <input type="hidden" th:value="${limit}" name="limit" id="limit">
                 </div>
               </div>
