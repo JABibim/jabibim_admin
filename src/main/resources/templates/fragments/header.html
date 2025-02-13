@@ -172,9 +172,11 @@
                     success: function (response) {
                         chatRoomId = response.chatRoomId; // 서버에서 받은 채팅방 ID 저장
                         senderId = response.senderId;
+                        senderName = response.senderName;
 
                         $("#chatRoomId").val(chatRoomId);
                         $("#loggedInUserId").val(senderId);
+                        $("#senderName").val(senderName);
 
                         $('#chatModal').modal('show');
                         $('#chatBox').html(''); // 채팅창 초기화
@@ -369,6 +371,7 @@
                 <div class="modal-header">
                     <input type="hidden" id="chatRoomId">
                     <input type="hidden" id="loggedInUserId">
+                    <input type="hidden" id="senderName">
                     <h5 class="modal-title" id="chatModalLabel">채팅</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>

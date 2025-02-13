@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -75,6 +76,7 @@ public class ChatController {
     @GetMapping(value = "/openChat")
     public ResponseEntity<Map<String, Object>> openChat(@RequestParam String teacherId, HttpSession session) {
         String loggedInTeacherId = (String) session.getAttribute("id");
+        String senderName = (String) session.getAttribute("name");
         String roomId = chatService.getOrCreateChatRoom(loggedInTeacherId, teacherId);
 
         //채팅방 열 시, 메시지를 읽음 처리
@@ -83,6 +85,7 @@ public class ChatController {
         Map<String, Object> response = new HashMap<>();
         response.put("chatRoomId", roomId);
         response.put("senderId", loggedInTeacherId);
+        response.put("senderName", senderName);
         return ResponseEntity.ok(response);
     }
 
@@ -91,12 +94,14 @@ public class ChatController {
      */
     @MessageMapping("/sendMessage")    // 클라이언트가 메시지를 보내는 경로
     @SendTo("/topic/chatRoom")              // 메시지를 브로드캐스트할 경로
-    public ChatMessage sendMessage(@Payload Map<String, Object> payload, HttpSession session) {
+    public ChatMessage sendMessage(@Payload Map<String, Object> payload, SimpMessageHeaderAccessor headerAccessor) {
 
         String chatRoomId = (String) payload.get("chatRoomId");
         String senderId = (String) payload.get("senderId");
         String chatMessage = (String) payload.get("chatMessage");
-        String senderName = (String) session.getAttribute("name");
+        String senderName = (String) payload.get("senderName");
+
+        System.out.println("senderName=====================" + senderName);
         LocalDateTime sentAt = LocalDateTime.now();
 
         if (chatRoomId == null || chatRoomId.isEmpty()) {
@@ -104,7 +109,7 @@ public class ChatController {
         }
 
         if (senderId == null || senderId.isEmpty()) {
-            senderId = (String) session.getAttribute("id");
+            senderId = (String) headerAccessor.getSessionAttributes().get("id");
         }
 
         ChatMessage message = new ChatMessage();
