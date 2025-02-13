@@ -133,9 +133,10 @@
                         <label for="payment_status_success">
                           <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="paymentStatus"
                                  id="payment_status_success" value="success"
-                                 th:checked="${paymentStatus == 'susccess' ? true : false}">
+                                 th:checked="${paymentStatus == 'success' ? true : false}">
                           결제 완료
                         </label>
+                        </div>
                         <div class="form-check my-auto mx-1">
                           <label for="payment_status_pending">
                             <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="paymentStatus"
@@ -144,7 +145,6 @@
                             결제 확인 중
                           </label>
                         </div>
-                      </div>
                       <div class="form-check my-auto mx-1">
                         <label for="payment_status_failed">
                           <input class="form-check-input mt-1 ml-1 align-middle" type="radio" name="paymentStatus"
@@ -277,7 +277,7 @@
                           </span>
                   </td>
                   <td th:text="${#temporals.format(orders.createdAt, 'yyyy-MM-dd')}"></td>
-                  <td th:text="${orders.paidAt.substring(0, 10)}"></td>
+                  <td th:text="${#strings.substring(orders.paidAt, 0, 10)}"></td>
                   <td>
                     <a th:href="@{/orders/detail(id=${orders.ordersId})}">
                       <button type="button" class="btn btn-secondary btn-sm rounded-pill payment-detail"
@@ -293,7 +293,7 @@
           </div>
         </div>
         <th:block th:if="${listcount == 0}">
-          <div class="text-center">주문 내역이 없습니다.</div>
+          <div class="text-center mb-3"><h2>주문 내역이 없습니다.</h2></div>
         </th:block>
 
         <!-- 페이지네이션 -->

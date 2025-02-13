@@ -34,9 +34,6 @@ import lombok.RequiredArgsConstructor;
 @Order(1)
 @RequiredArgsConstructor
 public class JwtSecurityConfig {
-    @Value("${front.host}")
-    private String frontHost;
-
     private final Logger logger = LoggerFactory.getLogger(JwtSecurityConfig.class);
     // jwt 토큰 발급 클래스
     private final JwtTokenProvider jwtTokenProvider;
@@ -90,7 +87,7 @@ public class JwtSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin(frontHost); // 프론트엔드
+        configuration.addAllowedOrigin("https://bibimfront.vercel.app/"); // 프론트엔드
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
         configuration.setAllowCredentials(true); // 인증 정보 허용

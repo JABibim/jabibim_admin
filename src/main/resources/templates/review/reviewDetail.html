@@ -272,7 +272,12 @@
           </div>
         </div>
         <div class="text-center d-flex flex-row-reverse">
-          <button type="button" class="btn btn-danger mx-3" id="reviewDelete" th:deleteId='${review.reviewId}'>삭제</button>
+          <button type="button" class="btn btn-danger mx-2" id="reviewDelete" th:deleteId='${review.reviewId}'>삭제</button>
+          <button type="button" class="btn btn-success mx-2">
+            <a href="javascript:window.history.back();" class="text-decoration-none text-white">
+              목록으로
+            </a>
+          </button>
 <!--          <button type="button" class="btn btn-info text-white mx-3" id="reviewUpdate">수정-->
             <!--      th:onclick="reviewUpdate(${review.reviewId})"-->
 <!--          </button>-->
@@ -305,7 +310,7 @@
           <input type="text" class="form-control" id="replyDate"
                  th:value="${#temporals.format(reply.createdAt, 'yyyy.MM.dd HH:mm:ss')}" readonly>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" th:if="${reply.teacherEmail.equals(email)}">
           <label for="replyPassword" class="form-label">비밀번호</label>
           <input type="password" class="form-control" id="replyPassword" name="replyPassword">
         </div>
@@ -325,10 +330,10 @@
           </div>
         </div>
         <div class="text-center d-flex flex-row-reverse">
-          <button type="button" class="btn btn-danger mx-3" id="replyDelete" th:deleteId="${reply.reviewId}">
+          <button type="button" class="btn btn-danger mx-2" id="replyDelete" th:deleteId="${reply.reviewId}" th:if="${reply.teacherEmail.equals(email)}">
             삭제
           </button>
-          <button type="submit" class="btn btn-info text-white mx-3" id="replyUpdate">수정
+          <button type="submit" class="btn btn-info text-white mx-2" id="replyUpdate" th:if="${reply.teacherEmail.equals(email)}">수정
           </button>
         </div>
       </form><!-- End Multi Columns Form -->
@@ -384,7 +389,6 @@
       </div>
       </th:block>
     </th:block>
-  </th:block>
   <!--        </c:if>-->
   <!--    </c:when>-->
 
