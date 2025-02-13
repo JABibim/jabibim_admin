@@ -13,7 +13,7 @@ public class SocialClientRegistration {
         return ClientRegistration.withRegistrationId("google")
                 .clientId("547757846015-dlmrd94327s9bnojsvpjekr0ac7t13vl.apps.googleusercontent.com")
                 .clientSecret("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")
-                .redirectUri("http://32to100.kr/login/oauth2/code/google")
+                .redirectUri("https://32to100.kr/login/oauth2/code/google")
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .scope("profile", "email")
                 .authorizationUri("https://accounts.google.com/o/oauth2/v2/auth")
