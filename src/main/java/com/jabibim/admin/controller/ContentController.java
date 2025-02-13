@@ -14,14 +14,14 @@ import com.jabibim.admin.dto.content.course.request.SelectCourseListReqDto;
 import com.jabibim.admin.dto.content.course.response.SelectClassFileDownResDto;
 import com.jabibim.admin.dto.content.course.response.SelectCourseListResDto;
 import com.jabibim.admin.func.PaginationResult;
-import com.jabibim.admin.security.dto.AccountDto;
 import com.jabibim.admin.service.ContentService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -54,16 +54,16 @@ public class ContentController {
 
     @GetMapping(value = "/class")
     public ModelAndView classListPage(
-            Authentication authentication,
+            HttpServletRequest request,
             ModelAndView modelAndView,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(defaultValue = "") String courseId,
             @RequestParam(defaultValue = "") String searchKeyword
     ) {
-        AccountDto account = (AccountDto) authentication.getPrincipal();
-        boolean isAdmin = account.getRoles().contains("ROLE_ADMIN");
-        String academyId = account.getAcademyId();
+        HttpSession session = request.getSession();
+        boolean isAdmin = (boolean) session.getAttribute("isAdmin");
+        String academyId = (String) session.getAttribute("aid");
 
         List<SelectCourseClassListResDto> courseClassList = contentService.getCourseClassList(isAdmin, academyId);
 
@@ -90,11 +90,11 @@ public class ContentController {
 
     @GetMapping(value = "/class/addClass")
     public ModelAndView addClassPage(
-            Authentication authentication
+            HttpServletRequest request
     ) {
-        AccountDto account = (AccountDto) authentication.getPrincipal();
-        boolean isAdmin = account.getRoles().contains("ROLE_ADMIN");
-        String academyId = account.getAcademyId();
+        HttpSession session = request.getSession();
+        boolean isAdmin = (boolean) session.getAttribute("isAdmin");
+        String academyId = (String) session.getAttribute("aid");
 
         List<SelectCourseClassListResDto> courseClassList = contentService.getCourseClassList(isAdmin, academyId);
 
@@ -127,14 +127,14 @@ public class ContentController {
     @Transactional
     @ResponseBody
     public ResponseEntity<ApiResponse<HashMap<String, Object>>> addCourseProcess(
-            Authentication authentication
+            HttpServletRequest request
             , @RequestPart("courseData") InsertCourseReqDto insertCourseReqDto
             , @RequestPart("courseImage") MultipartFile courseImage
     ) {
         try {
-            AccountDto account = (AccountDto) authentication.getPrincipal();
-            String teacherId = account.getId();
-            String academyId = account.getAcademyId();
+            HttpSession session = request.getSession();
+            String teacherId = (String) session.getAttribute("id");
+            String academyId = (String) session.getAttribute("aid");
 
             contentService.addCourse(teacherId, academyId, insertCourseReqDto, courseImage);
 
@@ -154,15 +154,16 @@ public class ContentController {
     @Transactional(readOnly = true)
     @ResponseBody
     public ResponseEntity<ApiResponse<HashMap<String, Object>>> getCourseList(
-            Authentication authentication,
+            HttpServletRequest request,
             @RequestParam String search
     ) {
         try {
             Gson gson = new Gson();
+            HttpSession session = request.getSession();
+
             SelectCourseListReqDto selectCourseListReqDto = gson.fromJson(search, SelectCourseListReqDto.class);
-            AccountDto account = (AccountDto) authentication.getPrincipal();
-            boolean isAdmin = account.getRoles().contains("ROLE_ADMIN");
-            String academyId = account.getAcademyId();
+            boolean isAdmin = (boolean) session.getAttribute("isAdmin");
+            String academyId = (String) session.getAttribute("aid");
 
             int courseListCount = contentService.getCourseListCount(isAdmin, academyId, selectCourseListReqDto);
             int page = selectCourseListReqDto.getPage();
@@ -206,7 +207,7 @@ public class ContentController {
 
     @PostMapping(value = "/modifyCourse")
     public String modifyCourse(
-            Authentication authentication
+            HttpServletRequest request
             , @RequestPart("course_id") String courseId
             , @RequestPart("course_name") String courseName
             , @RequestPart("course_subject") String courseSubject
@@ -217,9 +218,10 @@ public class ContentController {
             , @RequestPart("course_tag") String courseTag
             , @RequestPart("course_diff") String courseDiff
     ) {
-        AccountDto account = (AccountDto) authentication.getPrincipal();
-        String teacherId = account.getId();
-        String academyId = account.getAcademyId();
+        HttpSession session = request.getSession();
+        String teacherId = (String) session.getAttribute("id");
+        String academyId = (String) session.getAttribute("aid");
+
         contentService.updateCourse(teacherId, academyId, courseId, courseName, courseSubject, isProfileChanged, courseImage, courseInfo, coursePrice, courseTag, courseDiff);
 
         return "redirect:/content";
@@ -241,16 +243,16 @@ public class ContentController {
     @PostMapping(value = "/class/addClassProcess")
     @ResponseBody
     public ResponseEntity<ApiResponse<HashMap<String, Object>>> addClassProcess(
-            Authentication authentication
+            HttpServletRequest request
             , @RequestParam String courseId
             , @RequestParam String classSubject
             , @RequestParam String classContent
             , @RequestParam String classType
     ) {
         try {
-            AccountDto account = (AccountDto) authentication.getPrincipal();
-            String academyId = account.getAcademyId();
-            String teacherId = account.getId();
+            HttpSession session = request.getSession();
+            String academyId = (String) session.getAttribute("aid");
+            String teacherId = (String) session.getAttribute("id");
 
             String newClassId = contentService.addNewClassInfo(academyId, teacherId, courseId, classSubject, classContent, classType);
             HashMap<String, Object> result = new HashMap<>();
@@ -269,7 +271,7 @@ public class ContentController {
     @PostMapping(value = "/class/addClassFilesProcess")
     @ResponseBody
     public ResponseEntity<ApiResponse<HashMap<String, Object>>> addClassFilesProcess(
-            Authentication authentication,
+            HttpServletRequest request,
             @RequestParam("courseId") String courseId,
             @RequestParam("classId") String classId,
             @RequestParam("classType") String classType,
@@ -277,9 +279,9 @@ public class ContentController {
     ) {
         HashMap<String, Object> result = new HashMap<>();
         try {
-            AccountDto account = (AccountDto) authentication.getPrincipal();
-            String academyId = account.getAcademyId();
-            String teacherId = account.getId();
+            HttpSession session = request.getSession();
+            String academyId = (String) session.getAttribute("aid");
+            String teacherId = (String) session.getAttribute("id");
 
             contentService.addNewClassFileInfo(academyId, teacherId, courseId, classId, classType, file);
 
