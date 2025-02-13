@@ -234,21 +234,12 @@ function fetchUnreadMessagesByChatRoom() {
 }
 
 function updateUnreadIndicators(unreadCounts) {
-    console.log("🔥 디버깅 - 채팅방별 안 읽은 메시지 개수:", unreadCounts); // 디버깅 추가
-
-    console.log("🔥 디버깅 - teacherList 요소 확인:", $("#teacherList").length);
-    console.log("🔥 디버깅 - teacherList 내부 HTML:", $("#teacherList").html());
-
 
     $("#teacherList .list-group-item").each(function () {
         let teacherId = $(this).find("button.teacherChat").attr("id");
         let chatRoomId = chatRoomIdMap[teacherId];
-        console.log("🔥 디버깅 - 채팅 리스트 개수:", $("#teacherList .list-group-item").length);
-
-        console.log("✅ 디버깅 - teacherId:", teacherId, "chatRoomId:", chatRoomId); // 추가 디버깅
 
         if (chatRoomId && unreadCounts[chatRoomId] > 0) {
-            console.log("🔴 안 읽은 메시지 있음 - 채팅방 ID:", chatRoomId); // 디버깅
             if (!$(this).find(".unread-indicator").length) {
                 $(this).find(".fw-bold").after('<span class="unread-indicator" style="color: red; font-size: 1rem;">🔴</span>');
             }
