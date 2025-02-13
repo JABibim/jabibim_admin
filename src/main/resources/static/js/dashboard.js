@@ -8,7 +8,7 @@ function getStudentChartData() {
         data: {},
         success: function (res) {
             // 서버 응답 데이터 확인
-            console.log('서버 응답:', res);
+            // console.log('서버 응답:', res);
 
             if (res.success && res.result) {
                 const dateList = [];
