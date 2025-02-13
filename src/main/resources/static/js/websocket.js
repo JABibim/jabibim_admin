@@ -50,7 +50,7 @@ function connectWebSocket() {
 }
 
 // ✅ 메시지 전송 함수 (WebSocket 사용)
-function sendMessage(chatRoomId, senderId, chatMessage) {
+function sendMessage(chatRoomId, senderId, chatMessage, senderName) {
     if (!stompClient.connected) {
         console.error("🚨 WebSocket이 연결되지 않았음! 메시지 전송 불가.");
         return;
@@ -59,7 +59,8 @@ function sendMessage(chatRoomId, senderId, chatMessage) {
     const message = {
         chatRoomId: chatRoomId,
         senderId: senderId,
-        chatMessage: chatMessage
+        chatMessage: chatMessage,
+        senderName : senderName
     };
 
     stompClient.send("/app/sendMessage", {}, JSON.stringify(message));
@@ -88,8 +89,9 @@ $(document).ready(function () {
 
         let chatRoomId = $("#chatRoomId").val();
         let senderId = $("#loggedInUserId").val();
+        let senderName = $("#senderName").val();
 
-        sendMessage(chatRoomId, senderId, message);
+        sendMessage(chatRoomId, senderId, message, senderName);
 
         $("#chatInput").val(""); // 입력창 초기화
     });
