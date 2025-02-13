@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
             center: 'title'
         },
         initialView: 'dayGridMonth',
-        googleCalendarApiKey: 'AIzaSyBXFz8vCh6SbLBDmddYajLubFWJMGs2DRM',
+        googleCalendarApiKey: 'AIzaSyBC3q74jN5wugwjJaqY8nScxmoM3GhJbFU', // AIzaSyBXFz8vCh6SbLBDmddYajLubFWJMGs2DRM
         events:
             {
                 googleCalendarId: googleCalendarInfo
