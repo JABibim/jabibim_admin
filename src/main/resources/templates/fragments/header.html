@@ -120,8 +120,12 @@
                     url: "/chat/teacherList",
                     method: "GET",
                     success: function (data) {
+                        let teacherList = data.teacherList;
+                        console.log("teacherList는요!!!!!", teacherList);
+
+
                         $('#teacherList').html(''); // 기존 리스트 초기화
-                        data.forEach(teacher => {
+                        teacherList.forEach(teacher => {
                             let lastMessage = teacher.lastMessage || "메시지가 없습니다.";
 
                             if (lastMessage.length > 10) {
@@ -141,6 +145,9 @@
                         });
 
                         fetchUnreadMessageCount();
+
+                        updateUnreadIndicators(data.unreadCounts);
+
 
                         $('#chatTeacherListModal').modal('show'); // 모달 표시
                         isOpen = true;
