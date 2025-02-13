@@ -46,13 +46,14 @@ public class TeacherController {
 
         session.setAttribute("referer", "list");
         String academyId = (String) session.getAttribute("aid");
+        String teacherId = (String) session.getAttribute("id");
         boolean isAdmin = academyId.equals("ADMIN");
 
         // 총 선생 수를 받아옴
         int listcount = teacherService.getTeacherCount(academyId, isAdmin, state, search_field, search_word);
 
         // 선생 리스트를 받아옴
-        List<Teacher> list = teacherService.getTeacherList(page, limit, academyId, isAdmin, state, search_field, search_word);
+        List<Teacher> list = teacherService.getTeacherList(page, limit, teacherId, academyId, isAdmin, state, search_field, search_word);
 
         // Pagination 객체 생성
         PaginationResult result = new PaginationResult(page, limit, listcount);

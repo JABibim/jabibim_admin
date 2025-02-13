@@ -107,8 +107,16 @@
                         <tbody>
                         <tr th:each="teacher, iterStat : ${teacherlist}">
                             <td th:text="${iterStat.index + startnumber}"></td>
-                            <td th:text="${teacher.teacherName}"></td>  <!-- 수정된 부분 -->
-                            <td th:text="${teacher.teacherPhone}"></td>
+                            <td th:text="${teacher.teacherName}"></td>
+                            <td>
+                                <a th:if="${teacher.teacherPhone == null}"
+                                   th:href="@{/mypage/detail(id=${teacher.teacherId})}"
+                                   style="color: gray; text-decoration: none;">
+                                    <span>번호 등록</span>
+                                    <i class="bi bi-box-arrow-up-right" style="color: blue;"></i>
+                                </a>
+                                <span th:if="${teacher.teacherPhone != null}" th:text="${teacher.teacherPhone}"></span>
+                            </td>
                             <td th:text="${teacher.teacherEmail}"></td>
                             <td th:text="${teacher.deletedAt == null ? '정상' : '중지'}"></td>
                         </tr>
