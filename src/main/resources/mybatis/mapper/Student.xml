@@ -153,6 +153,17 @@
             <if test="!isAdmin">
                 academy_id = #{academyId}
             </if>
+            <!-- 검색 조건 -->
+            <if test='search_field == "0"'>
+                AND (student_name LIKE CONCAT('%', #{search_word}, '%')
+                OR student_email LIKE CONCAT('%', #{search_word}, '%'))
+            </if>
+            <if test='search_field == "1"'>
+                AND student_name LIKE CONCAT('%', #{search_word}, '%')
+            </if>
+            <if test='search_field == "2"'>
+                AND student_email LIKE CONCAT('%', #{search_word}, '%')
+            </if>
         </where>
     </select>
 
@@ -169,6 +180,17 @@
         <where>
             <if test="!isAdmin">
                 academy_id = #{academyId}
+            </if>
+            <!-- 검색 조건 -->
+            <if test='search_field == "0"'>
+                AND (student_name LIKE CONCAT('%', #{search_word}, '%')
+                OR student_email LIKE CONCAT('%', #{search_word}, '%'))
+            </if>
+            <if test='search_field == "1"'>
+                AND student_name LIKE CONCAT('%', #{search_word}, '%')
+            </if>
+            <if test='search_field == "2"'>
+                AND student_email LIKE CONCAT('%', #{search_word}, '%')
             </if>
         </where>
         ) AS subquery
