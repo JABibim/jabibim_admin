@@ -1,7 +1,7 @@
 pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub') // dockerhub : jenkins에 등록해 놓은 docker hub credentials 이름
-        TARGET_HOST = "ubuntu@43.203.226.104" // @ 뒤에는 web-server public ip
+        TARGET_HOST = "ubuntu@3.39.3.203" // @ 뒤에는 web-server public ip
         AWS_ACCESS_KEY = "${env.AWS_ACCESS_KEY}"
         AWS_SECRET_KEY = "${env.AWS_SECRET_KEY}"
         RDS_URL = "${env.RDS_URL}"
